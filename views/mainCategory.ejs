@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save 71 - Dashboard - Dashboard</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/output.css">
+    <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+  </head>
+
+  <body class="font-sans">
+    <section class=" max-w-[1920px] ml-auto mr-auto relative">
+
+      <!-- Navigation Menu -->
+      <%- include('header')  %>
+
+
+
+      <!-- Right Side Section -->
+      <div class="ml-auto w-full xl:w-5/6 px-0 xl:px-1 py-2 mt-16 xl:mt-0">
+
+
+        <!-- Project Overview Header -->
+
+        <div class="flex items-center justify-between px-5 py-2 xl:py-5 gap-4 border-b-2">
+          <!-- Search Box -->
+          <div class="bg-white relative">
+            <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text" placeholder="Search...">
+            <i class="fa-solid fa-magnifying-glass absolute top-1/2 left-0 -translate-y-1/2 text-tColor"></i>
+          </div>
+
+          <!-- Notification & User -->
+          <%- include('profileBar') %>
+
+
+        </div>
+
+        <div class="bg-gray-100 px-5 pt-5 rounded-md">
+
+          <div class="flex justify-between items-center flex-wrap gap-5">
+            <p class="text-xl xl:text-2xl font-semibold text-tColor2">Categories</p>
+            <div class="bg-white relative ml-auto">
+              <input id="searchInput" class="py-2 pl-3 pr-6 focus:outline-none max-w-[205px] rounded-md" type="text"
+                placeholder="Search categories...">
+              <i class="fa-solid fa-magnifying-glass absolute top-1/2 right-2 -translate-y-1/2 text-tColor"></i>
+            </div>
+            <button class="primary-btn" id="add-category-btn">+ Add Category</button>
+          </div>
+
+          <!-- All Orders Table -->
+          <div class="mt-5">
+
+            <div class="flex flex-col justify-around">
+
+              <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3">
+
+                <ul class="flex gap-7 border-b-2 pb-2 flex-wrap">
+                  <li><a href="/maincategory" class="font-bold border-b-2 border-primaryColor pb-[10px]">Main</a></li>
+                  <li><a href="/subcategory">Sub</a></li>
+                  <li><a href="/extracategory">Extra</a></li>
+                </ul>
+
+                <div class="relative ml-auto">
+                  <button class="accordion-button menu-list" onclick="toggleMenu()">
+                    <i class="fa-solid fa-filter"></i>
+                    <span>Filter By</span>
+                    <i class="fa-solid fa-sort-down -mt-1"></i>
+                  </button>
+
+                  <ul id="menu" class="menu-collapse bg-white absolute right-0 p-5 shadow-md hidden">
+                    <li><a href="#">By Name</a></li>
+                    <li><a href="#">By Price</a></li>
+                    <li><a href="#">By Category</a></li>
+                    <li><a href="#">By Sales</a></li>
+                  </ul>
+                </div>
+
+
+              </div>
+
+              <div class="bg-white pt-5 mt-5 overflow-x-scroll md:overflow-hidden px-5">
+                <table class="table-auto text-xs md:text-sm profile-table w-[150%] md:w-full">
+                  <thead>
+                    <tr>
+                      <th>NO</th>
+                      <th>CATEGORY</th>
+                      <th>SUB-CATEGORIES</th>
+                      <th>#</th>
+                      <th>#</th>
+                    </tr>
+                  </thead>
+                  <tbody id="productTableBody">
+                  </tbody>
+                </table>
+
+              </div>
+
+              <!-- Page Select -->
+              <div class="flex flex-col xl:flex-row justify-between xl:items-center py-5 gap-2">
+                <p class="text-center text-xs xl:text-sm text-tColor">
+                  Showing <span id="showFrom"></span> - <span id="showTo"></span> of <span id="totalProducts"></span>
+                  products
+                </p>
+                <div
+                  class="scale-75 xl:scale-100 grid grid-flow-col content-center ml-auto mr-auto xl:mr-0 font-semibold xl:text-sm text-tColor gap-3"
+                  id="paginationContainer">
+                </div>
+              </div>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+      <!-- Add Extra Category Section -->
+      <div
+        class="bg-white h-screen max-h-[1080px] w-full xl:w-1/3 2xl:w-1/4 absolute top-0 right-0 shadow-lg p-10 hidden"
+        id="add-category">
+        <form action="/maincat" method="POST">
+
+          <div class="flex justify-between items-center">
+            <p class="text-xl font-semibold">Add Category</p>
+            <a id="category-close-button" type="button"><i
+                class="fa-solid fa-xmark bg-secondaryColor text-white text-sm rounded-[50%] px-[7px] py-[5px]"></i></a>
+          </div>
+
+          <p class="my-5 text-tColor2">You only need to enter the basic information when you create the categories.</p>
+
+          <div>
+            <p class="mb-2">Category Name</p>
+            <input class=" border rounded px-3 py-2 flex-1 focus:outline-none focus:shadow-outline w-full" type="text"
+              id="category-name" name="main_category_name" placeholder="Category Name">
+          </div>
+
+          <button class="bg-primaryColor text-white rounded px-4 py-2 w-full mt-5" type="submit">Publish</button>
+        </form>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- Table search -->
+    <script>
+      $(document).ready(function () {
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let typingTimer;
+        const doneTypingInterval = 500; // Wait for 500ms of inactivity before sending the request
+
+        const fetchProducts = (page) => {
+          const searchQuery = $('#searchInput').val(); // Get the search query from the input field
+          $.ajax({
+            url: `/api/getMainProducts/${page}`,
+            method: 'GET',
+            data: {
+              search: searchQuery
+            },
+            dataType: 'json',
+            success: function (response) {
+              const products = response.products;
+              const images = response.images;
+              displayPage(page, products, images);
+              updatePagination(page, response.totalPages, itemsPerPage);
+              updateDisplayedItemsInfo(page, response.totalProducts, itemsPerPage);
+            },
+            error: function (error) {
+              console.error(error);
+            }
+          });
+        };
+
+        const displayPage = (page, products, subCatCount) => {
+          const tableBody = $('#productTableBody');
+          tableBody.empty();
+
+          products.forEach((product, index) => {
+            const {
+              id,
+              main_cat_name,
+              product_cat_id
+            } = product;
+            const subCatCountValue = subCatCount[index];
+            const row = `
+            <tr id="row_${id}">
+              <td id="rowId_${id}">${id}</td>
+              <td id="rowCatName_${id}">${main_cat_name}</td>
+              <td id="rowSubCatVal_${id}">${subCatCountValue}</td>
+              <td><button id="editCat" onclick="editProduct('${id}', '${subCatCountValue}')"><i class=" fa-regular fa-edit w-full text-primaryColor p-3"></i></button></td>
+              <td><a href="/mainCatDel/${id}"><i class="fa-regular fa-trash-can w-full text-tertiaryColor p-3"></i></a></td>
+            </tr>
+          `;
+            tableBody.append(row);
+          });
+        };
+
+
+        const updatePagination = (currentPage, totalPages, itemsPerPage) => {
+          // Function to update pagination buttons
+          const paginationContainer = $('#paginationContainer');
+          paginationContainer.empty();
+
+          for (let i = 1; i <= totalPages; i++) {
+            const button = $('<button></button>')
+              .text(i)
+              .addClass('pagination-button')
+              .toggleClass('active', i === currentPage)
+              .click(function () {
+                currentPage = i;
+                fetchProducts(currentPage);
+              });
+
+            paginationContainer.append(button);
+          }
+        };
+
+        const updateDisplayedItemsInfo = (currentPage, totalProducts, itemsPerPage) => {
+          // Function to update displayed items information
+          const showFrom = (currentPage - 1) * itemsPerPage + 1;
+          const showTo = Math.min(currentPage * itemsPerPage, totalProducts);
+          $('#showFrom').text(showFrom);
+          $('#showTo').text(showTo);
+          $('#totalProducts').text(totalProducts);
+        };
+
+        const handleInput = () => {
+          clearTimeout(typingTimer);
+          typingTimer = setTimeout(() => {
+            fetchProducts(currentPage);
+          }, doneTypingInterval);
+        };
+        $('#searchInput').on('keyup', handleInput);
+      });
+    </script>
+    <!-- Table search -->
+
+    <!-- Header Section Script -->
+    <script>
+      // Menu toggle button
+      const toggleButton = document.getElementById("toggle-button");
+      const toggleMenu = document.getElementById("toggle-menu");
+      var toggleCounter = 1;
+      toggleButton.onclick = function () {
+        toggleCounter++;
+        if (toggleCounter % 2 == 0) {
+          toggleMenu.classList.remove("hidden");
+          toggleMenu.classList.add("grid");
+        } else {
+          toggleMenu.classList.remove("grid");
+          toggleMenu.classList.add("hidden");
+        }
+      }
+    </script>
+
+
+    <!-- Accordion Script -->
+    <script>
+      const accordionButtons = document.querySelectorAll('.accordion-button');
+      const accordionMenu = document.querySelectorAll('.menu-collapse');
+
+      accordionButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const accordionCollapse = button.nextElementSibling;
+          button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') === 'false' ? 'true' : 'false');
+          accordionCollapse.classList.toggle('hidden');
+        });
+      });
+
+      // Set all accordion items to collapsed state by default
+      document.querySelectorAll('.menu-collapse').forEach(collapse => {
+        collapse.classList.add('hidden');
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!accordionMenu.contains(e.target) && !accordionButtons.contains(e.target)) {
+          accordionMenu.classList.add('hidden');
+        }
+      });
+    </script>
+
+    <!-- Add Sub Category -->
+    <script>
+      const categoryOpen = document.getElementById("add-category-btn");
+      const categoryClose = document.getElementById("category-close-button");
+      const categorySection = document.getElementById("add-category");
+
+      categoryOpen.onclick = function () {
+        categorySection.classList.remove("hidden");
+      }
+
+      categoryClose.onclick = function () {
+        categorySection.classList.add("hidden");
+      }
+    </script>
+    <script>
+      $(document).ready(function () {
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        const fetchProducts = (page) => {
+          // Function to fetch products using AJAX
+          $.ajax({
+            url: `/api/getMainProducts/${page}`,
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+              const products = response.products;
+              const subCatCount = response.subCatCount;
+              displayPage(page, products, subCatCount);
+              updatePagination(page, response.totalPages, itemsPerPage);
+              updateDisplayedItemsInfo(page, response.totalProducts, itemsPerPage);
+            },
+            error: function (error) {
+              console.error(error);
+            }
+          });
+        };
+
+        const displayPage = (page, products, subCatCount) => {
+          // Function to display products on the page
+          const tableBody = $('#productTableBody');
+          tableBody.empty();
+
+          products.forEach((product, index) => {
+            const {
+              id,
+              main_cat_name,
+              product_cat_id
+            } = product;
+            const subCatCountValue = subCatCount[index];
+            const row = `
+      <tr id="row_${id}">
+        <td id="rowId_${id}">${id}</td>
+        <td id="rowCatName_${id}">${main_cat_name}</td>
+        <td id="rowSubCatVal_${id}">${subCatCountValue}</td>
+        <td><button id="editCat" onclick="editProduct('${id}', '${subCatCountValue}')"><i class=" fa-regular fa-edit w-full text-primaryColor p-3"></i></button></td>
+        <td><a href="/mainCatDel/${id}"><i class="fa-regular fa-trash-can w-full text-tertiaryColor p-3"></i></a></td>
+      </tr>
+    `;
+            tableBody.append(row);
+          });
+        };
+
+
+        const updatePagination = (currentPage, totalPages, itemsPerPage) => {
+          // Function to update pagination buttons
+          const paginationContainer = $('#paginationContainer');
+          paginationContainer.empty();
+
+          for (let i = 1; i <= totalPages; i++) {
+            const button = $('<button></button>')
+              .text(i)
+              .addClass('pagination-button')
+              .toggleClass('active', i === currentPage)
+              .click(function () {
+                currentPage = i;
+                fetchProducts(currentPage);
+              });
+
+            paginationContainer.append(button);
+          }
+        };
+
+        const updateDisplayedItemsInfo = (currentPage, totalProducts, itemsPerPage) => {
+          // Function to update displayed items information
+          const showFrom = (currentPage - 1) * itemsPerPage + 1;
+          const showTo = Math.min(currentPage * itemsPerPage, totalProducts);
+          $('#showFrom').text(showFrom);
+          $('#showTo').text(showTo);
+          $('#totalProducts').text(totalProducts);
+        };
+
+        fetchProducts(currentPage); // Initial fetch on page load
+      });
+    </script>
+
+    <script>
+      const editProduct = (rowNumber, subCatCount) => {
+        const editRow = $('#row_' + rowNumber);
+        const id = editRow.find('#rowId_' + rowNumber).text();
+        const main_cat_name = editRow.find('#rowCatName_' + rowNumber).text();
+        const subCatCountValue = editRow.find('#rowSubCatVal_' + rowNumber).text();
+        editRow.empty();
+
+        const newRow = `
+    <td>${id}</td>
+    <td><input id="editName" style="border: 2px solid #3498db; border-radius: 5px; padding: 5px;" type="text" name="main_category_name" value="${main_cat_name}"></td>
+    <td>${subCatCount}</td>
+    <td>
+      <button id="editBtn_${rowNumber}">
+        <i class="fa-solid fa-check w-full text-primaryColor p-3"></i>
+      </button>
+    </td>
+    <td>
+      <a href="/maincategory">
+        <i class="fa-solid fa-times w-full text-tertiaryColor p-3"></i>
+      </a>
+    </td>
+  `;
+        editRow.append(newRow);
+
+        $(`#editBtn_${rowNumber}`).click(function (event) {
+          event.preventDefault();
+
+          const url = `/mainCatEdit/${id}`;
+          const data = {
+            main_category_name: $('#editName').val()
+          };
+
+          $.ajax({
+            type: 'POST',
+            url: url,
+            data: data,
+            success: function (response) {
+              console.log(response);
+              window.location.href = "/maincategory";
+            },
+            error: function (error) {
+              console.log(error);
+            }
+          });
+        });
+      };
+    </script>
+
+
+  </body>
+
+</html>

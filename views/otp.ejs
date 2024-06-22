@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  </head>
+
+  <body class="flex items-center justify-center h-screen bg-gray-200">
+    <div class="w-full max-w-xs">
+      <% if (message) { %>
+      <div id="message"
+        class="bg-blue-500 text-white px-6 py-4 my-4 rounded-md text-lg flex justify-between items-center mx-auto w-full max-w-md">
+        <span><%- message %></span>
+        <button onclick="document.getElementById('message').style.display='none'"
+          class="ml-4 bg-white rounded-full text-blue-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <% } %>
+      <form action="/otp" method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="otp">
+            OTP
+          </label>
+          <input
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            name="otp" id="otp" type="text" placeholder="Enter OTP" required>
+        </div>
+        <div class="flex items-center justify-between">
+          <button
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit">
+            Verify
+          </button>
+          <a href="/resend">
+            <button
+              class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              type="button">
+              Resend OTP
+            </button>
+          </a>
+        </div>
+      </form>
+    </div>
+  </body>
+
+</html>

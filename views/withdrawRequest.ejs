@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Save 71 - Dashboard - All Product</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/output.css" />
+
+    <!-- css for date range picker -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+  </head>
+
+
+  <body class="font-sans">
+    <section class="max-w-[1920px] ml-auto mr-auto">
+      <!-- Navigation Menu -->
+      <%- include('header') %>
+
+      <!-- Right Side Section -->
+      <div class="w-full px-0 py-2 mt-16 ml-auto xl:w-5/6 xl:px-5 xl:mt-0">
+        <!-- Project Overview Header -->
+
+        <div class="flex items-center justify-between gap-4 px-5 py-2 border-b-2 xl:py-5">
+          <!-- Search Box -->
+          <div class="relative bg-white">
+            <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text" placeholder="Search..." />
+            <i class="absolute left-0 -translate-y-1/2 fa-solid fa-magnifying-glass top-1/2 text-tColor"></i>
+          </div>
+
+          <!-- Notification & User -->
+          <%- include('profileBar') %>
+
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+        <div class="px-5 pt-5 bg-gray-100 rounded-md">
+          <div class="flex flex-wrap items-center justify-between gap-5">
+            <p class="text-xl font-semibold xl:text-2xl text-tColor2">
+              Withdraws
+            </p>
+          </div>
+
+
+          <!-- Filter Option -->
+
+          <div class="mt-10">
+            <button class="btn mb-3" id="exportButton">Export to Excel</button>
+            <p class="text-lg">Filter Options</p>
+            <form action="/withDrawFilter" method="POST" class="flex flex-col gap-2 mt-2 lg:items-center lg:flex-row">
+              <!-- Hidden input for country code -->
+              <div class="relative px-2 py-0">
+                <input id="countryCode" name="phn" value="0" style="display: none;" />
+                <input id="countryName" name="countryName" value="0" style="display: none;" />
+              </div>
+
+              <!-- Date Range Picker -->
+              <div class="relative px-7">
+                <input type="hidden" id="sDate" name="sDate" value="0" />
+                <input type="hidden" id="eDate" name="eDate" value="0" />
+                <input id="dateRangePicker" class="input" />
+
+                <!-- You may need additional styles or classes for your date picker dropdown -->
+              </div>
+
+              <!-- Filter button -->
+              <button
+                class="self-stretch px-5 lg:ms-5 py-1 border border-gray-400 rounded-lg active:scale-[0.85] duration-150">
+                Filter
+              </button>
+              <a class="self-stretch px-5 lg:ms-5 py-3 border border-red-400 rounded-lg active:scale-[0.85] duration-150"
+                href="/withDrawFilterClear">Clear Filter</a>
+            </form>
+          </div>
+          <!-- Filter Option -->
+
+
+          <!-- All Orders Table -->
+          <div class="mt-10">
+            <div class="flex flex-col justify-around">
+              <div class="flex flex-col items-start justify-between gap-3 xl:flex-row xl:items-center">
+                <ul class="flex flex-wrap pb-2 border-b-2 gap-7">
+                  <li>
+                    <a class="tab active-tab" data-target="pendingTab" href="#">Pending</a>
+                  </li>
+                  <li>
+                    <a class="tab" data-target="processingTab" href="#">Processing</a>
+                  </li>
+                  <li>
+                    <a class="tab" data-target="paidTab" href="#">Paid</a>
+                  </li>
+                  <li>
+                    <a class="tab" data-target="rejectedTab" href="#">Rejected</a>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Pending -->
+              <div class="tab-details" data-target="pendingTab_<%= currentPage %>" id="pendingTab">
+                <div class="px-5 pt-5 mt-5 overflow-x-scroll bg-white md:overflow-hidden">
+                  <table class="table-auto text-xs md:text-sm profile-table w-[230%] md:w-full">
+                    <thead>
+                      <tr>
+                        <th>NAME</th>
+                        <th>BANK NAME</th>
+                        <th>BRANCH NAME</th>
+                        <th>ACCOUNT NAME</th>
+                        <th>ACCOUNT NUMBER</th>
+                        <th>ROUTING NUMBER</th>
+                        <th>DATE</th>
+                        <th>TR. DATE</th>
+                        <th>AMOUNT</th>
+                        <th id="NOPRINT">VIEW</th>
+                        <th>STATUS</th>
+                      </tr>
+                    </thead>
+                    <tbody id="pendingTabBody">
+                    </tbody>
+                  </table>
+                </div>
+                <!-- Page Select -->
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center py-5 gap-2">
+                  <p class="text-center text-xs xl:text-sm text-tColor">
+                    Showing <span id="showFromPending"></span> - <span id="showToPending"></span> of <span
+                      id="totalProductsPending"></span> Transactions
+                  </p>
+                  <div
+                    class="scale-75 xl:scale-100 grid grid-flow-col content-center ml-auto mr-auto xl:mr-0 font-semibold xl:text-sm text-tColor gap-3"
+                    id="paginationContainerPending">
+                  </div>
+                </div>
+                <!-- Page Select -->
+              </div>
+              <!-- Pending -->
+
+              <!-- Processing -->
+              <div class="hidden tab-details" data-target="processingTab_<%= currentPage %>" id="processingTab">
+                <div class="px-5 pt-5 mt-5 overflow-x-scroll bg-white md:overflow-hidden">
+                  <table class="table-auto text-xs md:text-sm profile-table w-[230%] md:w-full">
+                    <thead>
+                      <tr>
+                        <th>NAME</th>
+                        <th>BANK NAME</th>
+                        <th>BRANCH NAME</th>
+                        <th>ACCOUNT NAME</th>
+                        <th>ACCOUNT NUMBER</th>
+                        <th>ROUTING NUMBER</th>
+                        <th>DATE</th>
+                        <th>TR. DATE</th>
+                        <th>AMOUNT</th>
+                        <th id="NOPRINT">VIEW</th>
+                        <th>STATUS</th>
+                      </tr>
+                    </thead>
+                    <tbody id="processingTabBody">
+                    </tbody>
+                  </table>
+                </div>
+                <!-- Page Select -->
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center py-5 gap-2">
+                  <p class="text-center text-xs xl:text-sm text-tColor">
+                    Showing <span id="showFromProcessing"></span> - <span id="showToProcessing"></span> of <span
+                      id="totalProductsProcessing"></span> Transactions
+                  </p>
+                  <div
+                    class="scale-75 xl:scale-100 grid grid-flow-col content-center ml-auto mr-auto xl:mr-0 font-semibold xl:text-sm text-tColor gap-3"
+                    id="paginationContainerProcessing">
+                  </div>
+                </div>
+                <!-- Page Select -->
+              </div>
+              <!-- Processing -->
+
+              <!-- Paid -->
+              <div class="hidden tab-details" data-target="paidTab_<%= currentPage %>" id="paidTab">
+                <div class="px-5 pt-5 mt-5 overflow-x-scroll bg-white md:overflow-hidden">
+                  <table class="table-auto text-xs md:text-sm profile-table w-[230%] md:w-full">
+                    <thead>
+                      <tr>
+                        <th>NAME</th>
+                        <th>BANK NAME</th>
+                        <th>BRANCH NAME</th>
+                        <th>ACCOUNT NAME</th>
+                        <th>ACCOUNT NUMBER</th>
+                        <th>ROUTING NUMBER</th>
+                        <th>DATE</th>
+                        <th>TR. DATE</th>
+                        <th>AMOUNT</th>
+                        <th id="NOPRINT">VIEW</th>
+                        <th>STATUS</th>
+                      </tr>
+                    </thead>
+                    <tbody id="paidTabBody">
+                    </tbody>
+                  </table>
+                </div>
+                <!-- Page Select -->
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center py-5 gap-2">
+                  <p class="text-center text-xs xl:text-sm text-tColor">
+                    Showing <span id="showFromPaid"></span> - <span id="showToPaid"></span> of <span
+                      id="totalProductsPaid"></span> Transactions
+                  </p>
+                  <div
+                    class="scale-75 xl:scale-100 grid grid-flow-col content-center ml-auto mr-auto xl:mr-0 font-semibold xl:text-sm text-tColor gap-3"
+                    id="paginationContainerPaid">
+                  </div>
+                </div>
+                <!-- Page Select -->
+              </div>
+              <!-- Paid -->
+
+              <!-- Rejected -->
+              <div class="hidden tab-details" data-target="rejectedTab_<%= currentPage %>" id="rejectedTab">
+                <div class="px-5 pt-5 mt-5 overflow-x-scroll bg-white md:overflow-hidden">
+                  <table class="table-auto text-xs md:text-sm profile-table w-[230%] md:w-full">
+                    <thead>
+                      <tr>
+                        <th>NAME</th>
+                        <th>BANK NAME</th>
+                        <th>BRANCH NAME</th>
+                        <th>ACCOUNT NAME</th>
+                        <th>ACCOUNT NUMBER</th>
+                        <th>ROUTING NUMBER</th>
+                        <th>DATE</th>
+                        <th>TR. DATE</th>
+                        <th>AMOUNT</th>
+                        <th id="NOPRINT">VIEW</th>
+                        <th>STATUS</th>
+                      </tr>
+                    </thead>
+                    <tbody id="rejectedTabBody">
+                    </tbody>
+                  </table>
+                </div>
+                <!-- Page Select -->
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center py-5 gap-2">
+                  <p class="text-center text-xs xl:text-sm text-tColor">
+                    Showing <span id="showFromRejected"></span> - <span id="showToRejected"></span> of <span
+                      id="totalProductsRejected"></span> Transactions
+                  </p>
+                  <div
+                    class="scale-75 xl:scale-100 grid grid-flow-col content-center ml-auto mr-auto xl:mr-0 font-semibold xl:text-sm text-tColor gap-3"
+                    id="paginationContainerRejected">
+                  </div>
+                </div>
+                <!-- Page Select -->
+              </div>
+              <!-- Rejected -->
+            </div>
+          </div>
+
+
+
+        </div>
+      </div>
+    </section>
+
+    <!-- must include for date range picker -->
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+    <!-- Modal script -->
+    <script>
+      const modalOpenBtn = document.querySelector('#filterButton');
+      const modal = document.querySelector('#filterModal');
+      const modalClose = document.querySelector('#modalClose');
+      modalOpenBtn.addEventListener('click', (e) => {
+        modal.showModal();
+      });
+      modalClose.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.close();
+      });
+    </script>
+
+    <!-- date range picker script -->
+    <script type="text/javascript">
+      $(function () {
+        var start = moment().subtract(29, 'days');
+        var end = moment();
+
+        function cb(start, end) {
+          $('#dateRangePicker').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
+          // Set the values of hidden inputs
+          $('#sDate').val(start.format('YYYY-MM-DD'));
+          $('#eDate').val(end.format('YYYY-MM-DD'));
+        }
+
+        $('#dateRangePicker').daterangepicker({
+          startDate: start,
+          endDate: end,
+          ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+          }
+        }, cb);
+
+        cb();
+
+        // Access the date range when needed
+        $('#dateRangePicker').on('apply.daterangepicker', function (ev, picker) {
+          var startDate = picker.startDate.format('YYYY-MM-DD');
+          var endDate = picker.endDate.format('YYYY-MM-DD');
+          console.log('Selected Date Range:', startDate, 'to', endDate);
+        });
+      });
+    </script>
+
+
+    <!-- Header Section Script -->
+    <script>
+      // Menu toggle button
+      const toggleButton = document.getElementById('toggle-button');
+      const toggleMenu = document.getElementById('toggle-menu');
+      var toggleCounter = 1;
+      toggleButton.onclick = function () {
+        toggleCounter++;
+        if (toggleCounter % 2 == 0) {
+          toggleMenu.classList.remove('hidden');
+          toggleMenu.classList.add('grid');
+        } else {
+          toggleMenu.classList.remove('grid');
+          toggleMenu.classList.add('hidden');
+        }
+      };
+    </script>
+
+    <!-- Accordion Script -->
+    <script>
+      const accordionButtons = document.querySelectorAll('.accordion-button');
+      const accordionMenu = document.querySelectorAll('.menu-collapse');
+
+      accordionButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const accordionCollapse = button.nextElementSibling;
+          button.setAttribute(
+            'aria-expanded',
+            button.getAttribute('aria-expanded') === 'false' ? 'true' : 'false'
+          );
+          accordionCollapse.classList.toggle('hidden');
+        });
+      });
+
+      // Set all accordion items to collapsed state by default
+      document.querySelectorAll('.menu-collapse').forEach((collapse) => {
+        collapse.classList.add('hidden');
+      });
+    </script>
+
+    <script>
+      const tables = document.querySelectorAll('.table-collapse');
+      window.onclick = function (event) {
+        for (let table of tables) {
+          if (event.target == table) {
+            table.classList.toggle('hidden');
+          }
+        }
+      };
+    </script>
+
+    <!-- tab script -->
+    <script>
+      const tabLinks = document.querySelectorAll('.tab');
+      const tabDetails = document.querySelectorAll('.tab-details');
+
+      tabLinks.forEach((t) => {
+        t.addEventListener('click', (e) => {
+          tabLinks.forEach((tl) => tl.classList.remove('active-tab'));
+          e.target.classList.add('active-tab');
+          tabDetails.forEach((td) => {
+            td.classList.add('hidden');
+            if (td.id === e.target.dataset.target)
+              td.classList.remove('hidden');
+          });
+        });
+      });
+    </script>
+
+    <!-- Pagination Script -->
+    <script>
+      $(document).ready(function () {
+        const itemsPerPage = 10;
+        let currentTab = 'pendingTab'; // Default to Pending
+        const tabData = {
+          'pendingTab': {
+            currentPage: 1
+          },
+          'processingTab': {
+            currentPage: 1
+          },
+          'paidTab': {
+            currentPage: 1
+          },
+          'rejectedTab': {
+            currentPage: 1
+          }
+        };
+
+        const fetchTabData = (status, page, tabId) => {
+
+          $.ajax({
+            url: `/api/getWithdraw?status=${status}&page=${page}`,
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+              const {
+                withdraws,
+                totalPages,
+                totalItems,
+                actions,
+                currRate,
+                currCode
+              } = response;
+              displayTabData(currRate, currCode, withdraws, `#${tabId}Body`, actions);
+
+              const replaceTab = tabId.replace(/Tab/g, '');
+              const withoutTab = replaceTab.charAt(0).toUpperCase() + replaceTab.slice(1)
+
+              updatePagination(page, totalItems, totalPages, itemsPerPage, `#paginationContainer${withoutTab}`, withoutTab, `#showFrom${withoutTab}`, `#showTo${withoutTab}`, `#totalProducts${withoutTab}`);
+              updateDisplayedItemsInfo(page, totalItems, itemsPerPage, `#showFrom${withoutTab}`, `#showTo${withoutTab}`, `#totalProducts${withoutTab}`);
+            },
+            error: function (error) {
+              console.error(error);
+            }
+          });
+        };
+
+        const displayTabData = (currRate, currCode, tabData, tableBodyId, actions) => {
+          const tableBody = $(tableBodyId);
+          tableBody.empty();
+
+          tabData.forEach(withdraw => {
+            let selectHTML = `<select id="statusSelect" class="border rounded px-3 py-2 pr-8 appearance-none focus:outline-none focus:shadow-outline status-select" data-transaction-id="${withdraw.transaction_id}">`;
+            actions.forEach((action, index) => {
+              console.log("Tab body id: ", tableBodyId)
+              selectHTML += `<option class="excludeFromExport" value="${index}" ${index == withdraw.status ? 'selected' : ''} ${tableBodyId === '#paidTabBody' || tableBodyId === '#rejectedTabBody' ? 'disabled' : ''}>${action}</option>`;
+            });
+            selectHTML += '</select>';
+
+            const row = `
+							<tr data-target-1="${withdraw.account_name}" data-target-2="${withdraw.account_number}" data-target-3="${withdraw.routing_number}" data-target-4="${withdraw.branch_name}">
+									<td>${withdraw.user_name}</td>
+									<td>${withdraw.bank_name}</td>
+                  <td>${withdraw.branch_name}</td>
+                  <td>${withdraw.account_name}</td>
+                  <td>${withdraw.account_number}</td>
+                  <td>${withdraw.routing_number}</td>
+									<!-- <td>${new Date(withdraw.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</td> -->
+									<td>${new Date(withdraw.date).toLocaleDateString()}</td>
+                  <td>${withdraw.transaction_date ? new Date(withdraw.transaction_date).toLocaleDateString() : 'N/A'}</td>
+									<td>
+                    <div class="tooltip">
+                      <button onclick="copyToClipboard()" style="cursor: pointer;" title="Copy Full Amount">
+                        <span id="copyText" data-value="${(withdraw.amount * currRate).toFixed(10)}">
+                          ${(withdraw.amount * currRate).toFixed(4)}
+                        </span>
+                        <span class="tooltiptext" style="display: none"></span>
+                        <b>(${currCode})</b>
+                      </button>
+                    </div>
+                  </td>
+									<td>
+                    <a href="/withdrawDetails/${withdraw.transaction_id}" class="btn">
+                      <i class="fa-solid fa-eye"></i>
+                    </a>
+                  </td>
+									<td>${selectHTML}</td>
+
+							</tr>
+					`;
+            tableBody.append(row);
+          });
+
+          $(document).on('change', '.status-select', function () {
+            const transactionId = $(this).data('transaction-id');
+            const status = $(this).val();
+
+            $.ajax({
+              url: '/withDrawStatusUpdate',
+              type: 'POST',
+              data: {
+                transaction_id: transactionId,
+                status: status
+              },
+              success: function (response) {
+                // Handle success
+                console.log(response);
+                location.reload();
+              },
+              error: function (error) {
+                // Handle error
+                console.error(error);
+              }
+            });
+          });
+        };
+
+        const updatePagination = (currentPage, totalItems, totalPages, itemsPerPage, paginationContainerId, tabId, showFromId, showToId, totalItemsId) => {
+          const paginationContainer = $(paginationContainerId);
+          paginationContainer.empty();
+
+          for (let i = 1; i <= totalPages; i++) {
+            const button = $('<button></button>')
+              .text(i)
+              .addClass('pagination-button')
+              .toggleClass('active', i === currentPage)
+              .click(() => fetchTabData(getStatusFromTabId(tabId), i, tabId));
+
+            paginationContainer.append(button);
+          }
+
+          // Update displayed items info
+          const showFrom = ((currentPage - 1) * itemsPerPage) + 1;
+          const showTo = Math.min(currentPage * itemsPerPage, totalItems);
+          $(showFromId).text(showFrom);
+          $(showToId).text(showTo);
+          $(totalItemsId).text(totalItems);
+        };
+
+
+        const updateDisplayedItemsInfo = (currentPage, totalItems, itemsPerPage, showFromId, showToId, totalItemsId) => {
+          const showFrom = (currentPage - 1) * itemsPerPage + 1;
+          const showTo = Math.min(currentPage * itemsPerPage, totalItems);
+          $(showFromId).text(showFrom);
+          $(showToId).text(showTo);
+          $(totalItemsId).text(totalItems);
+        };
+
+        const getStatusFromTabId = (tabId) => {
+          return {
+            'pendingTab': 0,
+            'processingTab': 1,
+            'paidTab': 2,
+            'rejectedTab': 3
+          }[tabId];
+        };
+
+        const getTabData = () => tabData[currentTab];
+
+        // Initial setup
+        fetchTabData(getStatusFromTabId(currentTab), 1, currentTab);
+
+        // Tab change event listener
+        $('.tab').click(function () {
+          const targetTab = $(this).data('target');
+          const tabId = targetTab;
+          fetchTabData(getStatusFromTabId(targetTab), 1, tabId);
+        });
+      });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        try {
+          const inputContainer = document.querySelector("#countryCode");
+
+          // Initialize the intlTelInput library
+          const iti = window.intlTelInput(inputContainer, {
+            initialCountry: "auto",
+            autoInsertDialCode: true,
+            separateDialCode: false,
+          });
+
+          inputContainer.addEventListener("click", function () {
+            iti.openDropdown();
+          });
+
+          // Event listener for changes in the selected country
+          inputContainer.addEventListener("countrychange", function () {
+            const selectedCountryData = iti.getSelectedCountryData();
+            const phoneCode = selectedCountryData.dialCode;
+
+            document.querySelector("#countryName").value = selectedCountryData.iso2;
+
+            // alert the data
+            inputContainer.value = `+${phoneCode}`;
+          });
+        } catch (error) {
+          console.error("Script error:", error);
+        }
+      });
+    </script>
+
+
+    <!-- Click to copy -->
+    <script>
+      function copyToClipboard() {
+        const copyText = document.getElementById("copyText").getAttribute("data-value");
+        navigator.clipboard.writeText(copyText).then(function () {
+          // Display the tooltip when the text is copied
+          const tooltip = document.querySelector(".tooltiptext");
+          tooltip.style.display = "block";
+          tooltip.style.opacity = 1;
+          setTimeout(() => {
+            tooltip.style.opacity = 0;
+          }, 1000); // Hide the tooltip after 2 seconds
+        }).catch(function (err) {
+          console.error('Unable to copy to clipboard', err);
+        });
+      }
+    </script>
+
+    <!-- Excel export -->
+    <script>
+      function exportToExcel(tableId, sheetName) {
+        const statusSelect = document.querySelector('#statusSelect');
+        const selectedStatus = statusSelect.options[statusSelect.selectedIndex].text;
+
+        const rows = Array.from(document.querySelectorAll(`#${tableId} tbody tr:not(.excludeFromExport)`));
+        const wb = XLSX.utils.book_new();
+
+        // Exclude the column with ID "NOPRINT"
+        const headers = Array.from(document.querySelectorAll(`#${tableId} thead th:not(.excludeFromExport)`)).map(th => th.innerText.trim());
+
+        const filteredRows = rows.map(row => {
+          const filteredRow = {};
+          Array.from(row.cells).forEach((cell, colIndex) => {
+            if (headers[colIndex] === 'STATUS') {
+              filteredRow[headers[colIndex]] = selectedStatus;
+            } else if (headers[colIndex] !== 'VIEW') {
+              filteredRow[headers[colIndex]] = cell.innerText;
+            }
+          });
+          return filteredRow;
+        });
+
+        // Create a new sheet and add the filtered rows
+        const ws = XLSX.utils.json_to_sheet(filteredRows, {
+          header: headers
+        });
+
+        // Set column width for all columns to 10cm
+        headers.forEach((_, colIndex) => {
+          const colLetter = String.fromCharCode(65 + colIndex);
+          ws['!cols'] = ws['!cols'] || [];
+          ws['!cols'].push({
+            wch: 20
+          });
+        });
+
+        XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+        console.log("Exporting...");
+        XLSX.writeFile(wb, `${sheetName}.xlsx`);
+      }
+
+      document.getElementById('exportButton').addEventListener('click', () => {
+        const activeTab = document.querySelector('.tab-details:not(.hidden)');
+        const [tableId, sheetName] = [activeTab.id, activeTab.getAttribute('data-target')];
+        exportToExcel(tableId, sheetName);
+      });
+    </script>
+
+
+
+  </body>
+
+</html>

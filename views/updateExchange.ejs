@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exchange Rates</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/output.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+  <section class="max-w-[1920px] ml-auto mr-auto">
+    <!-- Navigation Menu -->
+    <%- include('header') %>
+
+    <div class="container mt-5">
+      <h1 class="mb-4">Exchange Rates</h1>
+      <div class="mb-3">
+        <button class="btn btn-primary" onclick="updateExchange()">Update Currency</button>
+        <span class="ml-2">Last Update Time: <i><%= updateTime[0].date %> | <%= updateTime[0].time %></i></span>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Currency</th>
+            <th>Rate</th>
+            <th>Is Base</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% exchangeRates.forEach(rate => { %>
+          <tr>
+            <td><%= rate.sign %></td>
+            <td><%= rate.rate %></td>
+            <td><%= rate.is_base ? 'Yes' : 'No' %></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    function updateExchange() {
+      fetch('/updateExchange')
+        .then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            window.location.reload();
+          }
+        })
+        .catch(error => {
+          console.error('Error updating exchange rates:', error);
+        });
+    }
+  </script>
+</body>
+
+</html>

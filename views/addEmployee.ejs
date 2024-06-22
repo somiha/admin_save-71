@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin and Permission Management</title>
+        <link rel="stylesheet" href="./css/style.css">
+        <link rel="stylesheet" href="./css/output.css">
+        <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+    </head>
+
+    <body class="font-sans">
+
+        <section class=" max-w-[1920px] ml-auto mr-auto">
+
+            <!-- Navigation Menu -->
+            <%- include('header') %>
+
+            <div class="ml-auto w-full xl:w-5/6 px-0 xl:px-1 py-2 mt-16 xl:mt-0">
+                <div class="flex items-center justify-between px-5 py-2 xl:py-5 gap-4 border-b">
+                    <!-- Search Box -->
+                    <div class="bg-white relative">
+                        <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text"
+                            placeholder="Search...">
+                        <i
+                            class="fa-solid fa-magnifying-glass absolute top-1/2 left-0 -translate-y-1/2 text-tColor"></i>
+                    </div>
+
+                    <!-- Notification & User -->
+                    <%- include('profileBar') %>
+
+
+                </div>
+
+                <div class=" pt-5 mx-5 rounded-md">
+                    <h1 class="text-3xl font-semibold mb-6 ml-10 text-gray-600">Admin and Permission Management</h1>
+                    <form action="/addEmployee" method="POST"
+                        class="bg-white shadow-md rounded mx-10 px-8 pt-6 pb-8 mb-4">
+                        <div class="mb-4">
+
+                            <h2 class="text-xl font-semibold mb-2 mt-2 text-gray-600">New Admin</h2>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                                <div>
+                                    <label for="admin-name" class="block text-gray-600 font-medium mb-2">Admin
+                                        Name</label>
+                                    <input type="text" id="admin-name" name="name"
+                                        class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                </div>
+                                <div>
+                                    <label for="admin-email" class="block text-gray-600 font-medium mb-2">Admin
+                                        Email</label>
+                                    <input type="email" id="admin-email" name="email"
+                                        class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                </div>
+                                <div>
+                                    <label for="admin-mobile" class="block text-gray-600 font-medium mb-2">Admin Mobile
+                                        Number</label>
+                                    <input type="number" id="admin-mobile" name="number"
+                                        class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                </div>
+                                <div>
+                                    <label for="admin-password" class="block text-gray-600 font-medium mb-2">Admin
+                                        Password</label>
+                                    <input type="password" id="admin-password" name="password"
+                                        class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                </div>
+
+                                <div>
+                                    <label for="admin-designation" class="block text-gray-600 font-medium mb-2">Admin
+                                        Designation</label>
+                                    <input type="text" id="admin-designation" name="designation"
+                                        class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                </div>
+                                <div>
+                                    <label for="admin-note" class="block text-gray-600 font-medium mb-2">Admin
+                                        Note</label>
+                                    <input type="text" id="admin-note" name="note"
+                                        class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                </div>
+                                <!-- <div>
+                  <label for="admin-pic" class="block text-gray-600 font-medium mb-2">Admin Profile Pic</label>
+                  <input type="file" id="admin-pic" name="pic"
+                    class="file-input file-input-bordered file-input-success w-full text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    accept="image/*">
+                </div> -->
+                                <div>
+                                    <label for="admin-country" class="block text-gray-600 font-medium mb-2">Admin
+                                        Country</label>
+                                    <select id="admin-country" name="country"
+                                        class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                        <option value="" disabled selected>Select a country</option>
+                                        <% countries.forEach(function(country) { %>
+                                        <option value="<%= country.id %>"><%= country.country_name %></option>
+                                        <% }); %>
+                                    </select>
+                                </div>
+                                <!-- <div>
+                  <label for="admin-id" class="block text-gray-600 font-medium mb-2">Admin Id</label>
+                  <input type="text" id="admin-id" name="id"
+                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div> -->
+                                <!-- <div>
+                  <label for="admin-referrer" class="block text-gray-600 font-medium mb-2">Admin Referrer Code</label>
+                  <input type="text" id="admin-referrer" name="referrer"
+                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div> -->
+                                <!-- <div>
+                  <label for="admin-active" class="block text-gray-600 font-medium mb-2">Is Active</label>
+                  <input type="number" id="admin-active" name="active"
+                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div> -->
+                                <!-- <div>
+                  <label for="admin-passport" class="block text-gray-600 font-medium mb-2">Admin Passport Pdf</label>
+                  <input type="file" id="admin-passport" name="passport" class="file-input file-input-bordered file-input-success w-full text-gray-700 leading-tight focus:outline-none
+                    focus:shadow-outline" accept="application/pdf">
+                </div> -->
+
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <div class="mb-6">
+                                <div class="flex items-center justify-center h-full rounded-md bg-green-100">
+                                    <h2 class="text-xl font-semibold mb-2 mt-2 text-gray-600">Permissions</h2>
+                                </div>
+                                <!-- <h2 class="text-xl font-bold mb-2">Permissions</h2> -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <% for (const group in permissions) { %>
+                                    <div class="space-y-4">
+                                        <h3 class="text-lg font-bold"><%= group %></h3>
+                                        <% permissions[group].forEach(permission => { %>
+                                        <div class="flex items-center">
+                                            <input type="checkbox"
+                                                id="<%= group.toLowerCase().replace(' ', '-') + '-' + permission.permission_name.toLowerCase() %>"
+                                                name="permissions" value="<%= permission.permission_id %>"
+                                                class="form-checkbox h-5 w-5 text-blue-600">
+                                            <label
+                                                for="<%= group.toLowerCase().replace(' ', '-') + '-' + permission.permission_name.toLowerCase() %>"
+                                                class="ml-2 text-gray-700"><%= permission.permission_name %></label>
+                                        </div>
+                                        <% }) %>
+                                    </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit"
+                                class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded">
+                                Save Admin and Permissions
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+        <!-- Header Section Script -->
+        <script>
+            // Menu toggle button
+            const toggleButton = document.getElementById("toggle-button");
+            const toggleMenu = document.getElementById("toggle-menu");
+            var toggleCounter = 1;
+            toggleButton.onclick = function () {
+                toggleCounter++;
+                if (toggleCounter % 2 == 0) {
+                    toggleMenu.classList.remove("hidden");
+                    toggleMenu.classList.add("grid");
+                } else {
+                    toggleMenu.classList.remove("grid");
+                    toggleMenu.classList.add("hidden");
+                }
+            }
+        </script>
+
+        <script src="./js/main.js"></script>
+        <script>
+            const accordionButtons = document.querySelectorAll('.accordion-button');
+            const accordionMenu = document.querySelectorAll('.menu-collapse');
+
+            accordionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const accordionCollapse = button.nextElementSibling;
+                    button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') === 'false' ? 'true' : 'false');
+                    accordionCollapse.classList.toggle('hidden');
+                });
+            });
+
+            // Set all accordion items to collapsed state by default
+            document.querySelectorAll('.menu-collapse').forEach(collapse => {
+                collapse.classList.add('hidden');
+            });
+
+            // document.addEventListener('click', function (e) {
+            //   if (!accordionMenu.contains(e.target) && !accordionButtons.contains(e.target)) {
+            //     accordionMenu.classList.add('hidden');
+            //   }
+            // });
+        </script>
+    </body>
+
+</html>

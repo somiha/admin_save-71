@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save 71 - Dashboard - Product Review</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/output.css">
+    <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+  </head>
+
+  <body class="font-sans">
+    <section class=" max-w-[1920px] ml-auto mr-auto">
+
+      <!-- Navigation Menu -->
+      <div class="relative">
+
+        <nav
+          class="bg-white fixed min-[2000px]:absolute top-0 flex flex-row xl:flex-col justify-between max-h-[800px] custom-container shadow-sm xl:shadow-none w-full xl:w-fit z-10">
+
+          <div class="">
+            <a href="index.html" class="h-10 w-10"><img class="xl:my-5 py-5 xl:p-5 xl:ml-4 h-16 xl:h-16"
+                src="images/logo.svg" alt=""></a>
+
+            <div
+              class="bg-white xl:bg-transparent hidden xl:grid gap-3 absolute xl:static top-12 right-0 z-10 rounded-sm px-5 py-5 xl:py-0 2xl:py-5 max-h-[800px] xl:max-h-[450px] 2xl:max-h-[700px] overflow-y-auto scroll-h min-w-[195px] scroll-smooth shadow-md xl:shadow-none"
+              id="toggle-menu">
+
+              <button class="accordion-button menu-list">
+                <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                <span>Finace</span>
+                <i class="ml-auto fa-solid fa-chevron-down"></i>
+              </button>
+
+              <ul class="menu-collapse">
+                <li><a href="#">Earning History</a></li>
+                <li><a href="#">Comission History</a></li>
+                <li><a href="#">Withdraw History</a></li>
+                <li><a href="#">Company Costing</a></li>
+              </ul>
+
+              <button class="accordion-button menu-list">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span>Product</span>
+                <i class="ml-auto fa-solid fa-chevron-down"></i>
+              </button>
+
+              <ul class="menu-collapse">
+                <li><a href="#">All Products</a></li>
+                <li><a href="#">Categories</a></li>
+              </ul>
+
+
+              <a class="menu-list" href="#">
+                <i class="fa-solid text-xs fa-user-group"></i>
+                <span>Customers</span>
+              </a>
+
+              <a class="menu-list" href="#">
+                <i class="fa-solid fa-address-book"></i>
+                <span>Sellers</span>
+              </a>
+
+              <button class="accordion-button menu-list">
+                <i class="fa-solid fa-gear"></i>
+                <span>Settings</span>
+                <i class="ml-auto fa-solid fa-chevron-down"></i>
+              </button>
+
+              <ul class="menu-collapse">
+                <li><a href="#">Manage Profile</a></li>
+                <li><a href="#">My Profile</a></li>
+              </ul>
+
+              <a class="menu-list" href="student.html">
+                <i class="fa-solid fa-envelope-open-text"></i>
+                <span>Message</span>
+              </a>
+
+              <a class="menu-list" href="allStudents.html">
+                <i class="fa-solid fa-table-list"></i>
+                <span>Orders</span>
+              </a>
+
+
+
+            </div>
+          </div>
+
+          <!-- Logout Menu Section -->
+          <div class="flex items-center px-0 xl:px-4 xl:py-3 xl:mt-10">
+            <a class="menu-list text-primaryColor hover:bg-transparent" href="/logout">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M15.75 9V5.25C15.75 4.65326 15.5129 4.08097 15.091 3.65901C14.669 3.23705 14.0967 3 13.5 3H7.5C6.90326 3 6.33097 3.23705 5.90901 3.65901C5.48705 4.08097 5.25 4.65326 5.25 5.25V18.75C5.25 19.3467 5.48705 19.919 5.90901 20.341C6.33097 20.7629 6.90326 21 7.5 21H13.5C14.0967 21 14.669 20.7629 15.091 20.341C15.5129 19.919 15.75 19.3467 15.75 18.75V15M18.75 15L21.75 12M21.75 12L18.75 9M21.75 12H9"
+                  stroke="#1A63A6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+
+
+              <span class="hidden md:block">Log Out</span>
+            </a>
+
+            <button class="block xl:hidden" id="toggle-button">
+              <svg class="-mr-[1px]" height="24px" width="24px" fill="none" stroke="currentColor" stroke-width="1.5"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5">
+                </path>
+              </svg>
+            </button>
+            </a>
+
+          </div>
+
+
+
+        </nav>
+
+      </div>
+
+
+
+
+      <!-- Right Side Section -->
+      <div class="ml-auto w-full xl:w-5/6 px-0 xl:px-1 py-2 mt-16 xl:mt-0">
+
+
+        <!-- Project Overview Header -->
+
+        <div class="flex items-center justify-between px-5 py-2 xl:py-5 gap-4 border-b">
+          <!-- Search Box -->
+          <div class="bg-white relative">
+            <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text" placeholder="Search...">
+            <i class="fa-solid fa-magnifying-glass absolute top-1/2 left-0 -translate-y-1/2 text-tColor"></i>
+          </div>
+
+          <!-- Notification & User -->
+          <%- include('profileBar') %>
+
+
+        </div>
+
+        <div class="mx-5 rounded-md">
+
+          <div class="flex justify-between items-center flex-wrap gap-5 border-b py-10">
+            <p class="text-xl xl:text-2xl font-semibold text-tColor2">Product Preview</p>
+            <button class="bg-[#504F54] text-white px-7 py-3 rounded flex items-center gap-2">
+              <i class="fa-solid fa-pen-to-square"></i>
+              <p>Edit</p>
+            </button>
+          </div>
+
+          <!-- Product Upload Section -->
+          <form class="" action="">
+            <div class="grid grid-cols-1 xl:grid-cols-4 relative">
+
+              <!-- Product Left Section -->
+              <div class="col-span-3 xl:border-r xl:pr-5">
+                <p class="font-semibold text-lg text-tColor2 pt-5">Product Information</p>
+                <!-- Product Information Input Section -->
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-5 mt-5">
+                  <div class="col-span-1">
+                    <p class="text-tColor3 font-semibold mb-2">Product Name</p>
+                    <p class="text-tColor"><%= info.product_name  %></p>
+                  </div>
+                  <div class="col-span-1">
+                    <p class="text-tColor3 font-semibold mb-2">Price</p>
+                    <p class="text-tColor">$50</p>
+                  </div>
+                </div>
+
+                <!-- Product Right Section -->
+                <div class="xl:absolute top-0 right-0 xl:pl-5 xl:w-1/4">
+                  <p class="font-semibold text-lg text-tColor2 py-5">Primary Details</p>
+
+                  <div>
+                    <p class="text-tColor3 font-semibold mb-2">Main Category</p>
+                    <p class="text-tColor">Electronics</p>
+                  </div>
+
+                  <div class="mt-5">
+                    <p class="text-tColor3 font-semibold mb-2">Sub Category</p>
+                    <p class="text-tColor">Electronics</p>
+                  </div>
+
+                  <div class="my-5">
+                    <p class="text-tColor3 font-semibold mb-2">Extra Category</p>
+                    <p class="text-tColor">Electronics</p>
+
+                  </div>
+
+                </div>
+
+                <div class="border-b pb-10 mt-5">
+                  <p class="text-tColor3 font-semibold mb-2">Description</p>
+                  <p class="text-tColor">Details of the product</p>
+                </div>
+
+
+                <!-- Product Image Upload Section -->
+                <div class="border-b py-10 w-fit">
+                  <p class="font-semibold text-lg text-tColor2 mb-2">Media</p>
+
+                  <div class="flex flex-wrap gap-5">
+
+                    <div class="h-40 w-40 p-2 flex justify-center items-center border rounded">
+                      <img src="/images/product-upload-1.png" alt="">
+                    </div>
+
+                    <div class="h-40 w-40 p-2 flex justify-center items-center border rounded">
+                      <img src="/images/product-upload-2.png" alt="">
+                    </div>
+
+                    <div class="h-40 w-40 p-2 flex justify-center items-center border rounded">
+                      <img src="/images/product-upload-3.png" alt="">
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </form>
+
+        </div>
+
+
+
+      </div>
+
+    </section>
+
+
+
+
+
+    <!-- Header Section Script -->
+    <script>
+      // Menu toggle button
+      const toggleButton = document.getElementById("toggle-button");
+      const toggleMenu = document.getElementById("toggle-menu");
+      var toggleCounter = 1;
+      toggleButton.onclick = function () {
+        toggleCounter++;
+        if (toggleCounter % 2 == 0) {
+          toggleMenu.classList.remove("hidden");
+          toggleMenu.classList.add("grid");
+        } else {
+          toggleMenu.classList.remove("grid");
+          toggleMenu.classList.add("hidden");
+        }
+      }
+    </script>
+
+
+    <!-- Accordion Script -->
+    <script>
+      const accordionButtons = document.querySelectorAll('.accordion-button');
+      const accordionMenu = document.querySelectorAll('.menu-collapse');
+
+      accordionButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const accordionCollapse = button.nextElementSibling;
+          button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') === 'false' ? 'true' : 'false');
+          accordionCollapse.classList.toggle('hidden');
+        });
+      });
+
+      // Set all accordion items to collapsed state by default
+      document.querySelectorAll('.menu-collapse').forEach(collapse => {
+        collapse.classList.add('hidden');
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!accordionMenu.contains(e.target) && !accordionButtons.contains(e.target)) {
+          accordionMenu.classList.add('hidden');
+        }
+      });
+    </script>
+
+
+
+  </body>
+
+</html>

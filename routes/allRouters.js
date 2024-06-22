@@ -1,0 +1,46 @@
+const express = require("express");
+const Router = express.Router();
+
+const dashBoard = require("./dashBoard.route");
+const withdrawRequest = require("./withdrawRequest.route");
+const withdrawDetails = require("./withdrawDetails.route");
+const addProduct = require("./addProduct.route");
+const commission = require("./commission.route");
+const earningHistory = require("./earningHistory.route");
+const extraCategory = require("./extraCategory.route");
+const mainCategory = require("./mainCategory.route");
+const subCategory = require("./subCategory.route");
+const productPreview = require("./productPreview.route");
+const editProduct = require("./editProduct.route");
+const editUserProduct = require("./editUserProduct.route");
+const updateExchange = require("./updateExchange.route");
+const site_info = require("./site_info.route");
+const login = require("./login.route");
+const otp = require("./otp.route");
+const addAdmin = require("./addAdmin.route");
+const addEmployee = require("./addEmployee.route");
+const allAdmin = require("./allAdmin.route");
+const adminSettings = require("./adminSettings.route");
+
+Router.use(dashBoard);
+Router.use(withdrawRequest);
+Router.use(withdrawDetails);
+Router.use(addProduct);
+Router.use(commission);
+Router.use(earningHistory);
+Router.use(extraCategory);
+Router.use(mainCategory);
+Router.use(subCategory);
+Router.use(productPreview);
+Router.use(editProduct);
+Router.use(editUserProduct);
+Router.use(updateExchange);
+Router.use(site_info);
+Router.use(login);
+Router.use(otp);
+Router.use(addAdmin);
+Router.use(addEmployee);
+Router.use(allAdmin);
+Router.use(adminSettings);
+
+module.exports = Router;

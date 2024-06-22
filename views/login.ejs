@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body class="flex items-center justify-center h-screen bg-gray-200">
+  <div class="w-full max-w-xs">
+    <% if (login_message) { %>
+    <div id="message" class="bg-red-500 text-white px-6 py-4 my-4 rounded-md text-lg flex justify-between items-center mx-auto w-full max-w-md">
+      <span><%= login_message %></span>
+      <button onclick="document.getElementById('message').style.display='none'" class="ml-4 bg-white rounded-full text-red-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <% } %>
+    <form action="/login" method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+          Admin Email
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="email" id="email" type="email" placeholder="Enter Email" value="<%= typeof email !== 'undefined' ? email : '' %>" required>
+      </div>
+      <div class="mb-6 relative">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+          Admin Password
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="pass" id="pass" type="password" placeholder="******************" required>
+        <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+          <i id="eyeOpen" class="fas fa-eye"></i>
+        </button>
+      </div>
+      <div class="flex items-center justify-between">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+          Sign In
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('pass');
+      const eyeOpen = document.getElementById('eyeOpen');
+      const eyeClosed = document.getElementById('eyeClosed');
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      if (type === 'password') {
+        eyeOpen.classList.remove('fa-eye-slash');
+        eyeClosed.classList.add('fa-eye');
+      } else {
+        eyeOpen.classList.add('fa-eye-slash');
+        eyeClosed.classList.remove('fa-eye');
+      }
+    }
+  </script>
+
+</body>
+
+</html>

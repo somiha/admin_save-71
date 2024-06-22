@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sub-Admins</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+            integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+        <!-- Select All -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var selectAllCheckbox = document.getElementById('select-all');
+                var subAdminCheckboxes = document.querySelectorAll('input[name="selected-admins[]"]');
+
+                selectAllCheckbox.addEventListener('change', function () {
+                    subAdminCheckboxes.forEach(function (checkbox) {
+                        checkbox.checked = selectAllCheckbox.checked;
+                    });
+                });
+
+                subAdminCheckboxes.forEach(function (checkbox) {
+                    checkbox.addEventListener('change', function () {
+                        var allChecked = true;
+                        subAdminCheckboxes.forEach(function (cb) {
+                            if (!cb.checked) {
+                                allChecked = false;
+                                return;
+                            }
+                        });
+                        selectAllCheckbox.checked = allChecked;
+                    });
+                });
+            });
+        </script>
+        <!-- Select All -->
+
+        <!-- Delete Button -->
+        <script>
+            $(document).ready(function () {
+                $('#delete-button').click(function () {
+                    const selectedAdmins = $('input[name="selected-admins[]"]:checked').map(function () {
+                        return this.value;
+                    }).get();
+                    $.ajax({
+                        url: '/sub-admins/delete',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            'selected-admins': selectedAdmins
+                        }),
+                        success: function (response) {
+                            if (response === 'success') {
+                                alert("Sub-admins deleted successfully");
+                                window.location.reload();
+                            } else {
+                                alert("Failed to delete sub-admins");
+                            }
+                        },
+                        error: function (error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                });
+            });
+        </script>
+    </head>
+
+    <body class="bg-gray-100 font-sans">
+        <div class="container mx-auto py-8">
+            <h1 class="text-3xl font-bold mb-6">Sub-Admins</h1>
+            <div class="bg-white shadow-md rounded px-4 pt-4 pb-2 mb-4">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <input type="checkbox" id="select-all" class="form-checkbox h-5 w-5 text-blue-600">
+                        <label for="select-all" class="ml-2 text-gray-700">Select All</label>
+                    </div>
+                    <div>
+                        <!-- Delete Button -->
+                        <button id="delete-button"
+                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-6 text-left"></th>
+                                <th class="py-3 px-6 text-left">Admin ID</th>
+                                <th class="py-3 px-6 text-left">Admin Name</th>
+                                <th class="py-3 px-6 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 text-sm font-light">
+                            <% for (let i = 0; i < subAdmins.length; i++) { %>
+                            <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                <td class="py-3 px-6 text-left">
+                                    <input type="checkbox" name="selected-admins[]" value="<%= subAdmins[i].admin_id %>"
+                                        class="form-checkbox h-5 w-5 text-blue-600">
+                                </td>
+                                <td class="py-3 px-6 text-left"><%= subAdmins[i].admin_id %></td>
+                                <td class="py-3 px-6 text-left"><%= subAdmins[i].admin_name %></td>
+                                <td class="py-3 px-6 text-left">
+                                    <a href="/sub-admins/<%= subAdmins[i].admin_id %>/view"
+                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2">
+                                        View
+                                    </a>
+                                    <a href="/sub-admins/<%= subAdmins[i].admin_id %>/delete"
+                                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex justify-end mt-4">
+
+                    <!-- Pagination -->
+                    <nav aria-label="Page navigation">
+                        <ul class="inline-flex -space-x-px">
+                            <% if (currentPage > 1) { %>
+                            <li>
+                                <a href="/sub-admins?page=<%= currentPage - 1 %>"
+                                    class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">
+                                    Previous
+                                </a>
+                            </li>
+                            <% } %>
+                            <% for (let i = Math.max(1, currentPage - 1); i <= Math.min(totalPages, currentPage + 1); i++) { %>
+                            <li>
+                                <a href="/sub-admins?page=<%= i %>"
+                                    class="px-3 py-2 <% if (currentPage === i) { %>text-blue-600 bg-blue-50<% } else { %>text-gray-500 bg-white<% } %> border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                                    <%= i %>
+                                </a>
+                            </li>
+                            <% } %>
+                            <% if (currentPage + 1 < totalPages) { %>
+                            <li>
+                                <span class="px-3 py-2 text-gray-500 bg-white border border-gray-300">...</span>
+                            </li>
+                            <li>
+                                <a href="/sub-admins?page=<%= totalPages %>"
+                                    class="px-3 py-2 text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                                    <%= totalPages %>
+                                </a>
+                            </li>
+                            <% } %>
+
+                            <% if (currentPage < totalPages) { %>
+                            <li>
+                                <a href="/sub-admins?page=<%= currentPage + 1 %>"
+                                    class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700">
+                                    Next
+                                </a>
+                            </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>

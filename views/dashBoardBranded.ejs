@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save 71 - Dashboard - Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/output.css">
+    <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+  </head>
+
+  <body class="font-sans">
+    <section class=" max-w-[1920px] ml-auto mr-auto">
+
+      <!-- Navigation Menu -->
+      <%- include('header')  %>
+
+
+
+
+      <!-- Right Side Section -->
+      <div class="ml-auto w-full xl:w-5/6 px-0 xl:px-1 py-2 mt-16 xl:mt-0">
+
+
+        <!-- Project Overview Header -->
+
+        <div class="flex items-center justify-between px-5 py-2 xl:py-5 gap-4 border-b-2">
+          <!-- Search Box -->
+          <div class="bg-white relative">
+            <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text" placeholder="Search...">
+            <i class="fa-solid fa-magnifying-glass absolute top-1/2 left-0 -translate-y-1/2 text-tColor"></i>
+          </div>
+
+          <!-- Notification & User -->
+          <%- include('profileBar') %>
+
+        </div>
+
+        <div class="bg-gray-100 px-5 pt-5 rounded-md">
+
+          <div class="flex justify-between items-center flex-wrap gap-5">
+            <p class="text-xl xl:text-2xl font-semibold text-tColor2">All Products</p>
+            <div class="bg-white relative ml-auto">
+              <input id="searchInput" class="py-2 pl-3 pr-6 focus:outline-none max-w-[205px] rounded-md" type="text"
+                placeholder="Search product...">
+              <i class="fa-solid fa-magnifying-glass absolute top-1/2 right-2 -translate-y-1/2 text-tColor"></i>
+            </div>
+            <a href="/addProduct" class="primary-btn">+ Add Brand Products</a>
+          </div>
+
+          <!-- All Orders Table -->
+          <div class="mt-5">
+
+            <div class="flex flex-col justify-around">
+
+              <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3">
+
+                <ul class="flex gap-7 border-b-2 pb-2 flex-wrap">
+                  <li><a href="/">User Products</a></li>
+                  <li><a href="/branded" class="font-semibold border-b-2 border-primaryColor pb-[10px]">Branded
+                      Products</a></li>
+                </ul>
+
+                <div class="relative ml-auto">
+                  <button class="accordion-button menu-list" onclick="toggleMenu()">
+                    <i class="fa-solid fa-filter"></i>
+                    <span>Filter By</span>
+                    <i class="fa-solid fa-sort-down -mt-1"></i>
+                  </button>
+
+                  <ul id="menu" class="menu-collapse bg-white absolute right-0 p-5 shadow-md hidden">
+                    <li><a href="#" data-sort="name">By Name</a></li>
+                    <li><a href="#" data-sort="price">By Price</a></li>
+                    <li><a href="#" data-sort="category">By Category</a></li>
+                    <li><a href="#" data-sort="sales">By Sales</a></li>
+                  </ul>
+                </div>
+
+
+              </div>
+
+              <div class="bg-white pt-5 mt-5 overflow-x-scroll md:overflow-hidden px-5">
+                <table class="table-auto text-xs md:text-sm profile-table w-[230%] md:w-full">
+                  <thead>
+                    <tr>
+                      <th>PRODUCT ID</th>
+                      <th>PRODUCT IMAGE</th>
+                      <th>PRODUCT NAME</th>
+                      <th>CATEGORY</th>
+                      <th>PRICE</th>
+                      <th>#</th>
+                      <th>#</th>
+                    </tr>
+                  </thead>
+                  <tbody id="productTableBody">
+                    <!-- The table body content will be dynamically generated using JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Page Select -->
+              <div class="flex flex-col xl:flex-row justify-between xl:items-center py-5 gap-2">
+                <p class="text-center text-xs xl:text-sm text-tColor">
+                  Showing <span id="showFrom"></span> - <span id="showTo"></span> of <span id="totalProducts"></span>
+                  products
+                </p>
+                <div
+                  class="scale-75 xl:scale-100 grid grid-flow-col content-center ml-auto mr-auto xl:mr-0 font-semibold xl:text-sm text-tColor gap-3"
+                  id="paginationContainer">
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+    </section>
+
+    </div>
+
+
+    </div>
+
+    </div>
+
+
+    </div>
+
+    </section>
+
+
+    <!-- Table search -->
+    <script>
+      $(document).ready(function () {
+        let currentPage = (document.cookie.match(/(?<=__pB=)\d+/) || [1])[0];
+        const itemsPerPage = 10;
+        let typingTimer;
+        const doneTypingInterval = 500; // Wait for 500ms of inactivity before sending the request
+
+        const fetchProducts = (page) => {
+          const searchQuery = $('#searchInput').val(); // Get the search query from the input field
+          $.ajax({
+            url: `/api/brandedProducts/?page=${page}`,
+            method: 'GET',
+            data: {
+              search: searchQuery
+            },
+            dataType: 'json',
+            success: function (response) {
+              const products = response.products;
+              const images = response.images;
+              displayPage(page, products, images);
+              updatePagination(page, response.totalPages, itemsPerPage);
+              updateDisplayedItemsInfo(page, response.totalProducts, itemsPerPage);
+            },
+            error: function (error) {
+              console.error(error);
+            }
+          });
+        };
+
+        const displayPage = (page, products, images) => {
+          const tableBody = $('#productTableBody');
+          tableBody.empty();
+
+          products.forEach(product => {
+            const {
+              temp_id,
+              temp_name,
+              extra_cat_id,
+              temp_price,
+            } = product;
+            const productImage = images.find(image => image.product_temp_id === temp_id);
+
+            const row = `
+        <tr>
+          <td>${temp_id}</td>
+          <td>
+            <img src="${productImage ? productImage.temp_image_url : 'placeholder.jpg'}" alt="" class="h-9 w-9">
+          </td>
+          <td>${temp_name}</td>
+          <td>${extra_cat_id}</td>
+          <td>$ ${temp_price}</td>
+          <td><a href="/delBrandedProducts/${temp_id}"><i class="fa-regular fa-trash-can w-full text-tertiaryColor p-3"></i></a></td>
+        </tr>
+      `;
+            tableBody.append(row);
+          });
+        };
+
+        const updatePagination = (currentPage, totalPages, itemsPerPage) => {
+          const paginationContainer = $('#paginationContainer');
+          paginationContainer.empty();
+
+          for (let i = 1; i <= totalPages; i++) {
+            const button = $('<button></button>')
+              .text(i)
+              .addClass('pagination-button')
+              .toggleClass('active', i === currentPage)
+              .click(function () {
+                currentPage = i;
+                fetchProducts(currentPage);
+              });
+
+            paginationContainer.append(button);
+          }
+        };
+
+        const updateDisplayedItemsInfo = (currentPage, totalProducts, itemsPerPage) => {
+          const showFrom = (currentPage - 1) * itemsPerPage + 1;
+          const showTo = Math.min(currentPage * itemsPerPage, totalProducts);
+          $('#showFrom').text(showFrom);
+          $('#showTo').text(showTo);
+          $('#totalProducts').text(totalProducts);
+        };
+
+        const handleInput = () => {
+          clearTimeout(typingTimer);
+          typingTimer = setTimeout(() => {
+            fetchProducts(currentPage);
+          }, doneTypingInterval);
+        };
+        $('#searchInput').on('keyup', handleInput);
+      });
+    </script>
+    <!-- Table search -->
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Header Section Script -->
+    <script>
+      // Menu toggle button
+      const toggleButton = document.getElementById("toggle-button");
+      const toggleMenu = document.getElementById("toggle-menu");
+      var toggleCounter = 1;
+      toggleButton.onclick = function () {
+        toggleCounter++;
+        if (toggleCounter % 2 == 0) {
+          toggleMenu.classList.remove("hidden");
+          toggleMenu.classList.add("grid");
+        } else {
+          toggleMenu.classList.remove("grid");
+          toggleMenu.classList.add("hidden");
+        }
+      }
+    </script>
+
+
+    <!-- Accordion Script -->
+    <script>
+      const accordionButtons = document.querySelectorAll('.accordion-button');
+      const accordionMenu = document.querySelectorAll('.menu-collapse');
+
+      accordionButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const accordionCollapse = button.nextElementSibling;
+          button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') === 'false' ? 'true' : 'false');
+          accordionCollapse.classList.toggle('hidden');
+        });
+      });
+
+      document.querySelectorAll('.menu-collapse').forEach(collapse => {
+        collapse.classList.add('hidden');
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!accordionMenu.contains(e.target) && !accordionButtons.contains(e.target)) {
+          accordionMenu.classList.add('hidden');
+        }
+      });
+    </script>
+
+    <script>
+      $(document).ready(function () {
+        let currentPage = (document.cookie.match(/(?<=__pB=)\d+/) || [1])[0];
+        const itemsPerPage = 10;
+
+        const fetchProducts = (page) => {
+          $.ajax({
+            url: `/api/brandedProducts/?page=${page}`,
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+              page = response.currentPage;
+              const products = response.products;
+              const images = response.images;
+              displayPage(page, products, images);
+              updatePagination(page, response.totalPages, itemsPerPage);
+              updateDisplayedItemsInfo(page, response.totalProducts, itemsPerPage);
+            },
+            error: function (error) {
+              console.error(error);
+            }
+          });
+        };
+
+        const displayPage = (page, products, images) => {
+          const tableBody = $('#productTableBody');
+          tableBody.empty();
+
+          products.forEach(product => {
+            const {
+              temp_id,
+              temp_name,
+              extra_cat_id,
+              temp_price,
+            } = product;
+            const productImage = images.find(image => image.product_temp_id === temp_id);
+
+            const row = `
+        <tr>
+          <td>${temp_id}</td>
+          <td>
+            <img src="${productImage ? productImage.temp_image_url : 'placeholder.jpg'}" alt="" class="h-9 w-9">
+          </td>
+          <td>${temp_name}</td>
+          <td>${extra_cat_id}</td>
+          <td>৳ ${temp_price}</td>
+          <td><a href="/editProduct/${temp_id}"><i class="fa-regular fa-edit w-full text-primaryColor p-3"></i></a></td>
+          <td><a href="/delBrandedProducts/${temp_id}"><i class="fa-solid fa-trash w-full text-tertiaryColor p-3"></i></a></td>
+        </tr>
+      `;
+            tableBody.append(row);
+          });
+        };
+
+        const updatePagination = (currentPage, totalPages, itemsPerPage) => {
+          const paginationContainer = $('#paginationContainer');
+          paginationContainer.empty();
+          console.log(currentPage)
+
+          for (let i = 1; i <= totalPages; i++) {
+            const button = $('<button></button>')
+              .text(i)
+              .addClass('pagination-button')
+              .toggleClass('active', i === currentPage)
+              .click(function () {
+                currentPage = i;
+                fetchProducts(currentPage);
+              });
+
+            paginationContainer.append(button);
+          }
+        };
+
+        const updateDisplayedItemsInfo = (currentPage, totalProducts, itemsPerPage) => {
+          const showFrom = (currentPage - 1) * itemsPerPage + 1;
+          const showTo = Math.min(currentPage * itemsPerPage, totalProducts);
+          $('#showFrom').text(showFrom);
+          $('#showTo').text(showTo);
+          $('#totalProducts').text(totalProducts);
+        };
+
+        fetchProducts(currentPage);
+      });
+    </script>
+
+  </body>
+
+</html>

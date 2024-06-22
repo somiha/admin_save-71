@@ -1,0 +1,8 @@
+<div class="text-xs xl:text-base flex items-center gap-3 xl:gap-5">
+    <a href="#" class="flex items-center gap-2">
+        <img class="h-6 w-6" src="<%= admin && admin.profile_pic ? admin.profile_pic : '/images/user.png' %>" alt="">
+
+        <p class="font-semibold text-sm"><%= admin && admin.admin_name ? admin.admin_name : "Admin" %></p>
+        <i class="fa-solid fa-sort-down -mt-2 text-tColor"></i>
+    </a>
+</div>

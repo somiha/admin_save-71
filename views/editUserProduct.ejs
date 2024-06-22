@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save 71 - Dashboard - Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/output.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+  </head>
+
+  <body class="font-sans">
+    <section class="max-w-[1920px] ml-auto mr-auto">
+
+      <!-- Navigation Menu -->
+      <%- include('header') %>
+
+
+
+
+      <!-- Right Side Section -->
+      <div class="ml-auto w-full xl:w-5/6 px-0 xl:px-1 py-2 mt-16 xl:mt-0">
+
+
+        <!-- Project Overview Header -->
+
+        <div class="flex items-center justify-between px-5 py-2 xl:py-5 gap-4 border-b">
+          <!-- Search Box -->
+          <div class="bg-white relative">
+            <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text" placeholder="Search...">
+            <i class="fa-solid fa-magnifying-glass absolute top-1/2 left-0 -translate-y-1/2 text-tColor"></i>
+          </div>
+
+          <!-- Notification & User -->
+          <%- include('profileBar') %>
+
+
+        </div>
+
+        <div class="mx-5 rounded-md">
+
+          <div class="flex justify-between items-center flex-wrap gap-5 border-b py-10">
+            <p class="text-xl xl:text-2xl font-semibold text-tColor2">Edit User Product</p>
+            <button id="previewBtn" class="bg-[#504F54] text-white px-7 py-3 rounded flex items-center gap-2">
+              <i class="fa-solid fa-eye"></i>
+              <p>Preview</p>
+            </button>
+          </div>
+
+
+          <div id="previewModal" class="modal">
+            <div class="modal-content max-w-{500px}">
+              <div class="modal-header py-5">
+                <span class="close cart-modal-close">&times;</span>
+                <h6>Preview Product</h6>
+              </div>
+              <div class="modal-body" id="previewModalBody">
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Product Upload Section -->
+          <form id="productForm" enctype="multipart/form-data" action="/editUserProduct/<%= pID  %>" method="POST">
+            <div class="grid grid-cols-1 xl:grid-cols-4 relative">
+
+              <!-- Product Left Section -->
+              <div class="col-span-3 xl:border-r xl:pr-5">
+
+                <p class="font-semibold text-lg text-tColor2 pt-5">Product Information</p>
+
+                <!-- Product Information Input Section -->
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-5 mt-5">
+
+                  <div class="col-span-1 xl:col-span-2">
+                    <p class="text-tColor3 mb-2">Product Name</p>
+                    <input class=" border rounded px-3 py-2 flex-1 focus:outline-none focus:shadow-outline w-full"
+                      type="text" id="product-name" name="product_name" value="<%= product.product_name %>"
+                      placeholder="Product Name">
+                  </div>
+
+                  <div class="col-span-1">
+                    <label class="text-tColor3 mb-2" for="product_price">Price</label>
+                    <div class="flex mb-4 items-center">
+                      <div class="relative">
+                        <select
+                          class="border rounded-l px-3 py-2 pr-8 appearance-none focus:outline-none focus:shadow-outline"
+                          id="currency" name="currency">
+                          <option value="TAKA">TAKA</option>
+                          <!-- Add more currency options here -->
+                        </select>
+                      </div>
+                      <input
+                        class="border rounded-r border-l-0 px-3 py-2 flex-1 focus:outline-none focus:shadow-outline w-full"
+                        type="number" id="product_price" name="product_price" placeholder="Price"
+                        value="<%= product.product_price %>" readonly>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Product Right Section -->
+
+
+                <div class="xl:absolute top-0 right-0 xl:pl-5 xl:w-1/4">
+                  <p class="font-semibold text-lg text-tColor2 py-5">Primary Details</p>
+
+                  <div>
+                    <p class="text-tColor3 mb-2">Main Category</p>
+                    <div class="relative">
+                      <select
+                        class="border rounded-l px-3 py-2 pr-8 appearance-none focus:outline-none focus:shadow-outline w-full"
+                        id="mainCat" name="main_cat">
+                        <option value="" disabled>Select a Main Category</option>
+                        <% for (var i=0; i < mainCat.length; i++) { %>
+                        <option value="<%= mainCat[i].main_cat_id %>" <%= (i == mainCatIndex) ? "selected" : "" %>>
+                          <%= mainCat[i].main_cat_name %>
+                        </option>
+                        <% } %>
+                      </select>
+                      <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <i class="text-sm fa-solid fa-angle-down"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-5">
+                    <p class="text-tColor3 mb-2">Sub Category</p>
+                    <div class="relative">
+                      <select
+                        class="border rounded-l px-3 py-2 pr-8 appearance-none focus:outline-none focus:shadow-outline w-full"
+                        id="subCat" name="sub_cat">
+                        <option value="" disabled>Select a Sub Category</option>
+                        <% for (var i=0; i < subCat.length; i++) { %>
+                        <option value="<%= subCat[i].sub_cat_id %>" data-ref="<%= subCat[i].sub_cat_ref %>"
+                          <%= (i == subCatIndex) ? "selected" : "" %>>
+                          <%= subCat[i].sub_cat_name %>
+                        </option>
+                        <% } %>
+                      </select>
+                      <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <i class="text-sm fa-solid fa-angle-down"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="my-5">
+                    <p class="text-tColor3 mb-2">Extra Category</p>
+                    <div class="relative">
+                      <select
+                        class="border rounded-l px-3 py-2 pr-8 appearance-none focus:outline-none focus:shadow-outline w-full"
+                        id="extraCat" name="extra_cat">
+                        <option value="" disabled selected>Select a Extra Category</option>
+                        <% for (var i=0; i < extraCat.length; i++) { %>
+                        <option value="<%= extraCat[i].extra_cat_id %>" data-ref="<%= extraCat[i].extra_cat_ref %>"
+                          <%= (i == extraCatIndex) ? "selected" : "" %>>
+                          <%= extraCat[i].extra_cat_name %>
+                        </option>
+                        <% } %>
+                      </select>
+                      <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <i class="text-sm fa-solid fa-angle-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Product Right Section -->
+
+
+                <div class="pb-10">
+                  <p class="text-tColor3 mb-2">Short Description</p>
+                  <textarea class="border rounded-r px-3 py-2 flex-1 focus:outline-none focus:shadow-outline w-full"
+                    id="product-desciption" name="product_short_des" rows="4" cols="50"
+                    value="<%= product.product_short_des %>"
+                    placeholder="Enter Product Description"><%= product.product_short_des %></textarea>
+                </div>
+                <div class="pb-10">
+                  <p for="productDescription" class="text-tColor3 mb-2">Long Description</p>
+                  <%- include('richText', {des :  product.product_details_des }); %>
+                </div>
+
+                <!-- Product Image Upload Section -->
+                <div class="border-b py-10 w-fit">
+                  <p class="font-semibold text-lg text-tColor2 mb-2">Media</p>
+
+                  <div class="container">
+                    <div class="col-md-12">
+                      <p class="text-lg font-semibold">Previous Images</p>
+                      <div class="flex flex-wrap">
+                        <% for (var i = 0; i < images.length; i++) { %>
+                        <% if (images[i].product_id == pID) { %>
+                        <div class="card">
+                          <div class="bg-white shadow-md rounded-md relative">
+                            <img
+                              class="card-img-top <%= images[i].featured_image == 1 ? 'border border-custom-2-red' : '' %>"
+                              src="<%= images[i].product_image_url %>" alt="image" />
+                            <a title="Delete This Image" href="/delUserImage/<%= images[i].id %>" class="delete-button">
+                              <i class="fa-regular fa-trash-can w-full"></i>
+                            </a>
+                          </div>
+                        </div>
+                        <% } %>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+
+
+
+                  <p>Upload New Images <i style="color: red;">(Previous Images Will be deleted)</i></p>
+
+                  <div class="flex flex-wrap gap-5">
+                    <div>
+                      <label for="dropzone-file"
+                        class="flex flex-col items-center justify-center border border-dashed rounded-lg cursor-pointer h-40 w-40">
+                        <div class="flex flex-col items-center justify-center p-5">
+                          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                              d="M18 16V2C18 0.9 17.1 0 16 0H2C0.9 0 0 0.9 0 2V16C0 17.1 0.9 18 2 18H16C17.1 18 18 17.1 18 16ZM5.5 10.5L8 13.51L11.5 9L16 15H2L5.5 10.5Z"
+                              fill="#1A63A6" />
+                          </svg>
+                          <p class="mt-2 text-sm text-primaryColor text-center" id="browseImage">Browse image..</p>
+                        </div>
+                        <input id="dropzone-file" type="file" name="productImages" class="hidden" accept="image/*"
+                          multiple />
+                      </label>
+                    </div>
+                    <input type="hidden" id="featured_index" name="featured_index">
+                    <div id="imageContainer" class="flex flex-wrap gap-5"></div>
+                  </div>
+                </div>
+
+                <!-- Previous Videos Start -->
+                <% if (video.length > 0) { %>
+                <div class="mb-5">
+                  <label class="text-lg font-semibold"><u>Previous Videos</u></label>
+                  <video controls="true" width="45%" src="<%= video[0].product_video_url  %>"></video>
+                  <a title="Delete This Video" href="/delUserVideo/<%= video[0].id %>" class="delete-button">
+                    <i class="fa-regular fa-trash-can w-full text-tertiaryColor"></i>
+                  </a>
+                </div>
+                <% } %>
+                <!-- Previous Videos End -->
+
+                <!-- Video Upload -->
+                <div class="mb-3">
+                  <p class="text-lg font-semibold mb-5"><u>Upload New Video</u> <i style="color: red;">(Previous Video
+                      Will be deleted)</i></p>
+                  <div id="videoPreviewContainer"></div>
+                  <div class="mb-4">
+                    <label for="productVideo" class="form-label fw-medium"></label>
+                    <input type="file" id="productVideo" name="product_video" class="form-control" accept="video/*">
+                  </div>
+                </div>
+                <!-- Video Upload -->
+
+
+
+                <div
+                  class="flex justify-center xl:justify-between items-center flex-wrap gap-5 border rounded p-5 mb-5">
+                  <button type="reset" class="xl:ml-auto bg-orange-100 rounded"><i
+                      class="fa-regular fa-trash-can w-full text-tertiaryColor p-3"></i></button>
+                  <button class="bg-primaryColor text-white rounded px-4 py-2">Update Product</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </section>
+
+
+
+
+
+    <!-- Header Section Script -->
+    <script>
+      // Menu toggle button
+      const toggleButton = document.getElementById("toggle-button");
+      const toggleMenu = document.getElementById("toggle-menu");
+      var toggleCounter = 1;
+      toggleButton.onclick = function () {
+        toggleCounter++;
+        if (toggleCounter % 2 == 0) {
+          toggleMenu.classList.remove("hidden");
+          toggleMenu.classList.add("grid");
+        } else {
+          toggleMenu.classList.remove("grid");
+          toggleMenu.classList.add("hidden");
+        }
+      }
+    </script>
+
+    <!-- change categories as they are selected -->
+    <script>
+      $(document).ready(function () {
+        $('#mainCat').change(function () {
+          var selectedMainCatId = $(this).val();
+          $('#subCat option, #extraCat option').hide();
+          $('#subCat option[data-ref="' + selectedMainCatId + '"]').show();
+        });
+
+        $('#subCat').change(function () {
+          var selectedSubCatId = $(this).val();
+          $('#extraCat option').hide();
+          $('#extraCat option[data-ref="' + selectedSubCatId + '"]').show();
+        });
+      });
+    </script>
+    <!-- change categories as they are selected -->
+
+
+
+    <!-- preview Product -->
+    <script>
+      $(document).ready(function () {
+        function sendFormData() {
+          var formData = new FormData($('#productForm')[0]);
+
+          $.ajax({
+            type: 'POST',
+            url: '/productPreview',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+              updatePreviewModal(response.previewInfo, response.previewImages, response.previewVideo);
+              $("#previewModal").css("display", "block");
+            },
+            error: function (error) {
+              console.log(error);
+            }
+          });
+        }
+
+        function updatePreviewModal(previewInfo, previewImages, previewVideo) {
+          var modalBody = $('#previewModalBody');
+          modalBody.empty();
+          var titleElement = $('<h5 class="modal-title"></h5>').text(previewInfo.title);
+          var descriptionElement = $('<p></p>').text(previewInfo.description);
+          modalBody.append(titleElement, descriptionElement);
+
+          // Create a container for the preview images
+          var imageContainer = $('<div class="image-container row"></div>');
+
+          // Loop through the preview images and create image cards
+          previewImages.forEach(function (imageUrl, index) {
+            var cardElement = $('<div class="card col-md-3 h-100"></div>');
+            var imageElement = $('<img class="card-img-top img-fluid">').attr('src', imageUrl);
+            if (index === parseInt(previewInfo.featured_index)) {
+              cardElement.addClass('border border-danger border-4');
+            }
+            cardElement.append(imageElement);
+            imageContainer.append(cardElement);
+          });
+
+          // Add other product information
+          var productInfoContainer = $('<div class="product-info"></div>');
+          var nameElement = $('<p class="product-name"></p>').html('<strong><u>Name:</u></strong> <i>' + previewInfo.product_name + '</i>');
+          var priceElement = $('<p class="product-price"></p>').html('<strong><u>Price:</u></strong> <i>' + previewInfo.product_price + '</i> <strong>BDT</strong>');
+          var shortDesElement = $('<p class="product-price"></p>').html('<strong><u>Short Description:</u></strong> <i></br>' + previewInfo.product_short_des + '</i>');
+          var longDesElement = $('<p class="product-price"></p>').html('<strong><u>Long Description:</u></strong> ' + previewInfo.product_des);
+          var categoryElement = $('<p class="product-category"></p>').html('<strong><u>Selected Categories:</u></strong></br>' + previewInfo.main_cat + ' > ' + previewInfo.sub_cat + ' > ' + previewInfo.extra_cat);
+          var imgElement = $('<p class="product-price"></p>').html('<strong><u>Selected Images:</u></strong> ');
+
+          // Append the product info container to the modal body
+          productInfoContainer.append(nameElement, priceElement, shortDesElement, longDesElement, categoryElement, imgElement);
+          modalBody.append(productInfoContainer);
+          modalBody.append(imageContainer);
+
+          // Add video preview if available
+          if (previewVideo) {
+            var videoPreviewContainer = $('</br><div class="video-preview"><strong><u>Video Preview</strong></u></div>');
+            var videoElement = $('<video controls></video>').attr('src', previewVideo);
+            videoElement.css({
+              width: '75%',
+            });
+            videoPreviewContainer.append(videoElement);
+            modalBody.append(videoPreviewContainer);
+          }
+        }
+
+        /*
+          $('#productForm').submit(function(event) {
+            event.preventDefault();
+            sendFormData();
+          });
+          */
+
+        $('#previewBtn').click(function () {
+          sendFormData();
+        });
+      });
+    </script>
+    <!-- preview Product -->
+
+    <!-- Delete preview images -->
+    <script>
+      $(document).ready(function () {
+        $('#previewModal').on('hidden.bs.modal', function (e) {
+          $.ajax({
+            type: 'POST',
+            url: '/previewDelete',
+            success: function (response) {
+              console.log('POST request to /previewDelete successful');
+            },
+            error: function (error) {
+              console.error('Error making POST request to /previewDelete:', error);
+            }
+          });
+        });
+
+        $('#closeModalBtn').click(function () {
+          $('#previewModal').modal('hide');
+        });
+      });
+    </script>
+
+    <!-- Delete preview images End -->
+
+
+    <!-- Images Preview -->
+    <script>
+      const browseImage = document.getElementById('browseImage');
+      const imageContainer = document.getElementById('imageContainer');
+      const dropzoneFile = document.getElementById('dropzone-file');
+      const featuredIndexInput = document.getElementById('featured_index');
+
+      browseImage.addEventListener('click', () => {
+        dropzoneFile.click();
+      });
+
+      dropzoneFile.addEventListener('change', handleFileSelection);
+
+      let featured_index = 0; // Initialize the featured_index variable
+
+      function handleFileSelection(event) {
+        const files = event.target.files;
+
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+
+          const imageElement = document.createElement('img');
+          imageElement.src = URL.createObjectURL(file);
+          imageElement.alt = 'Uploaded Image';
+
+          const cardDiv = document.createElement('div');
+          cardDiv.className = 'image-card';
+
+          const imageDiv = document.createElement('div');
+          imageDiv.className = 'h-40 w-40 p-2 flex justify-center items-center border rounded';
+          imageDiv.appendChild(imageElement);
+
+          const gridDiv = document.createElement('div');
+          gridDiv.className = 'grid grid-cols-2 text-sm border mt-2 py-2';
+
+          const radioButton = document.createElement('input');
+          radioButton.type = 'radio';
+          radioButton.name = 'featuredImage';
+          radioButton.addEventListener('click', () => {
+            featured_index = i; // Set the selected index value
+            featuredIndexInput.value = featured_index; // Update the hidden input value
+          });
+
+          const deleteButton = document.createElement('button');
+          deleteButton.innerHTML = '<i class="fa-regular fa-trash-can w-full text-tertiaryColor"></i>';
+          deleteButton.addEventListener('click', () => {
+            imageContainer.removeChild(cardDiv);
+          });
+
+          gridDiv.appendChild(radioButton);
+          gridDiv.appendChild(deleteButton);
+
+          cardDiv.appendChild(imageDiv);
+          cardDiv.appendChild(gridDiv);
+
+          imageContainer.appendChild(cardDiv);
+        }
+      }
+    </script>
+    <!-- Images Preview -->
+
+
+    <!-- Video Preview -->
+    <script>
+      document.getElementById('productVideo').addEventListener('change', function (e) {
+        var videoPreviewContainer = document.getElementById('videoPreviewContainer');
+        videoPreviewContainer.innerHTML = '';
+
+        var file = e.target.files[0];
+
+        if (file) {
+          var videoPreview = document.createElement('video');
+          videoPreview.src = URL.createObjectURL(file);
+          videoPreview.controls = true;
+          videoPreview.style.width = '50%';
+
+          videoPreviewContainer.appendChild(videoPreview);
+        }
+      });
+    </script>
+    <!-- Video Preview End -->
+    <script src="/js/main.js"></script>
+
+    <!-- Accordion Script -->
+    <script>
+      const accordionButtons = document.querySelectorAll('.accordion-button');
+      const accordionMenu = document.querySelectorAll('.menu-collapse');
+
+      accordionButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const accordionCollapse = button.nextElementSibling;
+          button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') === 'false' ? 'true' : 'false');
+          accordionCollapse.classList.toggle('hidden');
+        });
+      });
+
+      // Set all accordion items to collapsed state by default
+      document.querySelectorAll('.menu-collapse').forEach(collapse => {
+        collapse.classList.add('hidden');
+      });
+
+      // document.addEventListener('click', function (e) {
+      //   if (!accordionMenu.contains(e.target) && !accordionButtons.contains(e.target)) {
+      //     accordionMenu.classList.add('hidden');
+      //   }
+      // });
+    </script>
+
+
+    <style>
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .card {
+        width: 20%;
+        margin-right: 20px;
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      .card img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .card .delete-button {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background-color: #f00;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .card:hover .delete-button {
+        opacity: 1;
+      }
+    </style>
+  </body>
+
+</html>

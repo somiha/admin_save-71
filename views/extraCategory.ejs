@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save 71 - Dashboard - Extra Category</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/output.css">
+    <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+  </head>
+
+  <body class="font-sans">
+    <section class=" max-w-[1920px] ml-auto mr-auto relative">
+
+      <!-- Navigation Menu -->
+      <%- include('header')  %>
+
+
+
+
+      <!-- Right Side Section -->
+      <div class="ml-auto w-full xl:w-5/6 px-0 xl:px-1 py-2 mt-16 xl:mt-0">
+
+
+        <!-- Project Overview Header -->
+
+        <div class="flex items-center justify-between px-5 py-2 xl:py-5 gap-4 border-b-2">
+          <!-- Search Box -->
+          <div class="bg-white relative">
+            <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text" placeholder="Search...">
+            <i class="fa-solid fa-magnifying-glass absolute top-1/2 left-0 -translate-y-1/2 text-tColor"></i>
+          </div>
+
+          <!-- Notification & User -->
+          <%- include('profileBar') %>
+
+
+        </div>
+
+        <div class="bg-gray-100 px-5 pt-5 rounded-md">
+
+          <div class="flex justify-between items-center flex-wrap gap-5">
+            <p class="text-xl xl:text-2xl font-semibold text-tColor2">Categories</p>
+            <div class="bg-white relative ml-auto">
+              <input name="search" id="searchInput" class="py-2 pl-3 pr-6 focus:outline-none max-w-[205px] rounded-md"
+                type="text" placeholder="Search categories...">
+              <i class="fa-solid fa-magnifying-glass absolute top-1/2 right-2 -translate-y-1/2 text-tColor"></i>
+            </div>
+            <button class="primary-btn" id="add-category-btn">+ Add Extra Category</button>
+          </div>
+
+          <!-- All Orders Table -->
+          <div class="mt-5">
+
+            <div class="flex flex-col justify-around">
+
+              <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3">
+
+                <ul class="flex gap-7 border-b-2 pb-2 flex-wrap">
+                  <li><a href="/subCategory">Main</a></li>
+                  <li><a href="/subcategory">Sub</a></li>
+                  <li><a href="/extracategory" class="font-bold border-b-2 border-primaryColor pb-[10px]">Extra</a></li>
+                </ul>
+
+                <div class="relative ml-auto">
+                  <button class="accordion-button menu-list" onclick="toggleMenu()">
+                    <i class="fa-solid fa-filter"></i>
+                    <span>Filter By</span>
+                    <i class="fa-solid fa-sort-down -mt-1"></i>
+                  </button>
+
+                  <ul id="menu" class="menu-collapse bg-white absolute right-0 p-5 shadow-md hidden">
+                    <li><a href="#">By Name</a></li>
+                    <li><a href="#">By Price</a></li>
+                    <li><a href="#">By Category</a></li>
+                    <li><a href="#">By Sales</a></li>
+                  </ul>
+                </div>
+
+
+              </div>
+
+              <div class="bg-white pt-5 mt-5 overflow-x-scroll md:overflow-hidden px-5">
+                <table class="table-auto text-xs md:text-sm profile-table w-[170%] md:w-full">
+                  <thead>
+                    <tr>
+                      <th>NO</th>
+                      <th>CATEGORY</th>
+                      <th>REF-SUB-CATEGORY</th>
+                      <th>PRODUCTS</th>
+                      <th>Retailer Deduct %</th>
+                      <th>Manufacturer Deduct %</th>
+                      <th>#</th>
+                      <th>#</th>
+                    </tr>
+                  </thead>
+                  <tbody id="productTableBody">
+                  </tbody>
+                </table>
+
+              </div>
+
+              <!-- Page Select -->
+              <div class="flex flex-col xl:flex-row justify-between xl:items-center py-5 gap-2">
+                <p class="text-center text-xs xl:text-sm text-tColor">
+                  Showing <span id="showFrom"></span> - <span id="showTo"></span> of <span id="totalProducts"></span>
+                  products
+                </p>
+                <div
+                  class="scale-75 xl:scale-100 grid grid-flow-col content-center ml-auto mr-auto xl:mr-0 font-semibold xl:text-sm text-tColor gap-3"
+                  id="paginationContainer">
+                </div>
+              </div>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+      <!-- Add Extra Category Section -->
+      <div
+        class="bg-white h-screen max-h-[1080px] w-full xl:w-1/3 2xl:w-1/4 absolute top-0 right-0 shadow-lg p-10 hidden"
+        id="add-category">
+        <form action="/addExtraCategory" method="POST" enctype="multipart/form-data">
+
+          <div class="flex justify-between items-center">
+            <p class="text-xl font-semibold">Add Category</p>
+            <button id="category-close-button"><i
+                class="fa-solid fa-xmark bg-secondaryColor text-white text-sm rounded-[50%] px-[7px] py-[5px]"></i></button>
+          </div>
+
+          <p class="my-5 text-tColor2">You only need to enter the basic information when you create the categories.</p>
+
+          <div>
+            <p class="mb-2">Category Name</p>
+            <input class=" border rounded px-3 py-2 flex-1 focus:outline-none focus:shadow-outline w-full" type="text"
+              id="category-name" name="category_name" placeholder="Category Name">
+          </div>
+          <div>
+            <p class="mb-2">Retailer deduct percentage</p>
+            <input class=" border rounded px-3 py-2 flex-1 focus:outline-none focus:shadow-outline w-full" type="number"
+              step="0.01" id="retailer_deduct_percentage" name="retailer_deduct_percentage" placeholder="10" value=0>
+          </div>
+          <div>
+            <p class="mb-2">Manufacturer deduct percentage</p>
+            <input class=" border rounded px-3 py-2 flex-1 focus:outline-none focus:shadow-outline w-full" type="number"
+              step="0.01" id="manufacturer_deduct_percentage" name="manufacturer_deduct_percentage" placeholder="10"
+              value=0>
+          </div>
+
+          <div>
+            <p class="mt-5 mb-2">Sub-Category</p>
+            <div class="relative">
+              <select
+                class=" border rounded-l px-3 py-2 pr-8 appearance-none focus:outline-none focus:shadow-outline w-full"
+                id="country-code" name="sub_cat_ref">
+                <option value="" selected disabled>Under which Sub category</option>
+                <% for (var i = 0; i < subCat.length; i++) { %>
+                <option value="<%= subCat[i].sub_cat_id %>"><%= subCat[i].sub_cat_name %></option>
+                <% } %>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                <i class="text-sm fa-solid fa-angle-down"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5">
+            <label for="dropzone-file"
+              class="flex flex-col items-center justify-center border border-dashed border-primaryColor rounded-lg cursor-pointer py-3 w-full">
+              <div class="flex items-center gap-5">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M1.5 13.9998H0.875H1.5ZM1.5 3.99984H2.125H1.5ZM4.83333 0.666504V0.0415039V0.666504ZM13.1667 0.666504V0.0415043V0.666504ZM16.5 3.99984H15.875H16.5ZM16.5 9.28579H17.125H16.5ZM8.45262 17.3332V16.7082V17.3332ZM4.83333 17.3332V17.9582V17.3332ZM15.5237 11.6428L15.0817 11.2009L15.5237 11.6428ZM10.8096 16.3569L11.2516 16.7988L10.8096 16.3569ZM9.83333 13.9998H9.20833H9.83333ZM13.1667 10.6665V10.0415V10.0415V10.6665ZM6.05806 6.0579C5.81398 6.30197 5.81398 6.6977 6.05806 6.94178C6.30214 7.18586 6.69786 7.18586 6.94194 6.94178L6.05806 6.0579ZM7.82149 5.17835L8.26343 5.62029L7.82149 5.17835ZM10.1785 5.17835L9.73657 5.62029V5.62029L10.1785 5.17835ZM11.0581 6.94178C11.3021 7.18586 11.6979 7.18586 11.9419 6.94178C12.186 6.6977 12.186 6.30197 11.9419 6.0579L11.0581 6.94178ZM9.625 4.83317C9.625 4.48799 9.34518 4.20817 9 4.20817C8.65482 4.20817 8.375 4.48799 8.375 4.83317H9.625ZM8.375 8.99984C8.375 9.34502 8.65482 9.62484 9 9.62484C9.34518 9.62484 9.625 9.34502 9.625 8.99984H8.375ZM2.125 13.9998L2.125 3.99984H0.875L0.875 13.9998H2.125ZM4.83333 1.2915L13.1667 1.2915V0.0415043L4.83333 0.0415039V1.2915ZM15.875 3.99984V9.28579H17.125V3.99984H15.875ZM8.45262 16.7082H4.83333V17.9582H8.45262V16.7082ZM15.0817 11.2009L10.3677 15.9149L11.2516 16.7988L15.9656 12.0848L15.0817 11.2009ZM8.45262 17.9582C9.50244 17.9582 10.5093 17.5411 11.2516 16.7988L10.3677 15.9149C9.85979 16.4228 9.17092 16.7082 8.45262 16.7082V17.9582ZM15.875 9.28579C15.875 10.0041 15.5897 10.693 15.0817 11.2009L15.9656 12.0848C16.708 11.3424 17.125 10.3356 17.125 9.28579H15.875ZM2.125 3.99984C2.125 2.50407 3.33756 1.2915 4.83333 1.2915V0.0415039C2.64721 0.0415038 0.875001 1.81371 0.875 3.99984H2.125ZM0.875 13.9998C0.875 16.186 2.64721 17.9582 4.83333 17.9582V16.7082C3.33756 16.7082 2.125 15.4956 2.125 13.9998H0.875ZM13.1667 1.2915C14.6624 1.2915 15.875 2.50407 15.875 3.99984H17.125C17.125 1.81371 15.3528 0.0415044 13.1667 0.0415043V1.2915ZM10.4583 17.3332V13.9998H9.20833V17.3332H10.4583ZM13.1667 11.2915L16.5 11.2915V10.0415H13.1667V11.2915ZM10.4583 13.9998C10.4583 12.5041 11.6709 11.2915 13.1667 11.2915V10.0415C10.9805 10.0415 9.20833 11.8137 9.20833 13.9998H10.4583ZM6.94194 6.94178L8.26343 5.62029L7.37955 4.73641L6.05806 6.0579L6.94194 6.94178ZM9.73657 5.62029L11.0581 6.94178L11.9419 6.0579L10.6205 4.73641L9.73657 5.62029ZM8.375 4.83317V8.99984H9.625V4.83317H8.375ZM8.26343 5.62029C8.67023 5.2135 9.32977 5.2135 9.73657 5.62029L10.6205 4.73641C9.7255 3.84146 8.2745 3.84146 7.37955 4.73641L8.26343 5.62029Z"
+                    fill="#2874A6" />
+                </svg>
+                <p class="text-sm text-primaryColor text-center">Click here or drop svg, png</p>
+              </div>
+              <input id="dropzone-file" type="file" class="hidden" name="extra_cat_image" accept="image/*" required />
+            </label>
+          </div>
+
+          <button class="bg-primaryColor text-white rounded px-4 py-2 w-full mt-5" type="submit">Publish</button>
+        </form>
+
+      </div>
+
+    </section>
+
+
+
+
+    <!-- Table search -->
+    <script>
+      $(document).ready(function () {
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let typingTimer;
+        const doneTypingInterval = 500; // Wait for 500ms of inactivity before sending the request
+
+        const fetchProducts = (page) => {
+          const searchQuery = $('#searchInput').val(); // Get the search query from the input field
+          $.ajax({
+            url: `/api/getExtraProducts/${page}`,
+            method: 'GET',
+            data: {
+              search: searchQuery
+            },
+            dataType: 'json',
+            success: function (response) {
+              const products = response.products;
+              const images = response.images;
+              displayPage(page, products, images);
+              updatePagination(page, response.totalPages, itemsPerPage);
+              updateDisplayedItemsInfo(page, response.totalProducts, itemsPerPage);
+            },
+            error: function (error) {
+              console.error(error);
+            }
+          });
+        };
+        const displayPage = (page, products, images) => {
+          const tableBody = $('#productTableBody');
+          tableBody.empty();
+
+          products.forEach(product => {
+            const {
+              id,
+              extra_cat_name,
+              product_cat_id,
+              extra_cat_image_url,
+              extra_cat_ref,
+              count,
+              retailer_deduct_percentage,
+              manufacturer_deduct_percentage,
+            } = product;
+
+            const row = `
+            <tr id="row_${id}">
+              <td id="rowId_${id}">${id}</td>
+              <td>
+                <div class="flex items-center">
+                  <img src="${extra_cat_image_url}" alt="" class="h-9 w-9">
+                  <span class="p-2" id="rowCatName_${id}">${extra_cat_name}</span>
+                </div>
+              </td>
+              <td id="refCat_${id}">${extra_cat_ref}</td>
+              <td id="rowSubCatVal_${id}">${count}</td>
+              <td id="rowDeductVal_${id}">${retailer_deduct_percentage.toFixed(2)}</td>
+              <td id="rowManuDeductVal_${id}">${manufacturer_deduct_percentage.toFixed(2)}</td>
+              <td><button id="editCat" onclick="editProduct('${id}', '${count}', <%= JSON.stringify(subCat) %>)"><i class=" fa-regular fa-edit w-full text-primaryColor p-3"></i></button></td>
+              <td><a href="/extraCatDel/${id}"><i class="fa-regular fa-trash-can w-full text-tertiaryColor p-3"></i></a></td>
+            </tr>
+          `;
+            tableBody.append(row);
+          });
+        };
+
+        const updatePagination = (currentPage, totalPages, itemsPerPage) => {
+          const paginationContainer = $('#paginationContainer');
+          paginationContainer.empty();
+
+          for (let i = 1; i <= totalPages; i++) {
+            const button = $('<button></button>')
+              .text(i)
+              .addClass('pagination-button')
+              .toggleClass('active', i === currentPage)
+              .click(function () {
+                currentPage = i;
+                fetchProducts(currentPage);
+              });
+
+            paginationContainer.append(button);
+          }
+        };
+
+        const updateDisplayedItemsInfo = (currentPage, totalProducts, itemsPerPage) => {
+          const showFrom = (currentPage - 1) * itemsPerPage + 1;
+          const showTo = Math.min(currentPage * itemsPerPage, totalProducts);
+          $('#showFrom').text(showFrom);
+          $('#showTo').text(showTo);
+          $('#totalProducts').text(totalProducts);
+        };
+
+
+        const handleInput = () => {
+          clearTimeout(typingTimer);
+          typingTimer = setTimeout(() => {
+            fetchProducts(currentPage);
+          }, doneTypingInterval);
+        };
+        $('#searchInput').on('keyup', handleInput);
+      });
+    </script>
+    <!-- Table search -->
+
+
+    <!-- Header Section Script -->
+    <script>
+      // Menu toggle button
+      const toggleButton = document.getElementById("toggle-button");
+      const toggleMenu = document.getElementById("toggle-menu");
+      var toggleCounter = 1;
+      toggleButton.onclick = function () {
+        toggleCounter++;
+        if (toggleCounter % 2 == 0) {
+          toggleMenu.classList.remove("hidden");
+          toggleMenu.classList.add("grid");
+        } else {
+          toggleMenu.classList.remove("grid");
+          toggleMenu.classList.add("hidden");
+        }
+      }
+    </script>
+
+
+    <!-- Accordion Script -->
+    <script>
+      const accordionButtons = document.querySelectorAll('.accordion-button');
+      const accordionMenu = document.querySelectorAll('.menu-collapse');
+
+      accordionButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const accordionCollapse = button.nextElementSibling;
+          button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') === 'false' ? 'true' : 'false');
+          accordionCollapse.classList.toggle('hidden');
+        });
+      });
+
+      // Set all accordion items to collapsed state by default
+      document.querySelectorAll('.menu-collapse').forEach(collapse => {
+        collapse.classList.add('hidden');
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!accordionMenu.contains(e.target) && !accordionButtons.contains(e.target)) {
+          accordionMenu.classList.add('hidden');
+        }
+      });
+    </script>
+
+    <!-- Add Sub Category -->
+    <script>
+      const categoryOpen = document.getElementById("add-category-btn");
+      const categoryClose = document.getElementById("category-close-button");
+      const categorySection = document.getElementById("add-category");
+
+      categoryOpen.onclick = function () {
+        categorySection.classList.remove("hidden");
+      }
+
+      categoryClose.onclick = function () {
+        categorySection.classList.add("hidden");
+      }
+    </script>
+
+    <script>
+      $(document).ready(function () {
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        const fetchProducts = (page) => {
+          $.ajax({
+            url: `/api/getExtraProducts/${page}`,
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+              const products = response.products;
+              const images = response.images;
+              displayPage(page, products, images);
+              updatePagination(page, response.totalPages, itemsPerPage);
+              updateDisplayedItemsInfo(page, response.totalProducts, itemsPerPage);
+            },
+            error: function (error) {
+              console.error(error);
+            }
+          });
+        };
+
+        const displayPage = (page, products, images) => {
+          const tableBody = $('#productTableBody');
+          tableBody.empty();
+
+          products.forEach(product => {
+            const {
+              id,
+              extra_cat_name,
+              product_cat_id,
+              extra_cat_image_url,
+              extra_cat_ref,
+              count,
+              retailer_deduct_percentage,
+              manufacturer_deduct_percentage,
+            } = product;
+
+            const row = `
+          <tr id="row_${id}">
+            <td id="rowId_${id}">${id}</td>
+            <td>
+              <div class="flex items-center">
+                <img src="${extra_cat_image_url}" alt="" class="h-9 w-9">
+                <span class="p-2" id="rowCatName_${id}">${extra_cat_name}</span>
+              </div>
+            </td>
+            <td id="refCat_${id}">${extra_cat_ref}</td>
+            <td id="rowSubCatVal_${id}">${count}</td>
+            <td id="rowDeductVal_${id}">${retailer_deduct_percentage.toFixed(2)}</td>
+            <td id="rowManuDeductVal_${id}">${manufacturer_deduct_percentage.toFixed(2)}</td>
+            <td><button id="editCat" onclick="editProduct('${id}', '${count}', <%= JSON.stringify(subCat) %>)"><i class=" fa-regular fa-edit w-full text-primaryColor p-3"></i></button></td>
+            <td><a href="/extraCatDel/${id}"><i class="fa-regular fa-trash-can w-full text-tertiaryColor p-3"></i></a></td>
+          </tr>
+        `;
+            tableBody.append(row);
+          });
+        };
+
+        const updatePagination = (currentPage, totalPages, itemsPerPage) => {
+          const paginationContainer = $('#paginationContainer');
+          paginationContainer.empty();
+
+          for (let i = 1; i <= totalPages; i++) {
+            const button = $('<button></button>')
+              .text(i)
+              .addClass('pagination-button')
+              .toggleClass('active', i === currentPage)
+              .click(function () {
+                currentPage = i;
+                fetchProducts(currentPage);
+              });
+
+            paginationContainer.append(button);
+          }
+        };
+
+        const updateDisplayedItemsInfo = (currentPage, totalProducts, itemsPerPage) => {
+          const showFrom = (currentPage - 1) * itemsPerPage + 1;
+          const showTo = Math.min(currentPage * itemsPerPage, totalProducts);
+          $('#showFrom').text(showFrom);
+          $('#showTo').text(showTo);
+          $('#totalProducts').text(totalProducts);
+        };
+
+        fetchProducts(currentPage);
+      });
+    </script>
+
+
+    <script>
+      const editProduct = async (rowNumber, subCatCount, parentCat) => {
+        const editRow = $('#row_' + rowNumber);
+        const id = editRow.find('#rowId_' + rowNumber).text();
+        const deductAmount = editRow.find('#rowDeductVal_' + rowNumber).text();
+        const deductManuAmount = editRow.find('#rowManuDeductVal_' + rowNumber).text();
+        const refCatValue = editRow.find('#refCat_' + rowNumber).text();
+
+        const matchingParentCat = parentCat.find(cat => cat.sub_cat_name === refCatValue);
+
+        const categoryRef = matchingParentCat ? matchingParentCat.sub_cat_id : '';
+
+        const sub_cat_name = editRow.find('#rowCatName_' + rowNumber).text();
+        console.log(id, sub_cat_name, subCatCount)
+        editRow.empty();
+
+        const newRow = `
+    <td>${id}</td>
+    <td>
+      <div class="flex items-center">
+        <input id="edit_pic_${id}" type="file" name="productImage" accept="image/*" />
+        <input id="editName_${id}" style="border: 2px solid #3498db; border-radius: 5px; padding: 5px;" type="text" name="sub_category_name" value="${sub_cat_name}">
+      </div>
+    </td>
+    <td>
+      <select class=" border rounded px-3 py-2 pr-8 appearance-none focus:outline-none focus:shadow-outline " id="edit_cat_ref_${id}" name="edit_cat_ref">
+        <option value="" selected disabled>Under which main category</option>
+        <% for (var i = 0; i < subCat.length; i++) { %>
+          <option value="<%= subCat[i].sub_cat_id %>"><%= subCat[i].sub_cat_name %></option>
+        <% } %>
+      </select>
+    </td>
+    <td>${subCatCount}</td>
+    <td>
+      <input id="deductAmount_${id}" style="border: 2px solid #3498db; border-radius: 5px; padding: 5px;" type="text" name="deductAmount" value="${deductAmount}">
+    </td>
+    <td>
+      <input id="deductManuAmount_${id}" style="border: 2px solid #3498db; border-radius: 5px; padding: 5px;" type="text" name="deductManuAmount" value="${deductManuAmount}">
+    </td>
+    <td>
+      <button id="editBtn_${rowNumber}">
+        <i class="fa-solid fa-check w-full text-primaryColor p-3"></i>
+      </button>
+    </td>
+    <td>
+      <a href="/extracategory">
+        <i class="fa-solid fa-times w-full text-tertiaryColor p-3"></i>
+      </a>
+    </td>
+  `;
+        editRow.append(newRow);
+
+        $(`#editBtn_${rowNumber}`).click(function (event) {
+          event.preventDefault();
+
+          const url = `/extraCatEdit/${id}`;
+          const data = new FormData();
+          data.append('category_name', $(`#editName_${rowNumber}`).val());
+          data.append('deductAmount', $(`#deductAmount_${rowNumber}`).val());
+          data.append('deductMenuAmount', $(`#deductAmount_${rowNumber}`).val());
+          data.append('category_ref', $(`#edit_cat_ref_${rowNumber}`).val() == null ? categoryRef : $(`#edit_cat_ref_${rowNumber}`).val());
+
+          if ($(`#edit_pic_${rowNumber}`)[0].files.length > 0) {
+            data.append('productImage', $(`#edit_pic_${rowNumber}`)[0].files[0]);
+          }
+          console.log(data)
+
+          $.ajax({
+            type: 'POST',
+            url: url,
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+              console.log(response);
+              window.location.href = "/extracategory";
+            },
+            error: function (error) {
+              console.log(error);
+            }
+          });
+        });
+      };
+    </script>
+  </body>
+
+</html>

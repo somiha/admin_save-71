@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Save 71 - Dashboard - All Product</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/output.css" />
+    <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+  </head>
+
+  <body class="font-sans">
+    <section class="max-w-[1920px] ml-auto mr-auto">
+      <!-- Navigation Menu -->
+      <%- include('header') %>
+
+      <!-- Right Side Section -->
+      <div class="w-full px-0 py-2 mt-16 ml-auto xl:w-5/6 xl:px-5 xl:mt-0">
+        <!-- Project Overview Header -->
+
+        <div class="flex items-center justify-between gap-4 px-5 py-2 border-b-2 xl:py-5">
+          <!-- Search Box -->
+          <div class="relative bg-white">
+            <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text" placeholder="Search..." />
+            <i class="absolute left-0 -translate-y-1/2 fa-solid fa-magnifying-glass top-1/2 text-tColor"></i>
+          </div>
+
+          <!-- Notification & User -->
+          <%- include('profileBar') %>
+
+        </div>
+
+        <div class="px-5 py-10 bg-gray-100 rounded-md">
+          <div class="flex items-center justify-between gap-5">
+            <p class="text-xl font-semibold xl:text-2xl text-tColor2">
+              Withdraw Details
+            </p>
+            <button class="px-5 py-2 text-white border rounded-xl bg-primaryColor active:scale-[0.85] duration-150"
+              id="printButton">
+              <i class="fa fa-print"></i> Print
+            </button>
+          </div>
+
+          <div class="mt-5">
+            <img src="<%= withdrawDetails.pic_url %>" alt="" class="h-20 w-20 rounded-[50%]" />
+            <div class="grid gap-10 mt-5 lg:grid-cols-2 gap-y-5">
+              <div class="flex flex-col">
+                <label>Name</label>
+                <input class="input" type="text" value=<%= withdrawDetails.user_name  %> readonly />
+              </div>
+              <div class="flex flex-row">
+                <div class="flex flex-col" style="width: 50%;">
+                  <label>Request Date</label>
+                  <input class="input" type="text" value="<%= (new Date(withdrawDetails.date).toLocaleDateString()) %>"
+                    readonly />
+                </div>
+
+                <% if (withdrawDetails.transaction_date) { %>
+                <div class="flex flex-col ml-4" style="width: 50%;">
+                  <!-- Adjust the margin or spacing as needed -->
+                  <label>Transaction Date</label>
+                  <input class="input" type="text"
+                    value="<%= (new Date(withdrawDetails.transaction_date).toLocaleString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' })) %>"
+                    readonly />
+                </div>
+                <% } %>
+              </div>
+
+              <div class="flex flex-col">
+                <label>Amount <b>(<%= currCode %>)</b></label>
+                <input class="input" type="text" value="<%= (withdrawDetails.amount * currRate).toFixed(10)  %>"
+                  readonly />
+              </div>
+              <div class="flex flex-col">
+                <label>Bank Name</label>
+                <input class="input" type="text" value="<%= withdrawDetails.bank_name  %>" readonly />
+              </div>
+              <div class="flex flex-col">
+                <label>Account Name</label>
+                <input class="input" type="text" value="<%= withdrawDetails.account_name  %>" readonly />
+              </div>
+              <div class="flex flex-col">
+                <label>Branch Name</label>
+                <input class="input" type="text" value="<%= withdrawDetails.branch_name  %>" readonly />
+              </div>
+              <div class="flex flex-col">
+                <label>Account Number</label>
+                <input class="input" type="text" value="<%= withdrawDetails.account_number %>" readonly />
+              </div>
+
+              <div class="flex flex-col">
+                <label>Routing Number</label>
+                <input class="input" type="text" value="<%= withdrawDetails.routing_number %>" readonly />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Invoice Section -->
+
+    <div id="invoice" class="hidden">
+      <%- include('invoice', {withdrawDetails: withdrawDetails}) %>
+    </div>
+
+    <!-- Invoice Section -->
+
+    <!-- Invoice Script -->
+    <script>
+      document.getElementById('printButton').addEventListener('click', function () {
+        var contentToPrint = document.getElementById('invoice').innerHTML;
+        var printWindow = window.open('', '_blank');
+        printWindow.document.write('<html><head><title>Invoice - Save71</title></head><body>' + contentToPrint + '</body></html>');
+        printWindow.print();
+        // printWindow.close();
+      });
+    </script>
+    <!-- Invoice Script -->
+
+
+    <!-- Header Section Script -->
+    <script>
+      // Menu toggle button
+      const toggleButton = document.getElementById('toggle-button');
+      const toggleMenu = document.getElementById('toggle-menu');
+      var toggleCounter = 1;
+      toggleButton.onclick = function () {
+        toggleCounter++;
+        if (toggleCounter % 2 == 0) {
+          toggleMenu.classList.remove('hidden');
+          toggleMenu.classList.add('grid');
+        } else {
+          toggleMenu.classList.remove('grid');
+          toggleMenu.classList.add('hidden');
+        }
+      };
+    </script>
+
+    <!-- Accordion Script -->
+    <script>
+      const accordionButtons = document.querySelectorAll('.accordion-button');
+      const accordionMenu = document.querySelectorAll('.menu-collapse');
+
+      accordionButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const accordionCollapse = button.nextElementSibling;
+          button.setAttribute(
+            'aria-expanded',
+            button.getAttribute('aria-expanded') === 'false' ? 'true' : 'false'
+          );
+          accordionCollapse.classList.toggle('hidden');
+        });
+      });
+
+      // Set all accordion items to collapsed state by default
+      document.querySelectorAll('.menu-collapse').forEach((collapse) => {
+        collapse.classList.add('hidden');
+      });
+    </script>
+
+    <script>
+      const tables = document.querySelectorAll('.table-collapse');
+      window.onclick = function (event) {
+        for (let table of tables) {
+          if (event.target == table) {
+            table.classList.toggle('hidden');
+          }
+        }
+      };
+    </script>
+
+    <!-- tab script -->
+    <script>
+      const tabLinks = document.querySelectorAll('.tab');
+      const tabDetails = document.querySelectorAll('.tab-details');
+
+      tabLinks.forEach((t) => {
+        t.addEventListener('click', (e) => {
+          // console.log(e.target.dataset.target);
+          tabLinks.forEach((tl) => tl.classList.remove('active-tab'));
+          e.target.classList.add('active-tab');
+          tabDetails.forEach((td) => {
+            td.classList.add('hidden');
+            if (td.id === e.target.dataset.target)
+              td.classList.remove('hidden');
+          });
+        });
+      });
+    </script>
+  </body>
+
+</html>

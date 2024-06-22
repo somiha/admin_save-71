@@ -1,0 +1,5 @@
+2024/04/14 03:44:55 [error] 13636#13636: *2052 access forbidden by rule, client: 157.245.73.178, server: admin.save71.com, request: "GET /.env HTTP/1.1", host: "89.116.20.153"
+2024/04/14 05:15:11 [error] 13636#13636: *2055 access forbidden by rule, client: 64.226.104.62, server: admin.save71.com, request: "GET /.env HTTP/1.1", host: "89.116.20.153"
+2024/04/14 05:15:20 [error] 13636#13636: *2058 access forbidden by rule, client: 64.226.104.62, server: admin.save71.com, request: "POST /core/.env HTTP/1.1", host: "89.116.20.153"
+2024/04/14 05:15:24 [error] 13636#13636: *2059 access forbidden by rule, client: 64.226.104.62, server: admin.save71.com, request: "GET /core/.env HTTP/1.1", host: "89.116.20.153"
+2024/04/14 05:15:31 [error] 13636#13636: *2062 access forbidden by rule, client: 64.226.104.62, server: admin.save71.com, request: "POST /core/.env HTTP/1.1", host: "89.116.20.153"
