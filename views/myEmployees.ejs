@@ -5,8 +5,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Sub-Admins</title>
-        <link rel="stylesheet" href="./css/style.css">
-        <link rel="stylesheet" href="./css/output.css">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/output.css">
         <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -96,7 +96,7 @@
 
                 </div>
                 <div class="container mx-auto py-8 w-4/5">
-                    <h1 class="text-3xl font-bold mb-6">Employees</h1>
+                    <h1 class="text-3xl font-bold mb-6">My Employees</h1>
                     <div class="bg-white shadow-md rounded px-4 pt-4 pb-2 mb-4">
                         <div class="flex justify-between items-center mb-4">
                             <!-- <div>
@@ -118,6 +118,7 @@
                                         <!-- <th class="py-3 px-6 text-left"></th> -->
                                         <th class="py-3 px-6 text-left">Admin ID</th>
                                         <th class="py-3 px-6 text-left">Admin Name</th>
+                                        <th class="py-3 px-6 text-left">Designation</th>
                                         <th class="py-3 px-6 text-left">Referred By</th>
                                         <th class="py-3 px-6 text-left">Actions</th>
                                     </tr>
@@ -132,7 +133,9 @@
                                         </td> -->
                                         <td class="py-3 px-6 text-left"><%= subAdmins[i].admin_id %></td>
                                         <td class="py-3 px-6 text-left"><%= subAdmins[i].admin_name %></td>
+                                        <td class="py-3 px-6 text-left"><%= subAdmins[i].designation %></td>
                                         <td class="py-3 px-6 text-left"><%= subAdmins[i].referrer_name %></td>
+
                                         <td class="py-3 px-6 text-left">
                                             <a href="/employees/<%= subAdmins[i].admin_id %>/view"
                                                 class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-1 px-2 rounded mr-2">

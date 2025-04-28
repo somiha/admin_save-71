@@ -26,33 +26,39 @@
             </a>
           </li>
 
-          <% if (premissions && premissions.includes && premissions.includes('/addAdmin')) { %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.includes('/addAdmin')) { %>
           <li><a href="/addAdmin">
-              Add Sub Admin
+              Add Country Representative
             </a>
           </li>
           <% } %>
-          <% if (premissions && premissions.includes && premissions.includes('/addEmployee')) { %>
+          <% if (premissions && admin && !admin.is_super_admin && admin.is_active && premissions.includes && premissions.includes('/addEmployee')) { %>
           <li><a href="/addEmployee">
               Add Employee
             </a>
           </li>
           <% } %>
-          <% if (premissions && premissions.includes && premissions.includes('/sub-admins')) { %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.includes('/sub-admins')) { %>
           <li><a href="/sub-admins">
-              List All Sub Admin
+              Country Representative
             </a>
           </li>
           <% } %>
-          <% if (premissions && premissions.includes && premissions.includes('/allEmployees')) { %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.includes('/allEmployees')) { %>
           <li><a href="/allEmployees">
-              List All allEmployees
+              Employees
+            </a>
+          </li>
+          <% } %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.includes('/myEmployees')) { %>
+          <li><a href="/myEmployees">
+              My Employees
             </a>
           </li>
           <% } %>
 
         </ul>
-        <% if (premissions && premissions.includes && premissions.some(link => (link.toLowerCase() === '/withdraw'))) { %>
+        <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => (link.toLowerCase() === '/withdraw'))) { %>
         <button class="accordion-button menu-list">
           <i class="fa-solid fa-circle-dollar-to-slot"></i>
           <span>Finace</span>
@@ -63,32 +69,35 @@
         <ul class="menu-collapse">
           <!-- <li><a href="#">Earning History</a></li>
           <li><a href="#">Comission History</a></li> -->
-          <% if (premissions && premissions.includes && premissions.includes('/withdraw')) { %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.includes('/withdraw')) { %>
           <li><a href="/withdraw">Withdraw History</a></li>
           <% } %>
           <!-- <li><a href="#">Company Costing</a></li> -->
         </ul>
-
+        <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => (link.toLowerCase() === '/' || link.toLowerCase() === '/maincategory' ))) { %>
         <button class="accordion-button menu-list">
           <i class="fa-solid fa-bag-shopping"></i>
           <span>Product</span>
           <i class="ml-auto fa-solid fa-chevron-down"></i>
         </button>
 
+        <% } %>
+
         <ul class="menu-collapse">
-          <% if (premissions && premissions.includes && premissions.includes('/')) { %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.includes('/')) { %>
           <li><a href="/">All Products</a></li>
           <% } %>
-          <% if (premissions && premissions.includes && premissions.some(link => link.toLowerCase() === '/maincategory')) { %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => link.toLowerCase() === '/maincategory')) { %>
           <li><a href="/maincategory">Categories</a></li>
           <% } %>
         </ul>
 
-
-        <a class="menu-list" href="#">
+        <% if (premissions && admin && admin.is_active && premissions.includes && premissions.includes('/customers')) { %>
+        <a class="menu-list" href="/customers">
           <i class="fa-solid text-xs fa-user-group"></i>
           <span>Customers</span>
         </a>
+        <% } %>
 
         <!-- <a class="menu-list" href="#">
           <i class="fa-solid fa-address-book"></i>
@@ -115,13 +124,13 @@
           <i class="fa-solid fa-table-list"></i>
           <span>Orders</span>
         </a> -->
-        <% if (premissions && premissions.includes && premissions.some(link => link.toLowerCase() === '/updateExchangeView')) { %>
+        <% if (premissions && admin && admin.is_active && premissions.includes && premissions.includes('/updateExchangeView')) { %>
         <a class="menu-list" href="/updateExchangeView">
           <i class="fa-solid fa-table-list"></i>
           <span>Update Exchange</span>
         </a>
         <% } %>
-        <% if (premissions && premissions.includes && premissions.some(link => (link.toLowerCase() === '/about-us' || link.toLowerCase() === '/privacy-policy' || link.toLowerCase() === '/terms-and-conditions' || link.toLowerCase() === '/contact-us'))) { %>
+        <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => (link.toLowerCase() === '/about-us' || link.toLowerCase() === '/privacy-policy' || link.toLowerCase() === '/terms-and-conditions' || link.toLowerCase() === '/contact-us'))) { %>
 
         <button class="accordion-button menu-list">
           <i class="fa-solid fa-info-circle"></i>
@@ -132,37 +141,37 @@
         <% } %>
 
         <ul class="menu-collapse">
-          <% if (premissions && premissions.includes && premissions.some(link => link.toLowerCase() === '/about-us')) { %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => link.toLowerCase() === '/about-us')) { %>
           <li><a href="/about-us">
               About Us
             </a>
           </li>
           <% } %>
-          <% if (premissions && premissions.includes && premissions.some(link => link.toLowerCase() === '/privacy-policy')) { %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => link.toLowerCase() === '/privacy-policy')) { %>
           <li><a href="/privacy-policy">
               Privacy Policy
             </a>
           </li>
           <% } %>
-          <% if (premissions && premissions.includes && premissions.some(link => link.toLowerCase() === '/terms-and-conditions')) { %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => link.toLowerCase() === '/terms-and-conditions')) { %>
           <li><a href="/terms-and-conditions">
               Terms and Conditions
             </a>
           </li>
           <% } %>
-          <% if (premissions && premissions.includes && premissions.some(link => link.toLowerCase() === '/contact-us')) { %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => link.toLowerCase() === '/contact-us')) { %>
           <li><a href="/contact-us">
               Contact Us
             </a>
           </li>
           <% } %>
-          <% if (premissions && premissions.includes && premissions.some(link => link.toLowerCase() === '/brand-guidelines')) { %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => link.toLowerCase() === '/brand-guidelines')) { %>
           <li><a href="/brand-guidelines">
               Brand Guidelines
             </a>
           </li>
           <% } %>
-          <% if (premissions && premissions.includes && premissions.some(link => link.toLowerCase() === '/notice')) { %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => link.toLowerCase() === '/notice')) { %>
           <li>
             <a href="/notice">
               Notice

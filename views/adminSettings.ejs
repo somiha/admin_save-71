@@ -169,10 +169,10 @@
             class="bg-white p-8 rounded-lg shadow-md">
             <div class="mb-4">
               <% if (admin.profile_pic) { %>
-              <img src="<%= admin.profile_pic %>" alt="Profile Picture" class="w-20 h-20 rounded-full object-cover">
+              <img src="<%= admin.profile_pic %>" alt="Profile Picture" class="w-28 h-28 object-cover">
               <% } %>
-              <label for="profile_pic" class="block text-gray-700 font-medium mb-2">Prifile Picture</label>
-              <input type="file" id="profile_pic" name="profile_pic" class="file-input file-input-bordered file-input-success w-full text-gray-700 leading-tight focus:outline-none
+              <label for="profile_pic" class="block text-gray-700 font-medium mb-2 mt-2">Profile Picture</label>
+              <input type="file" id="profile_pic" name="profile_pic" class="file-input file-input-bordered file-input-ghost w-full text-gray-700 leading-tight focus:outline-none
                         focus:shadow-outline" accept="image/*">
             </div>
 
@@ -181,8 +181,8 @@
               <embed src="<%= admin.passport_pdf %>" type="application/pdf" width="600" height="400">
               <% } %>
 
-              <label for="passport_pdf" class="block text-gray-700 font-medium mb-2">Passport (pdf only)</label>
-              <input type="file" id="passport_pdf" name="passport_pdf" class="file-input file-input-bordered file-input-success w-full text-gray-700 leading-tight focus:outline-none
+              <label for="passport_pdf" class="block text-gray-700 font-medium mb-2 mt-2">Passport (pdf only)</label>
+              <input type="file" id="passport_pdf" name="passport_pdf" class="file-input file-input-bordered file-input-ghost w-full text-gray-700 leading-tight focus:outline-none
                                       focus:shadow-outline" accept="application/pdf">
             </div>
 

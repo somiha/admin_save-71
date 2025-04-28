@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sub-Admin Details</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/output.css">
+    <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+
+    <style>
+      .custom-height {
+        height: 400px;
+        /* Set to desired height */
+      }
+
+      .transition-all {
+        transition: all 0.3s ease-in-out;
+      }
+    </style>
+  </head>
+
+  <body class="font-sans">
+    <section class=" max-w-[1920px] ml-auto mr-auto">
+
+      <!-- Navigation Menu -->
+      <%- include('header') %>
+
+      <div class="ml-auto w-full xl:w-5/6 px-0 xl:px-1 py-2 mt-16 xl:mt-0">
+        <div class="flex items-center justify-between px-5 py-2 xl:py-5 gap-4 border-b">
+          <!-- Search Box -->
+          <div class="bg-white relative">
+            <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text" placeholder="Search...">
+            <i class="fa-solid fa-magnifying-glass absolute top-1/2 left-0 -translate-y-1/2 text-tColor"></i>
+          </div>
+
+          <!-- Notification & User -->
+          <%- include('profileBar') %>
+
+
+        </div>
+        <div class=" mx-auto py-8 px-2">
+          <h1 class="text-3xl font-medium mb-6 text-gray-700"><%= subAdmin?.designation %> Details</h1>
+          <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <form action="/employees/<%= subAdmin.admin_id %>/update" method="POST" enctype="multipart/form-data">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                <div class="mb-4">
+                  <label for="admin-name" class="block text-gray-700 font-medium mb-2">Admin Name</label>
+                  <input type="text" id="admin-name" name="admin_name"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value="<%= subAdmin.admin_name %>">
+                </div>
+                <div class="mb-4">
+                  <label for="admin-email" class="block text-gray-700 font-medium mb-2">Admin Email</label>
+                  <input type="email" id="admin-email" name="admin_email"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value="<%= subAdmin.admin_email %>">
+                </div>
+                <div class="mb-4 relative">
+                  <label for="admin_pass" class="block text-gray-700 font-medium mb-2">Admin Password</label>
+                  <input type="password" id="admin_pass" value="<%= subAdmin.admin_pass  %>" name="admin_pass"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline pr-10">
+                  <button type="button" class="absolute top-10 right-3 focus:outline-none"
+                    onclick="togglePasswordVisibility()" style="line-height: 1.25;">
+                    <i class="fas fa-eye eye-icon text-gray-500"></i>
+                  </button>
+                </div>
+
+                <div class="mb-4">
+                  <label for="designation" class="block text-gray-700 font-medium mb-2">Designation</label>
+
+                  <select id="designation" name="designation"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="Super Admin" <%= subAdmin?.designation === 'Super Admin' ? 'selected' : '' %>>Super
+                      Admin</option>
+                    <option value="Country Representative"
+                      <%= subAdmin?.designation === 'Country Representative' ? 'selected' : '' %>>
+                      Country Representative</option>
+                    <option value="Employee" <%= subAdmin?.designation === 'Employee' ? 'selected' : '' %>>Employee
+                    </option>
+                  </select>
+
+                </div>
+
+                <div class="mb-4">
+                  <label for="note" class="block text-gray-700 font-medium mb-2">Note</label>
+                  <input type="text" id="note" name="note"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value="<%= subAdmin?.note %>">
+                </div>
+
+                <div class="mb-4">
+                  <label for="country" class="block text-gray-700 font-medium mb-2">Country</label>
+                  <select id="admin-country" name="country_id"
+                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="" disabled <%= !subAdmin.country_id ? 'selected' : '' %>>Select a country</option>
+                    <% countries.forEach(function(country) { %>
+                    <option value="<%= country.id %>" <%= subAdmin.country_id === country.id ? 'selected' : '' %>>
+                      <%= country.country_name %></option>
+                    <% }); %>
+                  </select>
+                </div>
+
+                <div class="mb-4">
+                  <label for="bank_name" class="block text-gray-700 font-medium mb-2">Bank Name</label>
+                  <input type="text" id="bank_name" name="bank_name"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value="<%= bankInfo[0]?.bank_name %>">
+                </div>
+
+                <div class="mb-4">
+                  <label for="routing_number" class="block text-gray-700 font-medium mb-2">Routing Number</label>
+                  <input type="text" id="routing_number" name="routing_number"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value="<%= bankInfo[0]?.routing_number %>">
+                </div>
+
+                <div class="mb-4">
+                  <label for="branch_name" class="block text-gray-700 font-medium mb-2">Branch Name</label>
+                  <input type="text" id="branch_name" name="branch_name"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value="<%= bankInfo[0]?.branch_name %>">
+                </div>
+
+                <div class="mb-4">
+                  <label for="account_name" class="block text-gray-700 font-medium mb-2">Account Holder Name</label>
+                  <input type="text" id="account_name" name="account_name"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value="<%= bankInfo[0]?.account_name %>">
+                </div>
+
+                <div class="mb-4">
+                  <label for="account_number" class="block text-gray-700 font-medium mb-2">Account Number</label>
+                  <input type="text" id="account_number" name="account_number"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value="<%= bankInfo[0]?.account_number %>">
+                </div>
+
+                <div class="mb-4 mt-8 form-control">
+                  <label class="cursor-pointer">
+                    <input type="checkbox" id="is_active" name="is_active" value="<%= subAdmin.is_active %>"
+                      class="form-checkbox h-5 w-5 text-blue-600 p-2 align-middle"
+                      <%= subAdmin.is_active ? 'checked' : '' %>>
+                    <span id="is_active_label"
+                      class="label-text shadow appearance-none border rounded py-2 px-3 font-medium mb-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                      <%= subAdmin.is_active ? 'Active' : 'Inactive' %>
+                    </span>
+                  </label>
+
+                </div>
+
+                <div class="mb-4">
+                  <% if (subAdmin.profile_pic) { %>
+                  <div
+                    class="relative overflow-hidden custom-height max-w-5xl mx-auto my-4 flex items-center justify-center">
+                    <img src="<%= subAdmin.profile_pic %>" alt="Profile Picture" class="w-48 h-48 object-cover">
+                  </div>
+                  <% } %>
+                  <label for="profile_pic" class="block text-gray-700 font-medium mb-2">Profile Picture</label>
+                  <input type="file" id="profile_pic" name="profile_pic"
+                    class="file-input file-input-ghost w-full text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    accept="image/*">
+                </div>
+
+                <div class="mb-4">
+                  <% if (subAdmin?.passport_pdf) { %>
+                  <div
+                    class="relative overflow-hidden custom-height max-w-5xl mx-auto my-4 bg-gray-300 flex items-center justify-center">
+                    <embed src="<%= subAdmin.passport_pdf %>" type="application/pdf"
+                      class="absolute top-0 left-0 w-full h-full">
+                  </div>
+                  <% } %>
+                  <label for="passport_pdf" class="block text-gray-700 font-medium mb-2">Passport (pdf only)</label>
+                  <input type="file" id="passport_pdf" name="passport_pdf"
+                    class="file-input file-input-ghost w-full text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    accept="application/pdf">
+                </div>
+                <div class="mb-4">
+                  <label class="block text-gray-700 font-medium mb-2">Unique Id</label>
+                  <input type="text" id="id" name="id"
+                    class="shadow appearance-none border rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value="<%= subAdmin.unique_id %>" disabled>
+                  <button onclick="copyToClipboard()" type="button"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Copy
+                  </button>
+                </div>
+
+                <div class="mb-4">
+                  <label class="block text-gray-700 font-medium mb-2">Created Time</label>
+                  <input type="text" id="time" name="time"
+                    class="shadow appearance-none border rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value="<%= new Date(subAdmin.created_at).toLocaleDateString('en-GB') %>" disabled>
+
+                </div>
+
+              </div>
+              <div class="mb-4">
+                <div class="flex items-center justify-center h-full rounded-md bg-blue-100">
+                  <h2 class="text-xl font-semibold mb-5 mt-2 text-gray-600">Referreer Info</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                  <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Referrer Name</label>
+                    <input type="text" id="referrer_name" name="referrer_name"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      value="<%= referrerInfo.admin_name %>" disabled>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Referrer Email</label>
+                    <input type="text" id="referrer_email" name="referrer_email"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      value="<%= referrerInfo.admin_email %>" disabled>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Referrer Designation</label>
+                    <input type="text" id="referrer_designation" name="referrer_designation"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      value="<%= referrerInfo.designation %>" disabled>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Referrer Unique Id</label>
+                    <input type="text" id="referrer_id" name="referrer_id"
+                      class="shadow appearance-none border rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      value="<%= referrerInfo.unique_id %>" disabled>
+                    <button onclick="copyToClipboard()" type="button"
+                      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div class="mb-4">
+                <div class="flex items-center justify-center h-full rounded-md bg-blue-100">
+                  <h2 class="text-xl font-semibold mb-5 mt-2 text-gray-600">Permissions</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-5">
+                  <% for (const group in Permissions) { %>
+                  <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-700"><%= group %></h3>
+                    <% Permissions[group].forEach(permission => { %>
+                    <div class="flex items-center">
+                      <%
+                        const subAdminPermissions = JSON.parse(subAdmin.permissions);
+                        const permissionIdToCheck = permission.permission_id.toString();
+                      
+                        const isChecked = subAdminPermissions.some(item => item === permissionIdToCheck);
+
+                      %>
+
+                      <input type="checkbox" id="permission-<%= permission.permission_id %>" name="permissions[]"
+                        value="<%= permission.permission_id %>" class="form-checkbox h-5 w-5 text-blue-600"
+                        <%= isChecked ? 'checked' : '' %>>
+                      <label for="permission-<%= permission.permission_id %>"
+                        class="ml-2 text-gray-700"><%= permission.permission_name %></label>
+                    </div>
+                    <% }) %>
+                  </div>
+                  <% } %>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <button type="submit"
+                  class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                  <i class="fas fa-save"></i> Save
+                </button>
+                <!-- <a href="/sub-admins/<%= subAdmin.admin_id %>/delete"
+                  class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                  <i class="fas fa-trash"></i> Delete
+                </a> -->
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+
+  <script>
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('admin_pass');
+      const eyeIcon = document.querySelector('.eye-icon');
+
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        eyeIcon.classList.remove('fa-eye-slash');
+        eyeIcon.classList.add('fa-eye');
+      }
+    }
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const checkbox = document.getElementById('is_active');
+      const label = document.getElementById('is_active_label');
+
+      checkbox.addEventListener('change', () => {
+        label.classList.add('transition-all');
+        label.textContent = checkbox.checked ? 'Active' : 'Inactive';
+      });
+    });
+  </script>
+
+  <script>
+    function copyToClipboard() {
+      const copyText = document.getElementById('referrer_id');
+      copyText.disabled = false;  // Enable temporarily to copy value
+      copyText.select();
+      document.execCommand('copy');
+      copyText.disabled = true;  // Disable again
+      alert('Copied to clipboard: ' + copyText.value);
+    }
+  </script>
+
+</html>

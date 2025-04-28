@@ -5,6 +5,7 @@ const path = require("path");
 const crypto = require("../middlewares/crypto");
 const adminModel = require("../middlewares/admin");
 const countryModal = require("../modals/countryModal");
+const adminInfoModal = require("../modals/adminInfoModal");
 const helper = require("../helper/index");
 
 exports.addEmployee = async (req, res) => {
@@ -155,7 +156,7 @@ exports.addEmployeePost = (req, res) => {
           }
           return res.status(500).send("Internal Server Error");
         }
-        res.redirect("/allEmployees");
+        res.redirect("/myEmployees");
       }
     );
   } catch (err) {
@@ -165,6 +166,56 @@ exports.addEmployeePost = (req, res) => {
 };
 
 exports.getAllEmployees = async (req, res) => {
+  try {
+    const adminInfo = JSON.parse(
+      crypto.decrypt(req.cookies.__aD || "") || "{is_logged: false}"
+    );
+    if (!adminInfo || !adminInfo.is_logged) {
+      if (adminInfo.otp !== true) {
+        console.log("OTP not verified");
+        return res.redirect("/otp");
+      } else {
+        console.log("Admin not logged in");
+        return res.redirect("/login");
+      }
+    }
+
+    const admin = await adminModel.getAdminById(res, req, adminInfo.admin_id);
+    const premissions = await adminModel.getAdminPremissions(
+      admin.is_super_admin,
+      admin.permissions
+    );
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const employess = await adminModel.getAllEmployee(
+      req,
+      res,
+      admin.admin_id,
+      page,
+      limit
+    );
+    console.log(employess.admins);
+    const total_pages = Math.ceil(employess.totalAdmins / limit);
+    console.log(total_pages);
+    const admin_info = employess.admins;
+    // return res.send("OK");
+
+    // console.log(allPermissions);
+    return res.render("allEmployees", {
+      title: "All Employees",
+      subAdmins: admin_info,
+      totalPages: total_pages,
+      currentPage: page,
+      premissions,
+      admin,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+exports.getMyEmployees = async (req, res) => {
   try {
     const adminInfo = JSON.parse(
       crypto.decrypt(req.cookies.__aD || "") || "{is_logged: false}"
@@ -200,7 +251,7 @@ exports.getAllEmployees = async (req, res) => {
     // return res.send("OK");
 
     // console.log(allPermissions);
-    return res.render("allEmployees", {
+    return res.render("myEmployees", {
       title: "All Employees",
       subAdmins: admin_info,
       totalPages: total_pages,
@@ -230,17 +281,21 @@ exports.viewEmployee = async (req, res) => {
     }
     const admin_id = req.params.admin_id;
     const admin = await adminModel.getAdminById(req, res, adminInfo.admin_id);
+    const subAdmin = await adminModel.getAdminById(req, res, admin_id);
     let referrerInfo = {};
-    if (admin.referrer) {
-      referrerInfo = await adminModel.getAdminById(req, res, admin.referrer);
+    if (subAdmin.referrer) {
+      referrerInfo = await adminModel.getAdminById(req, res, subAdmin.referrer);
+      console.log("referrerInfo", referrerInfo);
     }
+    console.log(admin);
+    console.log("referrerInfo", referrerInfo);
 
     const premissions = await adminModel.getAdminPremissions(
       admin.is_super_admin,
       admin.permissions
     );
 
-    console.log({ premissions });
+    console.log("premissions", { premissions });
 
     const allPermissions = await adminModel.getAllPermissions(req, res);
     let filteredGroupPermissions = allPermissions;
@@ -261,9 +316,9 @@ exports.viewEmployee = async (req, res) => {
     const countries = await countryModal.getAllCountries();
     const bankInfo = await adminModel.getAdminBankInfo(admin_id);
     if (admin) {
-      return res.render("adminProfile", {
+      return res.render("employeeProfile", {
         title: "Employee Profile",
-        subAdmin: admin,
+        subAdmin: subAdmin,
         Permissions: filteredGroupPermissions,
         countries,
         bankInfo,
@@ -273,6 +328,157 @@ exports.viewEmployee = async (req, res) => {
       });
     } else {
       res.status(404).send("Admin not found");
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+exports.viewSubAdminEmployee = async (req, res) => {
+  try {
+    const adminInfo = JSON.parse(
+      crypto.decrypt(req.cookies.__aD || "") || "{is_logged: false}"
+    );
+    if (!adminInfo || !adminInfo.is_logged) {
+      if (adminInfo.otp !== true) {
+        console.log("OTP not verified");
+        return res.redirect("/otp");
+      } else {
+        console.log("Admin not logged in");
+        return res.redirect("/login");
+      }
+    }
+
+    const admin_id = req.params.admin_id;
+
+    const admin = await adminModel.getAdminById(res, req, adminInfo.admin_id);
+    const premissions = await adminModel.getAdminPremissions(
+      admin.is_super_admin,
+      admin.permissions
+    );
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const employess = await adminModel.getPaginatedEmployee(
+      req,
+      res,
+      admin_id,
+      page,
+      limit
+    );
+    console.log(employess.admins);
+    const total_pages = Math.ceil(employess.totalAdmins / limit);
+    console.log(total_pages);
+    const admin_info = employess.admins;
+    // return res.send("OK");
+
+    // console.log(allPermissions);
+    return res.render("employees", {
+      title: "All Employees",
+      subAdmins: admin_info,
+      totalPages: total_pages,
+      currentPage: page,
+      premissions,
+      admin,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+exports.updateEmployeeInfo = async (req, res) => {
+  try {
+    const admin_id = req.params.admin_id;
+    let {
+      admin_name,
+      admin_email,
+      admin_pass,
+      note,
+      designation,
+      is_active,
+      country_id,
+      bank_name,
+      routing_number,
+      branch_name,
+      account_name,
+      account_number,
+      permissions,
+    } = req.body;
+
+    if (!is_active) {
+      is_active = 0;
+    } else {
+      is_active = 1;
+    }
+
+    const adminInfo = await adminInfoModal.getAdminDetails(admin_id);
+    const adminBankInfo = await adminModel.getAdminBankInfo(admin_id);
+    if (adminBankInfo.length > 0) {
+      await adminModel.updateAdminBankInfo(
+        admin_id,
+        bank_name,
+        routing_number,
+        branch_name,
+        account_name,
+        account_number
+      );
+    } else {
+      await adminModel.createAdminBankInfo(
+        bank_name,
+        routing_number,
+        branch_name,
+        account_name,
+        account_number,
+        admin_id
+      );
+    }
+    let profile_pic = adminInfo[0].profile_pic;
+    let passport_pdf = adminInfo[0].passport_pdf;
+
+    const profilePicPath = req.files.profile_pic
+      ? req.files.profile_pic[0].path
+      : null;
+    const passportPdfPath = req.files.passport_pdf
+      ? req.files.passport_pdf[0].path
+      : null;
+
+    console.log(passportPdfPath, profilePicPath);
+
+    if (profilePicPath) {
+      profile_pic =
+        "https://admin.save71.com/images/admin/" +
+        req.files.profile_pic[0].filename;
+    }
+    if (passportPdfPath) {
+      passport_pdf =
+        "https://admin.save71.com/images/admin/" +
+        req.files.passport_pdf[0].filename;
+    }
+
+    // Ensure permissions is an array
+    const permissionsArray = Array.isArray(permissions) ? permissions : [];
+
+    const updatedAdmin = await adminModel.updateAdminInfo(
+      req,
+      res,
+      admin_id,
+      admin_name,
+      admin_email,
+      crypto.encrypt(admin_pass),
+      JSON.stringify(permissionsArray),
+      note,
+      designation,
+      is_active,
+      country_id,
+      profile_pic,
+      passport_pdf
+    );
+
+    if (updatedAdmin) {
+      res.redirect("/myEmployees");
+    } else {
+      res.status(500).send("Internal Server Error");
     }
   } catch (err) {
     console.error(err);

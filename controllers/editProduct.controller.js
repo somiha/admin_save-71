@@ -2,10 +2,29 @@ const db = require("../config/database.config");
 const catModel = require("../middlewares/cat");
 const { convertAndDelete } = require("../middlewares/webp_converter");
 const path = require("path");
+const adminModel = require("../middlewares/admin");
+const crypto = require("../middlewares/crypto");
 const mult_upload = require("../config/multer_product.config");
 
 exports.editProduct = async (req, res) => {
   try {
+    const adminInfo = JSON.parse(
+      crypto.decrypt(req.cookies.__aD || "") || "{is_logged: false}"
+    );
+    if (!adminInfo || !adminInfo.is_logged) {
+      if (adminInfo.otp !== true) {
+        console.log("OTP not verified");
+        return res.redirect("/otp");
+      } else {
+        console.log("Admin not logged in");
+        return res.redirect("/login");
+      }
+    }
+    const admin = await adminModel.getAdminById(res, req, adminInfo.admin_id);
+    const premissions = await adminModel.getAdminPremissions(
+      admin.is_super_admin,
+      admin.permissions
+    );
     const [mainCat, subCat, extraCat, allCat, images, video] =
       await Promise.all([
         catModel.fetchMainCat(),
@@ -50,6 +69,8 @@ exports.editProduct = async (req, res) => {
                   product: res1[0],
                   pID,
                   video,
+                  premissions,
+                  admin,
                 });
               } else {
                 res.status(500).send("Main Category not found");

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Save 71 - <%= site_info.title %></title>
+        <link rel="stylesheet" href="./css/style.css">
+        <link rel="stylesheet" href="./css/output.css">
+        <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <script src="https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js"></script>
+        <script>
+            console.log("CKEditor 5 loaded:", typeof ClassicEditor); // Should log "function"
+        </script>
+    </head>
+
+
+    <body class="font-sans">
+        <section class=" max-w-[1920px] ml-auto mr-auto">
+
+            <!-- Navigation Menu -->
+            <%- include('header') %>
+
+
+
+
+            <!-- Right Side Section -->
+            <div class="ml-auto w-full xl:w-5/6 px-0 xl:px-1 py-2 mt-16 xl:mt-0">
+
+
+                <!-- Project Overview Header -->
+
+                <div class="flex items-center justify-between px-5 py-2 xl:py-5 gap-4 border-b">
+                    <!-- Search Box -->
+                    <div class="bg-white relative">
+                        <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text"
+                            placeholder="Search...">
+                        <i
+                            class="fa-solid fa-magnifying-glass absolute top-1/2 left-0 -translate-y-1/2 text-tColor"></i>
+                    </div>
+
+                    <!-- Notification & User -->
+                    <%- include('profileBar') %>
+
+
+                </div>
+
+                <div class="mx-5 rounded-md">
+
+                    <!-- Product Upload Section -->
+                    <form id="productForm" action="<%= site_info.post_link %>" method="POST">
+                        <div class="grid grid-cols-1 xl:grid-cols-4 relative">
+
+                            <!-- Product Left Section -->
+                            <div class="col-span-3 xl:border-r xl:pr-5">
+
+                                <p class="font-semibold text-lg text-tColor2 pt-5"><%= site_info.title %></p>
+
+                                <div class="mb-3">
+                                    <label for="productDescription" class="form-label fw-medium">Details</label>
+
+                                    <!-- CKEditor 5 Container -->
+                                    <textarea id="editor"></textarea>
+
+                                    <!-- Hidden input to store CKEditor content -->
+                                    <input type="hidden" id="productDescription" name="product_des"
+                                        value="<%- site_info.description || '' %>">
+
+                                    <!-- Pagination Controls -->
+                                    <div id="pagination-controls" class="flex justify-between mt-3">
+                                        <button id="prev-page" class="bg-gray-200 px-3 py-1 rounded">Previous</button>
+                                        <span id="page-info">Page 1</span>
+                                        <button id="next-page" class="bg-gray-200 px-3 py-1 rounded">Next</button>
+                                    </div>
+                                </div>
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", function () {
+                                        // Full content from the server
+                                        const fullContent = `<%- site_info.description || '' %>`;
+                                        const chunkSize = 10000; // Number of characters per chunk
+                                        let currentPage = 0;
+                                        let chunks = [];
+
+                                        // Function to split content into chunks
+                                        function splitContentIntoChunks(content, size) {
+                                            const chunks = [];
+                                            for (let i = 0; i < content.length; i += size) {
+                                                chunks.push(content.substring(i, i + size));
+                                            }
+                                            return chunks;
+                                        }
+
+                                        // Initialize CKEditor 5
+                                        ClassicEditor
+                                            .create(document.querySelector("#editor"), {
+                                                toolbar: [
+                                                    "heading",
+                                                    "|",
+                                                    "bold",
+                                                    "italic",
+                                                    "underline",
+                                                    "bulletedList",
+                                                    "numberedList",
+                                                    "|",
+                                                    "link",
+                                                    "undo",
+                                                    "redo"
+                                                ],
+                                                removePlugins: ["EasyImage", "ImageUpload", "MediaEmbed"], // Remove EasyImage and ImageUpload
+                                            })
+                                            .then(editor => {
+                                                console.log("CKEditor 5 initialized:", editor);
+
+                                                const hiddenInput = document.getElementById("productDescription");
+                                                const prevPageButton = document.getElementById("prev-page");
+                                                const nextPageButton = document.getElementById("next-page");
+                                                const pageInfo = document.getElementById("page-info");
+
+                                                // Split content into chunks
+                                                chunks = splitContentIntoChunks(fullContent, chunkSize);
+                                                console.log("Chunks:", chunks); // Debugging
+
+                                                // Function to load a specific page
+                                                function loadPage(page) {
+                                                    if (page >= 0 && page < chunks.length) {
+                                                        editor.setData(chunks[page]); // Load the chunk into CKEditor
+                                                        pageInfo.textContent = `Page ${page + 1} of ${chunks.length}`;
+                                                        currentPage = page;
+                                                        console.log("Loaded Page:", page + 1); // Debugging
+                                                    }
+                                                }
+
+                                                // Load the first page initially
+                                                loadPage(currentPage);
+
+                                                // Previous Page Button
+                                                prevPageButton.addEventListener("click", () => {
+                                                    if (currentPage > 0) {
+                                                        loadPage(currentPage - 1);
+                                                    }
+                                                });
+
+                                                // Next Page Button
+                                                nextPageButton.addEventListener("click", () => {
+                                                    if (currentPage < chunks.length - 1) {
+                                                        loadPage(currentPage + 1);
+                                                    }
+                                                });
+
+                                                // Update the hidden input on text change
+                                                editor.model.document.on("change:data", () => {
+                                                    chunks[currentPage] = editor.getData(); // Update the current chunk
+                                                    hiddenInput.value = chunks.join(""); // Combine all chunks into the hidden input
+                                                    // console.log("Hidden Input Value:", hiddenInput.value); // Debugging
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error("CKEditor 5 initialization failed:", error);
+                                            });
+                                    });
+                                </script>
+
+
+
+                                <div
+                                    class="flex justify-center xl:justify-between items-center flex-wrap gap-5 border rounded p-5 mb-5">
+                                    <button type="submit"
+                                        class="bg-primaryColor text-white rounded px-4 py-2">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </section>
+
+
+
+        <!-- Header Section Script -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            // Menu toggle button
+            const toggleButton = document.getElementById("toggle-button");
+            const toggleMenu = document.getElementById("toggle-menu");
+            var toggleCounter = 1;
+            toggleButton.onclick = function () {
+                toggleCounter++;
+                if (toggleCounter % 2 == 0) {
+                    toggleMenu.classList.remove("hidden");
+                    toggleMenu.classList.add("grid");
+                } else {
+                    toggleMenu.classList.remove("grid");
+                    toggleMenu.classList.add("hidden");
+                }
+            }
+        </script>
+
+    </body>
+
+</html>

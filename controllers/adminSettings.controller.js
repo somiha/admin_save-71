@@ -31,6 +31,8 @@ exports.adminSettings = async (req, res) => {
       admin.is_super_admin,
       admin.permissions
     );
+    console.log(`admin settings permissions: ${premissions}`);
+    console.log(`admin settings admin: ${admin}`);
 
     return res.render("adminSettings", {
       title: "Admin Settings",
@@ -183,12 +185,12 @@ exports.adminDocumentsPost = async (req, res) => {
 
     if (profilePicPath) {
       profile_pic =
-        "http://localhost:3010/images/admin/" +
+        "https://admin.save71.com/images/admin/" +
         req.files.profile_pic[0].filename;
     }
     if (passportPdfPath) {
       passport_pdf =
-        "http://localhost:3010/images/admin/" +
+        "https://admin.save71.com/images/admin/" +
         req.files.passport_pdf[0].filename;
     }
 

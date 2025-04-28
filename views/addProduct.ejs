@@ -399,6 +399,8 @@
       });
     </script>
 
+
+
     <!-- Delete preview images End -->
 
 
@@ -461,6 +463,87 @@
         }
       }
     </script>
+
+    <!-- <script>
+      $(document).ready(function () {
+        const browseImage = $('#browseImage'); // Button to trigger file browse
+        const fileInput = $('#dropzone-file'); // File input field (multiple allowed)
+        const imageContainer = $('#imageContainer'); // Div to contain image thumbnails
+        const featuredIndexInput = $('#featured_index'); // Hidden input to store featured index
+        let featuredIndex = 0; // Initialize the featured index
+
+        // Trigger file input click when browse image is clicked
+        browseImage.on('click', function (event) {
+          event.preventDefault(); // Prevent any default action
+          if (!fileInput.attr('disabled')) {
+            fileInput.trigger('click'); // Trigger file input manually
+          }
+        });
+
+        // Ensure that only one change event is bound to the file input
+        fileInput.off('change').on('change', function (event) {
+          const files = event.target.files; // Get the selected files
+
+
+          if (files.length === 0) {
+            return; // No files selected, return early
+          }
+
+
+          // Loop through each selected file
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+
+            // Ensure the file is an image
+            if (file.type.startsWith('image/')) {
+              const reader = new FileReader();
+
+              // On file load, create elements for image, radio button, and delete button
+              reader.onload = function (e) {
+                const cardDiv = $('<div>').addClass('image-card mb-4');
+                const imageDiv = $('<div>')
+                  .addClass('h-40 w-40 p-2 flex justify-center items-center border rounded')
+                  .append($('<img>').attr('src', e.target.result).addClass('object-cover h-full w-full rounded-md'));
+
+                const gridDiv = $('<div>').addClass('grid grid-cols-2 text-sm border mt-2 py-2');
+
+                // Radio button to select the featured image
+                const radioButton = $('<input>').attr({
+                  type: 'radio',
+                  name: 'featuredImage',
+                  value: i
+                }).on('click', function () {
+                  featuredIndex = i; // Set the selected index value
+                  featuredIndexInput.val(featuredIndex); // Update hidden input with featured index
+                });
+
+                // Delete button to remove the image
+                const deleteButton = $('<button>')
+                  .html('<i class="fa-regular fa-trash-can w-full text-tertiaryColor"></i>')
+                  .on('click', function () {
+                    cardDiv.remove(); // Remove the card when delete button is clicked
+                  });
+
+                gridDiv.append(radioButton, deleteButton);
+                cardDiv.append(imageDiv, gridDiv);
+                imageContainer.append(cardDiv); // Append the card to the container
+              };
+
+              reader.readAsDataURL(file); // Read the image file as Data URL
+            }
+          }
+
+          // Reset the file input value to allow selecting the same file again
+          fileInput.val('');
+        });
+      });
+    </script> -->
+
+
+
+
+
+
     <!-- Images Preview -->
 
 

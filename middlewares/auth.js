@@ -169,11 +169,12 @@ const verifyOTP = (req, res, OTP) => {
                                 }
 
                                 if (result.length > 0) {
-                                  if (result[0].is_active !== 1) {
-                                    return res.redirect("/adminSettings");
-                                  } else {
-                                    return res.redirect("/");
-                                  }
+                                  return res.redirect("/adminSettings");
+                                  // if (result[0].is_active !== 1) {
+                                  //   return res.redirect("/adminSettings");
+                                  // } else {
+                                  //   return res.redirect("/");
+                                  // }
                                 } else {
                                   return res.redirect("/otp");
                                 }

@@ -31,13 +31,13 @@
           'list': 'ordered'
         }], // Number list option
         [{
-            'script': 'sub',
-            'icon': 'fa-solid fa-subscript'
-          }, // Subscript option
-          {
-            'script': 'super',
-            'icon': 'fa-solid fa-superscript'
-          } // Superscript option
+          'script': 'sub',
+          'icon': 'fa-solid fa-subscript'
+        }, // Subscript option
+        {
+          'script': 'super',
+          'icon': 'fa-solid fa-superscript'
+        } // Superscript option
         ],
       ],
     }
@@ -51,7 +51,7 @@
     return delta
   })
 
-  quill.on('text-change', function() {
+  quill.on('text-change', function () {
     var html = quill.root.innerHTML;
     document.getElementById('product-des-input').value = html;
   });

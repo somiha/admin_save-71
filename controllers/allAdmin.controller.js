@@ -72,11 +72,15 @@ exports.viewAdmin = async (req, res) => {
       }
     }
     const admin_id = req.params.admin_id;
-    const admin = await adminModel.getAdminById(req, res, admin_id);
+    const admin = await adminModel.getAdminById(req, res, adminInfo.admin_id);
+    const subAdmin = await adminModel.getAdminById(req, res, admin_id);
     let referrerInfo = {};
-    if (admin.referrer) {
-      referrerInfo = await adminModel.getAdminById(req, res, admin.referrer);
+    if (subAdmin.referrer) {
+      referrerInfo = await adminModel.getAdminById(req, res, subAdmin.referrer);
+      console.log("referrerInfo", referrerInfo);
     }
+    console.log(admin);
+    console.log("referrerInfo", referrerInfo);
 
     const premissions = await adminModel.getAdminPremissions(
       admin.is_super_admin,
@@ -92,7 +96,7 @@ exports.viewAdmin = async (req, res) => {
       console.log(allPermissions, admin);
       return res.render("adminProfile", {
         title: "Admin Profile",
-        subAdmin: admin,
+        subAdmin: subAdmin,
         Permissions: allPermissions,
         countries,
         bankInfo,
@@ -169,12 +173,12 @@ exports.updateAdminInfo = async (req, res) => {
 
     if (profilePicPath) {
       profile_pic =
-        "http://localhost:3010/images/admin/" +
+        "https://admin.save71.com/images/admin/" +
         req.files.profile_pic[0].filename;
     }
     if (passportPdfPath) {
       passport_pdf =
-        "http://localhost:3010/images/admin/" +
+        "https://admin.save71.com/images/admin/" +
         req.files.passport_pdf[0].filename;
     }
 

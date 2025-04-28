@@ -94,26 +94,26 @@
 
         </div>
         <div class="container mx-auto py-8 w-4/5">
-          <h1 class="text-3xl font-bold mb-6">Sub-Admins</h1>
+          <h1 class="text-3xl font-bold mb-6">Country Representative</h1>
           <div class="bg-white shadow-md rounded px-4 pt-4 pb-2 mb-4">
             <div class="flex justify-between items-center mb-4">
-              <div>
+              <!-- <div>
                 <input type="checkbox" id="select-all" class="form-checkbox h-5 w-5 text-blue-600">
                 <label for="select-all" class="ml-2 text-gray-700">Select All</label>
-              </div>
+              </div> -->
               <div>
                 <!-- Delete Button -->
-                <button id="delete-button"
+                <!-- <button id="delete-button"
                   class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                   <i class="fas fa-trash"></i> Delete
-                </button>
+                </button> -->
               </div>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full table-auto">
                 <thead>
                   <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                    <th class="py-3 px-6 text-left"></th>
+                    <!-- <th class="py-3 px-6 text-left"></th> -->
                     <th class="py-3 px-6 text-left">Admin ID</th>
                     <th class="py-3 px-6 text-left">Admin Name</th>
                     <th class="py-3 px-6 text-left">Referred By</th>
@@ -123,22 +123,26 @@
                 <tbody class="text-gray-600 text-sm font-light">
                   <% for (let i = 0; i < subAdmins.length; i++) { %>
                   <tr class="border-b border-gray-200 hover:bg-gray-100">
-                    <td class="py-3 px-6 text-left">
+                    <!-- <td class="py-3 px-6 text-left">
                       <input type="checkbox" name="selected-admins[]" value="<%= subAdmins[i].admin_id %>"
                         class="form-checkbox h-5 w-5 text-blue-600">
-                    </td>
+                    </td> -->
                     <td class="py-3 px-6 text-left"><%= subAdmins[i].admin_id %></td>
                     <td class="py-3 px-6 text-left"><%= subAdmins[i].admin_name %></td>
                     <td class="py-3 px-6 text-left"><%= subAdmins[i].referrer_name %></td>
                     <td class="py-3 px-6 text-left">
+                      <a href="/sub-admin/employees/<%= subAdmins[i].admin_id %>/view"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-1 px-2 rounded mr-2">
+                        Employees
+                      </a>
                       <a href="/sub-admins/<%= subAdmins[i].admin_id %>/view"
                         class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-1 px-2 rounded mr-2">
                         View
                       </a>
-                      <a href="/sub-admins/<%= subAdmins[i].admin_id %>/delete"
+                      <!-- <a href="/sub-admins/<%= subAdmins[i].admin_id %>/delete"
                         class="bg-red-500 hover:bg-red-700 text-white font-medium py-1 px-2 rounded">
                         Delete
-                      </a>
+                      </a> -->
                     </td>
                   </tr>
                   <% } %>

@@ -62,7 +62,7 @@ exports.getPaginatedEmployee = (req, res, referrer, page = 1, limit = 10) => {
   return new Promise((resolve, reject) => {
     const offset = (page - 1) * limit;
     db.query(
-      "SELECT COUNT(*) as total_admins FROM admin_info WHERE is_super_admin = 0 AND is_employee = 1 AND referrer = ?;",
+      "SELECT COUNT(*) as total_admins FROM admin_info WHERE is_super_admin = 0 AND referrer = ?;",
       [referrer],
       (err, countResult) => {
         if (err) {
@@ -74,10 +74,45 @@ exports.getPaginatedEmployee = (req, res, referrer, page = 1, limit = 10) => {
             `SELECT a1.*, a2.admin_name AS referrer_name
               FROM admin_info a1
               LEFT JOIN admin_info a2 ON a1.referrer = a2.admin_id
-              WHERE a1.is_super_admin = 0 AND a1.is_employee = 1 AND a1.referrer = ?
+              WHERE a1.is_super_admin = 0 AND a1.referrer = ?
               LIMIT ?, ?;
               `,
             [referrer, offset, limit],
+            (err, admins) => {
+              if (err) {
+                console.error(err);
+                reject(err);
+              } else {
+                admins.forEach((admin) => (admin.admin_pass = undefined));
+                resolve({ totalAdmins, admins });
+              }
+            }
+          );
+        }
+      }
+    );
+  });
+};
+
+exports.getAllEmployee = (req, res, referrer, page = 1, limit = 10) => {
+  return new Promise((resolve, reject) => {
+    const offset = (page - 1) * limit;
+    db.query(
+      "SELECT COUNT(*) as total_admins FROM admin_info WHERE is_super_admin = 0 AND is_employee = 1",
+      (err, countResult) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          const totalAdmins = countResult[0].total_admins;
+          db.query(
+            `SELECT a1.*, a2.admin_name AS referrer_name
+              FROM admin_info a1
+              LEFT JOIN admin_info a2 ON a1.referrer = a2.admin_id
+              WHERE a1.is_super_admin = 0 AND a1.is_employee = 1
+              LIMIT ?, ?;
+              `,
+            [offset, limit],
             (err, admins) => {
               if (err) {
                 console.error(err);

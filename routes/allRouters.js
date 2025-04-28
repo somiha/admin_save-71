@@ -20,6 +20,7 @@ const otp = require("./otp.route");
 const addAdmin = require("./addAdmin.route");
 const addEmployee = require("./addEmployee.route");
 const allAdmin = require("./allAdmin.route");
+const customer = require("./customer.route");
 const adminSettings = require("./adminSettings.route");
 
 Router.use(dashBoard);
@@ -41,6 +42,7 @@ Router.use(otp);
 Router.use(addAdmin);
 Router.use(addEmployee);
 Router.use(allAdmin);
+Router.use(customer);
 Router.use(adminSettings);
 
 module.exports = Router;
