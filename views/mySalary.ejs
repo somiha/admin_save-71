@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Save Need - My Salary Records</title>
+        <!-- Tailwind CSS -->
+        <link rel="stylesheet" href="./css/style.css">
+        <link rel="stylesheet" href="./css/output.css">
+        <!-- Font Awesome -->
+        <link rel="icon" sizes="325x325" href="https://admin.saveneed.com/images/favicon.png">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <style>
+            :root {
+                --sidebar-width: 280px;
+                --primary-color: #4e73df;
+                --secondary-color: #858796;
+                --success-color: #1cc88a;
+                --warning-color: #f6c23e;
+                --danger-color: #e74a3b;
+            }
+
+            .summary-row {
+                background-color: #f8f9fa;
+                font-weight: 600;
+            }
+        </style>
+    </head>
+
+    <body class="font-sans bg-gray-50">
+        <section class="max-w-[1920px] ml-auto mr-auto">
+            <!-- Navigation Menu -->
+            <%- include('header') %>
+            <div class="ml-auto w-full xl:w-5/6 px-0 xl:px-1 py-2 mt-16 xl:mt-0">
+                <div class="flex items-center justify-between px-5 py-2 xl:py-5 gap-4 border-b">
+                    <!-- Search Box -->
+                    <div class="bg-white relative">
+                        <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text"
+                            placeholder="Search...">
+                        <i
+                            class="fa-solid fa-magnifying-glass absolute top-1/2 left-0 -translate-y-1/2 text-tColor"></i>
+                    </div>
+
+                    <!-- Notification & User -->
+                    <%- include('profileBar') %>
+                </div>
+
+                <div class="container mx-auto py-8 w-full">
+                    <p id="message">
+                        <% if (error) { %>
+                        <span class="text-red-500"><%= error %></span>
+                        <% } else if (success) { %>
+                        <span class="text-green-500"><%= success %></span>
+                        <% } %>
+                    </p>
+
+                    <!-- Main Content -->
+                    <div id="content" class="w-[calc(100%-5px)] ml-[10px] min-h-screen transition-all duration-300">
+                        <!-- Begin Page Content -->
+                        <div class="container mx-auto px-4">
+                            <!-- Page Heading -->
+                            <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+                                <h1 class="text-2xl font-bold text-gray-800">My Salary Records</h1>
+                            </div>
+
+                            <!-- Salary Filter Form -->
+                            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                                <h3 class="text-lg font-semibold mb-4">Filter Salary Records</h3>
+                                <form id="salaryFilterForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+                                        <input type="date" name="from_date" value="<%= fromDate %>"
+                                            class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+                                        <input type="date" name="to_date" value="<%= toDate %>"
+                                            class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div class="flex items-end">
+                                        <button type="submit"
+                                            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                            Filter Records
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Salary Records Table -->
+                            <% if (salaryData.length > 0) { %>
+                            <div class="mt-8">
+                                <div class="bg-white rounded-lg shadow-lg p-4">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h5 class="text-lg font-semibold text-gray-800">Salary Records</h5>
+                                        <div class="text-sm text-gray-500">
+                                            <%= salaryData.length %> records found
+                                        </div>
+                                    </div>
+
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full divide-y divide-gray-200">
+                                            <thead class="bg-gray-50">
+                                                <tr>
+                                                    <th scope="col"
+                                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Date
+                                                    </th>
+                                                    <th scope="col"
+                                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Task Duration
+                                                    </th>
+                                                    <th scope="col"
+                                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Salary
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white divide-y divide-gray-200">
+                                                <% 
+                                            let totalHours = 0;
+                                            let totalMinutes = 0;
+                                            let totalSalary = 0;
+                                            
+                                            // Function to parse duration
+                                            function parseDuration(duration) {
+                                                if (!duration) return { hours: 0, minutes: 0 };
+                                                
+                                                // Handle formats: "2h 30m", "2:30", "2h", "30m"
+                                                const hoursMatch = duration.match(/(\d+)h/);
+                                                const minsMatch = duration.match(/(\d+)m/);
+                                                const colonMatch = duration.match(/(\d+):(\d+)/);
+                                                
+                                                let hours = 0;
+                                                let minutes = 0;
+                                                
+                                                if (colonMatch) {
+                                                    hours = parseInt(colonMatch[1]) || 0;
+                                                    minutes = parseInt(colonMatch[2]) || 0;
+                                                } else {
+                                                    hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
+                                                    minutes = minsMatch ? parseInt(minsMatch[1]) : 0;
+                                                }
+                                                
+                                                return { hours, minutes };
+                                            }
+                                            
+                                            // Calculate totals
+                                            salaryData.forEach((record) => {
+                                                const duration = parseDuration(record.task_duration);
+                                                totalHours += duration.hours;
+                                                totalMinutes += duration.minutes;
+                                                totalSalary += parseFloat(record.salary) || 0;
+                                            });
+                                            
+                                            // Convert excess minutes to hours
+                                            totalHours += Math.floor(totalMinutes / 60);
+                                            totalMinutes = totalMinutes % 60;
+                                            
+                                            // Format duration for display
+                                            function formatDuration(hours, minutes) {
+                                                if (hours === 0 && minutes === 0) return '0m';
+                                                return `${hours > 0 ? hours + 'h ' : ''}${minutes > 0 ? minutes + 'm' : ''}`.trim();
+                                            }
+                                            %>
+
+                                                <% salaryData.forEach((record) => { 
+                                                const duration = parseDuration(record.task_duration);
+                                            %>
+                                                <tr>
+                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                        <%= new Date(record.task_date).toLocaleDateString('en-GB') %>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <%= formatDuration(duration.hours, duration.minutes) || 'N/A' %>
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap font-medium">
+                                                        <%= (parseFloat(record.salary) || 0).toFixed(2) %>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+
+                                                <!-- Summary Row -->
+                                                <tr class="summary-row">
+                                                    <td class="px-6 py-4 whitespace-nowrap">Total</td>
+                                                    <td class="px-6 py-4">
+                                                        <%= formatDuration(totalHours, totalMinutes) %>
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                        <%= totalSalary.toFixed(2) %>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } else { %>
+                            <div class="text-center py-8 text-gray-500">
+                                <i class="fas fa-file-invoice-dollar text-4xl mb-2 text-gray-300"></i>
+                                <p>No salary records found for the selected period</p>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+        </section>
+
+        <script>
+            // Auto-hide message after 2 seconds
+            setTimeout(() => {
+                const msg = document.getElementById('message');
+                if (msg) msg.style.display = 'none';
+            }, 2000);
+
+            // Set default dates (current month)
+            document.addEventListener('DOMContentLoaded', function () {
+                const today = new Date();
+                const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+                const formatDate = (date) => {
+                    return date.toISOString().split('T')[0];
+                };
+
+                // If dates are not already set, set default (current month)
+                if (!document.querySelector('input[name="from_date"]').value) {
+                    document.querySelector('input[name="from_date"]').value = formatDate(firstDayOfMonth);
+                }
+
+                if (!document.querySelector('input[name="to_date"]').value) {
+                    document.querySelector('input[name="to_date"]').value = formatDate(today);
+                }
+
+                // Form submission handler
+                document.getElementById('salaryFilterForm').addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const fromDate = this.elements['from_date'].value;
+                    const toDate = this.elements['to_date'].value;
+
+                    if (!fromDate || !toDate) {
+                        alert('Please select a date range');
+                        return;
+                    }
+
+                    // Build URL with query parameters
+                    const params = new URLSearchParams();
+                    params.append('from_date', fromDate);
+                    params.append('to_date', toDate);
+
+                    window.location.href = window.location.pathname + '?' + params.toString();
+                });
+            });
+        </script>
+    </body>
+
+</html>

@@ -3,11 +3,9 @@ const path = require("path");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    console.log({ file });
     cb(null, __dirname + "/../public/images/products");
   },
   filename: function (req, file, cb) {
-    console.log({ file });
     const uniqueSuffix = Date.now() + "_" + Math.round(Math.random() * 1e9);
 
     // Check if the file is PNG, JPG, or JPEG

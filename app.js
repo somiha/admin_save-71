@@ -23,7 +23,6 @@ app.use(async (req, res, next) => {
     // Ensure the decrypted data is a valid JSON string or use a fallback
     const adminData = JSON.parse(decryptedData || '{"is_logged": false}');
     if (!adminData.is_logged) {
-      console.log("Admin not logged in");
       return res.redirect("/login");
     }
 

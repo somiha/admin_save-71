@@ -22,6 +22,7 @@ const addEmployee = require("./addEmployee.route");
 const allAdmin = require("./allAdmin.route");
 const customer = require("./customer.route");
 const adminSettings = require("./adminSettings.route");
+const task = require("./task.route");
 
 Router.use(dashBoard);
 Router.use(withdrawRequest);
@@ -44,5 +45,6 @@ Router.use(addEmployee);
 Router.use(allAdmin);
 Router.use(customer);
 Router.use(adminSettings);
+Router.use(task);
 
 module.exports = Router;

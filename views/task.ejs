@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Save Need - Task</title>
+        <!-- Tailwind CSS -->
+        <link rel="stylesheet" href="./css/style.css">
+        <link rel="stylesheet" href="./css/output.css">
+        <!-- Font Awesome -->
+        <link rel="icon" sizes="325x325" href="https://admin.saveneed.com/images/favicon.png">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+        <!-- FullCalendar CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+        <style>
+            :root {
+                --sidebar-width: 280px;
+                --primary-color: #4e73df;
+                --secondary-color: #858796;
+                --success-color: #1cc88a;
+                --warning-color: #f6c23e;
+                --danger-color: #e74a3b;
+            }
+
+            /* Custom FullCalendar styles */
+            .fc .fc-toolbar-title {
+                font-size: 1.1rem;
+                font-weight: 600;
+            }
+
+            .fc-daygrid-day-number {
+                font-weight: 600;
+                font-size: 0.8rem;
+            }
+
+            .fc-daygrid-day.fc-day-today {
+                background-color: rgba(78, 115, 223, 0.1);
+            }
+
+            .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+                color: var(--primary-color);
+                font-weight: 700;
+            }
+
+            .fc-daygrid-event {
+                cursor: pointer;
+            }
+
+            .fc-event {
+                background-color: var(--primary-color);
+                border: none;
+                padding: 2px 4px;
+                font-size: 0.75rem;
+            }
+
+            .fc-event:hover {
+                opacity: 0.9;
+            }
+
+            .fc .fc-toolbar {
+                padding: 0.5rem;
+            }
+
+            .fc .fc-header-toolbar {
+                margin-bottom: 0.5rem;
+            }
+
+            .fc .fc-daygrid-body {
+                width: 100% !important;
+            }
+
+            .fc .fc-daygrid-day-frame {
+                min-height: 2rem;
+            }
+
+            .fc .fc-view-harness {
+                z-index: 0;
+            }
+
+            .whitespace-pre-line {
+                white-space: pre-line;
+            }
+        </style>
+    </head>
+
+    <body class="font-sans">
+        <section class=" max-w-[1920px] ml-auto mr-auto">
+
+            <!-- Navigation Menu -->
+            <%- include('header') %>
+            <div class="ml-auto w-full xl:w-5/6 px-0 xl:px-1 py-2 mt-16 xl:mt-0">
+                <div class="flex items-center justify-between px-5 py-2 xl:py-5 gap-4 border-b">
+                    <!-- Search Box -->
+                    <div class="bg-white relative">
+                        <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text"
+                            placeholder="Search...">
+                        <i
+                            class="fa-solid fa-magnifying-glass absolute top-1/2 left-0 -translate-y-1/2 text-tColor"></i>
+                    </div>
+
+                    <!-- Notification & User -->
+                    <%- include('profileBar') %>
+
+
+                </div>
+
+
+                <div class="container mx-auto py-8 w-full">
+
+                    <p id="message">
+                        <% if (error) { %>
+                        <span class="text-red-500"><%= error %></span>
+                        <% } else if (success) { %>
+                        <span class="text-green-500"><%= success %></span>
+                        <% } %>
+                    </p>
+
+                    <!-- Main Content -->
+                    <div id="content" class="w-[calc(100%-5px)] ml-[10px] min-h-screen transition-all duration-300">
+
+
+                        <!-- Begin Page Content -->
+                        <div class="container mx-auto px-4">
+                            <!-- Page Heading -->
+                            <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
+                                <h1 class="text-2xl font-bold text-gray-800">Task Calendar</h1>
+                            </div>
+
+                            <!-- Content Row -->
+                            <div class="flex flex-col lg:flex-row gap-4">
+                                <!-- Calendar Column -->
+                                <div class="w-full lg:w-1/3">
+                                    <div
+                                        class="bg-white rounded-lg shadow-[0_0.15rem_1.75rem_0_rgba(58,59,69,0.1)] p-4 mb-4 max-w-[400px] relative">
+                                        <div id="calendar"></div>
+                                    </div>
+
+                                    <div
+                                        class="bg-white rounded-lg shadow-[0_0.15rem_1.75rem_0_rgba(58,59,69,0.1)] p-4 mb-4">
+                                        <h5 class="mb-3 text-lg font-semibold">Add New Task</h5>
+                                        <form action="/add-task" method="POST" id="addTaskForm">
+                                            <div class="mb-3">
+                                                <label for="taskDate" class="block mb-1">Date</label>
+                                                <input name="task_date" type="date"
+                                                    class="w-full px-3 py-2 border rounded" id="taskDate" required>
+                                            </div>
+
+                                            <!-- <div class="mb-3">
+                                                <label for="taskDescription" class="block mb-1">Task Description</label>
+                                                <textarea name="task" class="w-full px-3 py-2 border rounded"
+                                                    id="taskDescription" rows="2" required></textarea>
+                                            </div> -->
+                                            <div class="mb-3">
+                                                <label for="taskDescription" class="block mb-1">Task Description</label>
+                                                <textarea name="task" class="w-full px-3 py-2 border rounded"
+                                                    id="taskDescription" rows="4" required
+                                                    placeholder="Enter task description"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="block mb-1">Time Spent</label>
+                                                <div class="flex items-center">
+                                                    <input type="number" name="hours"
+                                                        class="w-16 px-3 py-2 border rounded text-center" id="taskHours"
+                                                        min="0" max="24" placeholder="Hrs" required>
+                                                    <span class="mx-1">:</span>
+                                                    <input type="number" name="minutes"
+                                                        class="w-16 px-3 py-2 border rounded text-center"
+                                                        id="taskMinutes" min="0" max="59" placeholder="Mins" required>
+                                                </div>
+                                            </div>
+
+                                            <button class="bg-primaryColor text-white rounded px-4 py-2 w-full mt-5"
+                                                type="submit">Add Task</button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- Task List Column -->
+                                <div class="w-full lg:w-2/3">
+                                    <div
+                                        class="bg-white rounded-lg shadow-[0_0.15rem_1.75rem_0_rgba(58,59,69,0.1)] p-4">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <h5 class="text-lg font-semibold">Tasks for <span
+                                                    id="selectedDateText">Today</span>
+                                            </h5>
+                                            <div class="text-sm text-gray-500">
+                                                <i class="far fa-clock mr-1"></i>
+                                                Total: <span id="totalTime">0h 0m</span>
+                                            </div>
+                                        </div>
+                                        <div id="tasksContainer">
+                                            <!-- Tasks will be loaded here -->
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!-- Add this after the Task List Column -->
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Task Details Modal -->
+
+                    <div id="taskDetailsModal"
+                        class="fixed inset-0 bg-black/50 z-[9999] hidden transition-opacity duration-300">
+                        <!-- Modal Container -->
+                        <div class="fixed inset-0 flex items-center justify-center p-4">
+                            <!-- Modal Content - Initially scaled down and transparent -->
+                            <div id="modalContent"
+                                class="relative bg-white rounded-xl w-full max-w-md mx-auto shadow-2xl transform transition-all duration-300 opacity-0 scale-95">
+                                <!-- Modal Header -->
+                                <div class="flex justify-between items-center p-5 border-b border-gray-200">
+                                    <h3 class="text-xl font-bold text-gray-800">Task Details</h3>
+                                    <button id="closeModalBtn"
+                                        class="text-gray-400 hover:text-gray-600 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Modal Body -->
+                                <div class="p-5 max-h-[60vh] overflow-y-auto">
+                                    <div id="taskDetailsContent"></div>
+                                </div>
+
+                                <!-- Modal Footer -->
+                                <div class="flex justify-end gap-3 p-5 border-t border-gray-200">
+                                    <button id="cancelBtn"
+                                        class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+                                        Cancel
+                                    </button>
+                                    <button id="confirmBtn"
+                                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors shadow-sm">
+                                        Confirm
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add this modal right after your existing taskDetailsModal -->
+                    <div id="editTaskModal"
+                        class="fixed inset-0 bg-black/50 z-[9999] hidden transition-opacity duration-300">
+                        <!-- Modal Container -->
+                        <div class="fixed inset-0 flex items-center justify-center p-4">
+                            <!-- Modal Content -->
+                            <div id="editModalContent"
+                                class="relative bg-white rounded-xl w-full max-w-md mx-auto shadow-2xl transform transition-all duration-300 opacity-0 scale-95">
+                                <!-- Modal Header -->
+                                <div class="flex justify-between items-center p-5 border-b border-gray-200">
+                                    <h3 class="text-xl font-bold text-gray-800">Edit Task</h3>
+                                    <button id="closeEditModalBtn"
+                                        class="text-gray-400 hover:text-gray-600 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Modal Body -->
+                                <div class="p-5 max-h-[60vh] overflow-y-auto">
+                                    <form id="editTaskForm">
+                                        <input type="hidden" id="editTaskId" name="task_id">
+
+                                        <div class="mb-3">
+                                            <label for="editTaskDate" class="block mb-1">Date</label>
+                                            <input name="task_date" type="hidden"
+                                                class="w-full px-3 py-2 border rounded" id="editTaskDate" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="editTaskDescription" class="block mb-1">Task Description</label>
+                                            <textarea name="task" class="w-full px-3 py-2 border rounded"
+                                                id="editTaskDescription" rows="4" required
+                                                placeholder="Enter task description"></textarea>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="block mb-1">Time Spent</label>
+                                            <div class="flex items-center">
+                                                <input type="number" name="hours"
+                                                    class="w-16 px-3 py-2 border rounded text-center" id="editTaskHours"
+                                                    min="0" max="24" placeholder="Hrs" required>
+                                                <span class="mx-1">:</span>
+                                                <input type="number" name="minutes"
+                                                    class="w-16 px-3 py-2 border rounded text-center"
+                                                    id="editTaskMinutes" min="0" max="59" placeholder="Mins" required>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- Modal Footer -->
+                                <div class="flex justify-end gap-3 p-5 border-t border-gray-200">
+                                    <button id="cancelEditBtn" type="button"
+                                        class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+                                        Cancel
+                                    </button>
+                                    <button id="saveTaskBtn" type="button"
+                                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors shadow-sm">
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+                </div>
+        </section>
+
+        <!-- jQuery,  FullCalendar JS -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+        <script>
+            // Global variable to store tasks
+            let tasks = {};
+
+            // Initialize calendar
+            document.addEventListener('DOMContentLoaded', function () {
+                const calendarEl = document.getElementById('calendar');
+                const calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: '' // Remove day/week/month buttons
+                    },
+                    dayMaxEvents: true,
+                    events: function (fetchInfo, successCallback, failureCallback) {
+                        // Load tasks for the visible month
+                        loadTasksForMonth(fetchInfo.start, fetchInfo.end)
+                            .then(tasks => {
+                                const events = getCalendarEvents(tasks);
+                                successCallback(events);
+                            })
+                            .catch(error => {
+                                console.error('Error loading tasks:', error);
+                                failureCallback(error);
+                            });
+                    },
+                    dateClick: function (info) {
+                        // Update selected date text
+                        updateSelectedDateText(info.dateStr);
+                        // Load tasks for selected date
+                        loadTasksForDate(info.dateStr);
+                        // Set the date in the add task form
+                        document.getElementById('taskDate').value = info.dateStr;
+                    },
+                    height: 'auto', // Make calendar compact
+                    contentHeight: 'auto',
+                    aspectRatio: 1 // Square aspect ratio
+                });
+                calendar.render();
+
+                // Set today's date as default
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('taskDate').value = today;
+                updateSelectedDateText(today);
+                loadTasksForDate(today);
+
+                // Add event listeners
+                setupEventListeners();
+            });
+
+            // Load tasks for a month range from API
+            async function loadTasksForMonth(startDate, endDate) {
+                try {
+                    const start = startDate.toISOString().split('T')[0];
+                    const end = endDate.toISOString().split('T')[0];
+
+                    const response = await fetch(`/api/tasks?start_date=${start}&end_date=${end}`);
+                    if (!response.ok) throw new Error('Failed to fetch tasks');
+
+                    const tasksData = await response.json();
+
+                    // Transform the data into our tasks structure
+                    const tasksByDate = {};
+                    tasksData.forEach(task => {
+                        const taskDate = new Date(task.task_date).toLocaleDateString('en-CA');
+
+                        if (!tasksByDate[taskDate]) {
+                            tasksByDate[taskDate] = [];
+                        }
+
+                        tasksByDate[taskDate].push({
+                            id: task.id,
+                            emp_id: task.emp_id,
+                            task: task.task,
+                            task_duration: task.task_duration, // This is in HH:MM:SS format
+                            is_approved: task.is_approved,
+                            created_at: task.created_at,
+                            updated_at: task.updated_at
+                        });
+                    });
+
+                    // Update global tasks object
+                    tasks = tasksByDate;
+                    return tasks;
+                } catch (error) {
+                    console.error('Error loading tasks:', error);
+                    return {};
+                }
+            }
+
+            // Convert tasks to FullCalendar events
+            function getCalendarEvents(tasksData) {
+
+                let events = [];
+                for (const date in tasksData) {
+                    if (tasksData[date].length > 0) {
+                        // Find the status for the day based on is_approved
+                        let dayStatus = 'pending';
+                        if (tasksData[date].some(t => t.is_approved === false)) {
+                            dayStatus = 'rejected';
+                        } else if (tasksData[date].some(t => t.is_approved === true)) {
+                            dayStatus = 'approved';
+                        }
+
+                        events.push({
+                            start: date,
+                            allDay: true,
+                            display: 'background',
+                            className: 'has-tasks',
+                            backgroundColor: getStatusColor(dayStatus)
+                        });
+                    }
+                }
+                return events;
+            }
+
+            // Get color based on task status
+            function getStatusColor(status) {
+                switch (status) {
+                    case 'approved': return '#1cc88a';
+                    case 'pending': return '#f6c23e';
+                    case 'rejected': return '#e74a3b';
+                    default: return '#4e73df';
+                }
+            }
+
+            // Update the selected date text
+            function updateSelectedDateText(dateStr) {
+                const date = new Date(dateStr);
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('selectedDateText').textContent = date.toLocaleDateString('en-US', options);
+            }
+
+            // Load tasks for a specific date
+            async function loadTasksForDate(dateStr) {
+                const tasksContainer = document.getElementById('tasksContainer');
+                tasksContainer.innerHTML = '';
+
+                let totalHours = 0;
+                let totalMinutes = 0;
+
+                // Check if we already have tasks for this date
+                if (!tasks[dateStr]) {
+                    // If not, fetch tasks for this date
+                    try {
+                        const response = await fetch(`/api/tasks?start_date=${dateStr}&end_date=${dateStr}`);
+                        if (!response.ok) throw new Error('Failed to fetch tasks');
+
+                        const tasksData = await response.json();
+
+                        // Transform the data
+                        tasks[dateStr] = tasksData.map(task => ({
+                            id: task.id,
+                            emp_id: task.emp_id,
+                            task: task.task,
+                            task_duration: task.task_duration, // HH:MM:SS format
+                            is_approved: task.is_approved,
+                            created_at: task.created_at,
+                            updated_at: task.updated_at
+                        }));
+                    } catch (error) {
+                        console.error('Error loading tasks:', error);
+                        tasks[dateStr] = [];
+                    }
+                }
+
+                if (tasks[dateStr] && tasks[dateStr].length > 0) {
+                    // Sort tasks by status (approved first, then pending, then rejected)
+                    const sortedTasks = [...tasks[dateStr]].sort((a, b) => {
+                        const statusOrder = { 'true': 1, 'null': 2, 'false': 3 };
+                        return statusOrder[a.is_approved] - statusOrder[b.is_approved];
+                    });
+
+                    sortedTasks.forEach(task => {
+                        const taskElement = createTaskElement(task, dateStr);
+                        tasksContainer.appendChild(taskElement);
+
+                        // Calculate total time
+                        const duration = parseTimeString(task.task_duration);
+                        totalHours += duration.hours;
+                        totalMinutes += duration.minutes;
+                    });
+
+                    // Convert extra minutes to hours
+                    totalHours += Math.floor(totalMinutes / 60);
+                    totalMinutes = totalMinutes % 60;
+
+                    document.getElementById('totalTime').textContent = `${totalHours}h ${totalMinutes}m`;
+                } else {
+                    tasksContainer.innerHTML = '<div class="bg-blue-50 text-blue-800 p-2 rounded">No tasks for this date.</div>';
+                    document.getElementById('totalTime').textContent = '0h 0m';
+                }
+            }
+
+            // Parse MySQL time string (HH:MM:SS) into hours and minutes
+            function parseTimeString(timeStr) {
+                if (!timeStr) return { hours: 0, minutes: 0 };
+
+                const parts = timeStr.split(':');
+                return {
+                    hours: parseInt(parts[0]) || 0,
+                    minutes: parseInt(parts[1]) || 0
+                };
+            }
+
+            // Format time string (HH:MM:SS) for display
+            function formatTimeString(timeStr) {
+                const duration = parseTimeString(timeStr);
+                return `${duration.hours}h ${duration.minutes}m`;
+            }
+
+            // Create HTML element for a task
+            // function createTaskElement(task, date) {
+            //     const status = task.is_approved === true ? 'approved' :
+            //         task.is_approved === false ? 'rejected' : 'pending';
+
+            //     const taskElement = document.createElement('div');
+            //     taskElement.className = `border-l-4 border-primary p-3 mb-3 rounded bg-gray-50 ${status}`;
+            //     taskElement.dataset.taskId = task.id;
+            //     taskElement.dataset.taskDate = date;
+
+            //     let statusClass = '';
+            //     let statusText = '';
+            //     switch (status) {
+            //         case 'approved':
+            //             statusClass = 'bg-green-50 text-green-600';
+            //             statusText = 'approved';
+            //             break;
+            //         case 'pending':
+            //             statusClass = 'bg-yellow-50 text-yellow-600';
+            //             statusText = 'pending';
+            //             break;
+            //         case 'rejected':
+            //             statusClass = 'bg-red-50 text-red-600';
+            //             statusText = 'rejected';
+            //             break;
+            //     }
+
+            //     taskElement.innerHTML = `
+            //     <div class="flex justify-between items-center mb-2">
+            //         <h6 class="font-semibold">${task.task}</h6>
+            //         <span class="text-xs font-bold px-2 py-1 rounded uppercase ${statusClass}">${statusText}</span>
+            //     </div>
+            //     <div class="flex justify-between items-center">
+            //         <span class="text-gray-500 text-sm">
+            //             <i class="far fa-clock mr-1"></i>
+            //             ${formatTimeString(task.task_duration)}
+            //         </span>
+            //         <div class="flex">
+            //             <button id="viewTask" class="border border-gray-300 text-gray-700 hover:bg-gray-50 px-2 py-1 rounded text-sm mr-1 view-task">
+            //                 <i class="fas fa-eye fa-sm"></i>
+            //             </button>
+            //         </div>
+            //     </div>
+            // `;
+
+            //     return taskElement;
+            // }
+
+            // // Set up event listeners
+            // function setupEventListeners() {
+            //     // View task button
+            //     document.getElementById('tasksContainer').addEventListener('click', function (e) {
+            //         if (e.target.closest('.view-task')) {
+            //             const taskElement = e.target.closest('[data-task-id]');
+            //             const taskId = parseInt(taskElement.dataset.taskId);
+            //             const taskDate = taskElement.dataset.taskDate;
+
+            //             const task = tasks[taskDate].find(t => t.id === taskId);
+            //             if (task) {
+            //                 // Fill details modal
+            //                 const detailsContent = document.getElementById('taskDetailsContent');
+            //                 const status = task.is_approved === true ? 'approved' :
+            //                     task.is_approved === false ? 'rejected' : 'pending';
+
+            //                 let statusClass = '';
+            //                 switch (status) {
+            //                     case 'approved': statusClass = 'bg-green-50 text-green-600'; break;
+            //                     case 'pending': statusClass = 'bg-yellow-50 text-yellow-600'; break;
+            //                     case 'rejected': statusClass = 'bg-red-50 text-red-600'; break;
+            //                 }
+
+            //                 detailsContent.innerHTML = `
+            //                 <h6 class="font-semibold">Task Description</h6>
+            //                 <p class="mb-4">${task.task}</p>
+
+            //                 <h6 class="font-semibold mt-3">Time Spent</h6>
+            //                 <p class="mb-4">${formatTimeString(task.task_duration)}</p>
+
+            //                 <h6 class="font-semibold mt-3">Status</h6>
+            //                 <p class="mb-4"><span class="text-xs font-bold px-2 py-1 rounded uppercase ${statusClass}">${status}</span></p>
+
+            //                 <h6 class="font-semibold mt-3">Employee ID</h6>
+            //                 <p class="mb-4">${task.emp_id}</p>
+
+            //                 <h6 class="font-semibold mt-3">Date</h6>
+            //                 <p>${new Date(taskDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+
+            //                 <h6 class="font-semibold mt-3">Created At</h6>
+            //                 <p class="mb-4">${new Date(task.created_at).toLocaleString()}</p>
+
+            //                 <h6 class="font-semibold mt-3">Last Updated</h6>
+            //                 <p>${new Date(task.updated_at).toLocaleString()}</p>
+            //             `;
+
+            //                 // Show modal
+            //                 document.getElementById('taskDetailsModal').classList.remove('hidden');
+            //             }
+            //         }
+            //     });
+
+            //     // Close modal when clicking outside
+            //     document.querySelectorAll('[data-bs-dismiss="modal"]').forEach(button => {
+            //         button.addEventListener('click', function () {
+            //             document.getElementById('taskDetailsModal').classList.add('hidden');
+            //         });
+            //     });
+
+            //     // Toggle sidebar on mobile
+            //     document.getElementById('sidebarToggleTop').addEventListener('click', function () {
+            //         document.querySelector('.sidebar').classList.toggle('hidden');
+            //         document.getElementById('content').classList.toggle('ml-0');
+            //         document.getElementById('content').classList.toggle('w-full');
+            //     });
+            // }
+
+            // Function to create task element with preserved formatting
+            function createTaskElement(task, date) {
+                const status = task.is_approved == '1' ? 'approved' :
+                    task.is_approved == '2' ? 'rejected' : 'pending';
+
+                const taskElement = document.createElement('div');
+                taskElement.className = `border-l-4 border-primary p-3 mb-3 rounded bg-gray-50 ${status}`;
+                taskElement.dataset.taskId = task.id;
+                taskElement.dataset.taskDate = date;
+
+                let statusClass = '';
+                let statusText = '';
+                switch (status) {
+                    case 'approved':
+                        statusClass = 'bg-green-50 text-green-600';
+                        statusText = 'approved';
+                        break;
+                    case 'pending':
+                        statusClass = 'bg-yellow-50 text-yellow-600';
+                        statusText = 'pending';
+                        break;
+                    case 'rejected':
+                        statusClass = 'bg-red-50 text-red-600';
+                        statusText = 'rejected';
+                        break;
+                }
+
+                // Preserve line breaks by replacing newlines with <br> tags
+                const formattedDescription = task.task.replace(/\n/g, '<br>');
+
+                // Create edit button HTML only if status is rejected
+                const editButtonHtml = status === 'rejected' ?
+                    `<button class="border border-gray-300 text-gray-700 hover:bg-gray-50 px-2 py-1 rounded text-sm mr-1 edit-task">
+            <i class="fas fa-edit fa-sm"></i>
+        </button>` : '';
+
+                taskElement.innerHTML = `
+        <div class="flex justify-between items-center mb-2">
+            <h6 class="text-sm font-normal text-gray-700">${formattedDescription}</h6>
+            <span class="text-xs font-bold px-2 py-1 rounded uppercase ${statusClass}">${statusText}</span>
+        </div>
+        <div class="flex justify-between items-center">
+            <span class="text-gray-500 text-sm">
+                <i class="far fa-clock mr-1"></i>
+                ${formatTimeString(task.task_duration)}
+            </span>
+           
+            <div class="flex">
+                ${editButtonHtml}
+                <button class="border border-gray-300 text-gray-700 hover:bg-gray-50 px-2 py-1 rounded text-sm mr-1 view-task">
+                    <i class="fas fa-eye fa-sm"></i>
+                </button>
+            </div>
+        </div>
+    `;
+
+                return taskElement;
+            }
+
+            // Modal setup with preserved formatting
+            function setupEventListeners() {
+                document.getElementById('tasksContainer').addEventListener('click', function (e) {
+                    if (e.target.closest('.view-task')) {
+                        const taskElement = e.target.closest('[data-task-id]');
+                        const taskId = parseInt(taskElement.dataset.taskId);
+                        const taskDate = taskElement.dataset.taskDate;
+
+                        const task = tasks[taskDate].find(t => t.id === taskId);
+                        if (task) {
+                            const detailsContent = document.getElementById('taskDetailsContent');
+                            const status = task.is_approved === true ? 'approved' :
+                                task.is_approved === false ? 'rejected' : 'pending';
+
+                            let statusClass = '';
+                            switch (status) {
+                                case 'approved': statusClass = 'bg-green-50 text-green-600'; break;
+                                case 'pending': statusClass = 'bg-yellow-50 text-yellow-600'; break;
+                                case 'rejected': statusClass = 'bg-red-50 text-red-600'; break;
+                            }
+
+                            // Use white-space: pre-line to preserve line breaks
+                            detailsContent.innerHTML = `
+                    <h6 class="font-semibold">Task Description</h6>
+                    <p class="mb-4 whitespace-pre-line">${task.task}</p>
+                    
+                    <h6 class="font-semibold mt-3">Time Spent</h6>
+                    <p class="mb-4">${formatTimeString(task.task_duration)}</p>
+                    
+                    <h6 class="font-semibold mt-3">Status</h6>
+                    <p class="mb-4"><span class="text-xs font-bold px-2 py-1 rounded uppercase ${statusClass}">${status}</span></p>
+                `;
+
+                            // Show modal
+                            document.getElementById('taskDetailsModal').classList.remove('hidden');
+                            setTimeout(() => {
+                                document.getElementById('modalContent').classList.remove('opacity-0', 'scale-95');
+                                document.getElementById('modalContent').classList.add('opacity-100', 'scale-100');
+                            }, 10);
+                        }
+                    }
+                });
+            }
+
+
+            document.getElementById('tasksContainer').addEventListener('click', function (e) {
+                if (e.target.closest('.edit-task')) {
+                    const taskElement = e.target.closest('[data-task-id]');
+                    const taskId = parseInt(taskElement.dataset.taskId);
+                    const taskDate = taskElement.dataset.taskDate;
+
+                    const task = tasks[taskDate].find(t => t.id === taskId);
+                    if (task) {
+                        const duration = parseTimeString(task.task_duration);
+
+                        document.getElementById('editTaskId').value = task.id;
+                        document.getElementById('editTaskDescription').value = task.task;
+                        document.getElementById('editTaskHours').value = duration.hours;
+                        document.getElementById('editTaskMinutes').value = duration.minutes;
+
+                        openEditModal();
+                    }
+                }
+            });
+
+            // Edit modal controls
+            document.getElementById('closeEditModalBtn').addEventListener('click', closeEditModal);
+            document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
+
+            // Save changes button
+            document.getElementById('saveTaskBtn').addEventListener('click', function () {
+                const form = document.getElementById('editTaskForm');
+                const taskId = document.getElementById('editTaskId').value;
+
+                // Get current date from the selected date text element
+                const currentDate = document.getElementById('selectedDateText').dataset.date;
+
+                const hours = parseInt(document.getElementById('editTaskHours').value) || 0;
+                const minutes = parseInt(document.getElementById('editTaskMinutes').value) || 0;
+                const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+
+                let hiddenInput = document.getElementById('editTaskDuration');
+                if (!hiddenInput) {
+                    hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'task_duration';
+                    hiddenInput.id = 'editTaskDuration';
+                    form.appendChild(hiddenInput);
+                }
+                hiddenInput.value = timeString;
+
+                const body = {
+                    task: document.getElementById('editTaskDescription').value,
+                    task_duration: timeString,
+                };
+
+                submitEditForm(body, taskId); // Removed taskDate parameter
+            });
+
+            // Function to open edit modal
+            function openEditModal() {
+                const modal = document.getElementById('editTaskModal');
+                const modalContent = document.getElementById('editModalContent');
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modalContent.classList.remove('opacity-0', 'scale-95');
+                    modalContent.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            }
+
+            // Function to close edit modal
+            function closeEditModal() {
+                const modal = document.getElementById('editTaskModal');
+                const modalContent = document.getElementById('editModalContent');
+                modalContent.classList.remove('opacity-100', 'scale-100');
+                modalContent.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+
+            // Function to submit the edit form
+            function submitEditForm(form, taskId) {  // Removed taskDate parameter
+                fetch(`/update-task/${taskId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',  // Tells server to expect JSON
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(form)             // Convert JS object to JSON string
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.text().then(text => { throw new Error(text) });
+                        }
+                        // return response.json();
+                        closeEditModal();
+                        showMessage('Task updated successfully', 'success');
+                        // refresh page
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showMessage('An error occurred while updating the task', 'error');
+                    });
+            }
+
+            // Helper function to show messages
+            function showMessage(text, type) {
+                const messageEl = document.getElementById('message');
+                messageEl.textContent = text;
+                messageEl.className = type === 'success' ? 'text-green-500' : 'text-red-500';
+                messageEl.style.display = 'block';
+
+                setTimeout(() => {
+                    messageEl.style.display = 'none';
+                }, 3000);
+            }
+            // Refresh calendar
+            function refreshCalendar() {
+                const calendarEl = document.getElementById('calendar');
+                const calendar = FullCalendar.Calendar.getInstance(calendarEl);
+                calendar.refetchEvents();
+            }
+        </script>
+
+        <script>
+            document.getElementById('addTaskForm').addEventListener('submit', function (e) {
+                const hours = parseInt(document.getElementById('taskHours').value) || 0;
+                const minutes = parseInt(document.getElementById('taskMinutes').value) || 0;
+
+                // Format as HH:MM:SS for MySQL
+                const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+
+                // Create a hidden input to send the formatted time
+                let hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'task_duration';
+                hiddenInput.value = timeString;
+
+                // Add it to the form
+                this.appendChild(hiddenInput);
+            });
+        </script>
+
+        <!-- <script>
+            document.getElementById('addTaskForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                // Get form values
+                const taskDate = document.getElementById('taskDate').value;
+                const taskDescription = document.getElementById('taskDescription').value; // Preserves line breaks
+                const hours = parseInt(document.getElementById('taskHours').value) || 0;
+                const minutes = parseInt(document.getElementById('taskMinutes').value) || 0;
+
+                // Format time as HH:MM:00 for database
+                const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+
+                // Create task object (adjust according to your API)
+                const newTask = {
+                    task_date: taskDate,
+                    task: taskDescription, // Includes original line breaks
+                    task_duration: timeString,
+                    is_approved: null,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                };
+
+                // Add to tasks object
+                if (!tasks[taskDate]) {
+                    tasks[taskDate] = [];
+                }
+                tasks[taskDate].push(newTask);
+
+                // Refresh display
+                loadTasksForDate(taskDate);
+                refreshCalendar();
+
+                // Reset form
+                this.reset();
+                document.getElementById('taskDate').value = taskDate; // Keep the same date
+            });
+        </script> -->
+
+        <script>
+            // Auto-hide message after 2 seconds
+            setTimeout(() => {
+                const msg = document.getElementById('message');
+                if (msg) msg.style.display = 'none';
+            }, 2000);
+        </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const modal = document.getElementById('taskDetailsModal');
+                const modalContent = document.getElementById('modalContent');
+                const closeBtn = document.getElementById('closeModalBtn');
+                const cancelBtn = document.getElementById('cancelBtn');
+
+                // Function to open modal
+                function openModal() {
+                    modal.classList.remove('hidden');
+                    setTimeout(() => {
+                        modalContent.classList.remove('opacity-0', 'scale-95');
+                        modalContent.classList.add('opacity-100', 'scale-100');
+                    }, 10);
+                }
+
+                // Function to close modal
+                function closeModal() {
+                    modalContent.classList.remove('opacity-100', 'scale-100');
+                    modalContent.classList.add('opacity-0', 'scale-95');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                    }, 300);
+                }
+
+                // Event listeners for close buttons
+                closeBtn.addEventListener('click', closeModal);
+                cancelBtn.addEventListener('click', closeModal);
+
+                // Close when clicking outside modal content
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModal();
+                });
+
+                // Proper event delegation for view task buttons
+                document.addEventListener('click', function (e) {
+                    if (e.target.closest('.view-task')) {
+                        // The modal content is already being filled in your existing setupEventListeners() function
+                        openModal();
+                    }
+                });
+            });
+        </script>
+
+    </body>
+
+</html>

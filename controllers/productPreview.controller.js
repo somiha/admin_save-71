@@ -48,14 +48,14 @@ exports.productPreview = async (req, res) => {
       let picUrls;
       if (Array.isArray(productImages)) {
         picUrls = productImages.map(
-          (file) => "https://admin.save71.com/images/preview/" + file.filename
+          (file) => "https://admin.saveneed.com/images/preview/" + file.filename
         );
       } else {
         picUrls = [];
       }
 
       var video_url = req.files["product_video"]
-        ? "https://admin.save71.com/images/preview/" +
+        ? "https://admin.saveneed.com/images/preview/" +
           req.files["product_video"][0].filename
         : null;
       res.status(200).json({

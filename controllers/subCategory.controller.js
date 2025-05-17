@@ -13,10 +13,8 @@ exports.subCategory = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -147,12 +145,11 @@ exports.subCatAdd = async (req, res) => {
       return;
     }
     const { category_name, main_cat_ref } = req.body;
-    console.log("Info : ", category_name, main_cat_ref);
 
     // File upload successful
     const imageFileName =
-      "https://admin.save71.com/images/categories/" + req.file.filename;
-    console.log("Image uploaded successfully:", imageFileName);
+      "https://admin.saveneed.com/images/categories/" + req.file.filename;
+
     db.query(
       "INSERT INTO `sub_cat` (`id`, `sub_cat_id`, `sub_cat_ref`, `sub_cat_name`, `sub_cat_image_url`, `popular_cat_value`) VALUES (NULL, ?, ?, ?, ?, NULL)",
       [0, main_cat_ref, category_name, imageFileName],
@@ -234,7 +231,7 @@ exports.subCatEdit = (req, res) => {
     let imageFileName = "";
     if (req.file) {
       imageFileName =
-        "https://admin.save71.com/images/categories/" + req.file.filename;
+        "https://admin.saveneed.com/images/categories/" + req.file.filename;
       db.query(
         "UPDATE `sub_cat` SET `sub_cat_ref` = ?, `sub_cat_name` = ?, `sub_cat_image_url` = ? WHERE `sub_cat`.`id` = ?",
         [category_ref, category_name, imageFileName, id],

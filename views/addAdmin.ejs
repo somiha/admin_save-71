@@ -7,14 +7,13 @@
     <title>Admin and Permission Management</title>
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/output.css">
-    <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+    <link rel="icon" sizes="325x325" href="https://admin.saveneed.com/images/favicon.png">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
   </head>
 
-  <body class="font-sans">
-
+  <body class="bg-gray-50 font-sans">
     <section class=" max-w-[1920px] ml-auto mr-auto">
 
       <!-- Navigation Menu -->
@@ -33,124 +32,193 @@
 
 
         </div>
+        <div class="min-h-screen">
+          <!-- Navigation would go here -->
 
-        <div class=" pt-5 mx-5 rounded-md">
-          <h1 class="text-3xl font-semibold mb-6 ml-10 text-gray-600">Add Country Representative</h1>
-          <form action="/addAdmin" method="POST" class="bg-white shadow-md rounded mx-10 px-8 pt-6 pb-8 mb-4">
-            <div class="mb-4">
+          <main class="container mx-auto px-4 py-8">
+            <div class="max-w-6xl mx-auto">
+              <h1 class="text-3xl font-bold text-gray-800 mb-2">Add Country Representative</h1>
+              <p class="text-gray-600 mb-8">Fill in the details below to create a new country representative account</p>
 
-              <h2 class="text-xl font-semibold mb-2 mt-2 text-gray-600">New Admin</h2>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-                <div>
-                  <label for="admin-name" class="block text-gray-600 font-medium mb-2">Admin Name</label>
-                  <input type="text" id="admin-name" name="name"
-                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
-                <div>
-                  <label for="admin-email" class="block text-gray-600 font-medium mb-2">Admin Email</label>
-                  <input type="email" id="admin-email" name="email"
-                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
-                <div>
-                  <label for="admin-mobile" class="block text-gray-600 font-medium mb-2">Admin Mobile Number</label>
-                  <input type="number" id="admin-mobile" name="number"
-                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
-                <div>
-                  <label for="admin-password" class="block text-gray-600 font-medium mb-2">Admin Password</label>
-                  <input type="password" id="admin-password" name="password"
-                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
-                <div>
-                  <label for="admin-designation" class="block text-gray-600 font-medium mb-2">Admin Designation</label>
-
-
-                  <select id="admin-designation" name="designation"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-
-                    <option value="Country Representative">Country Representative</option>
-
-                  </select>
-
-                </div>
-                <div>
-                  <label for="admin-note" class="block text-gray-600 font-medium mb-2">Admin Note</label>
-                  <input type="text" id="admin-note" name="note"
-                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
-                <!-- <div>
-                  <label for="admin-pic" class="block text-gray-600 font-medium mb-2">Admin Profile Pic</label>
-                  <input type="file" id="admin-pic" name="pic"
-                    class="file-input file-input-bordered file-input-success w-full text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    accept="image/*">
-                </div> -->
-                <div>
-                  <label for="admin-country" class="block text-gray-600 font-medium mb-2">Admin Country</label>
-                  <select id="admin-country" name="country"
-                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                    <option value="" disabled selected>Select a country</option>
-                    <% countries.forEach(function(country) { %>
-                    <option value="<%= country.id %>"><%= country.country_name %></option>
-                    <% }); %>
-                  </select>
-                </div>
-                <!-- <div>
-                  <label for="admin-id" class="block text-gray-600 font-medium mb-2">Admin Id</label>
-                  <input type="text" id="admin-id" name="id"
-                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div> -->
-                <!-- <div>
-                  <label for="admin-referrer" class="block text-gray-600 font-medium mb-2">Admin Referrer Code</label>
-                  <input type="text" id="admin-referrer" name="referrer"
-                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div> -->
-                <!-- <div>
-                  <label for="admin-active" class="block text-gray-600 font-medium mb-2">Is Active</label>
-                  <input type="number" id="admin-active" name="active"
-                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div> -->
-                <!-- <div>
-                  <label for="admin-passport" class="block text-gray-600 font-medium mb-2">Admin Passport Pdf</label>
-                  <input type="file" id="admin-passport" name="passport" class="file-input file-input-bordered file-input-success w-full text-gray-700 leading-tight focus:outline-none
-                    focus:shadow-outline" accept="application/pdf">
-                </div> -->
-
-              </div>
-            </div>
-            <div class="mb-6">
-              <div class="mb-6">
-                <div class="flex items-center justify-center h-full rounded-md bg-green-100">
-                  <h2 class="text-xl font-semibold mb-2 mt-2 text-gray-600">Permissions</h2>
-                </div>
-                <!-- <h2 class="text-xl font-bold mb-2">Permissions</h2> -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <% for (const group in permissions) { %>
-                  <div class="space-y-4">
-                    <h3 class="text-lg font-bold"><%= group %></h3>
-                    <% permissions[group].forEach(permission => { %>
-                    <div class="flex items-center">
-                      <input type="checkbox"
-                        id="<%= group.toLowerCase().replace(' ', '-') + '-' + permission.permission_name.toLowerCase() %>"
-                        name="permissions" value="<%= permission.permission_id %>"
-                        class="form-checkbox h-5 w-5 text-blue-600">
-                      <label
-                        for="<%= group.toLowerCase().replace(' ', '-') + '-' + permission.permission_name.toLowerCase() %>"
-                        class="ml-2 text-gray-700"><%= permission.permission_name %></label>
-                    </div>
-                    <% }) %>
+              <form action="/addAdmin" method="POST" class="space-y-6">
+                <!-- Admin Information Card -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                  <div class="bg-gradient-to-r from-primary-50 to-secondary-50 px-6 py-4 border-b">
+                    <h2 class="text-xl font-semibold text-gray-700 flex items-center">
+                      <i class="fas fa-user-tie mr-3 text-primary-500"></i>
+                      Admin Information
+                    </h2>
                   </div>
-                  <% } %>
+                  <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label for="admin-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name <span
+                            class="text-red-500">*</span></label>
+                        <div class="relative">
+                          <input type="text" id="admin-name" name="name" required
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            placeholder="John Doe">
+                          <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label for="admin-country" class="block text-sm font-medium text-gray-700 mb-1">Country <span
+                            class="text-red-500">*</span></label>
+                        <div class="relative">
+                          <select id="admin-country" name="country" required
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none">
+                            <option value="" disabled selected>Select a country</option>
+                            <% countries.forEach(function(country) { %>
+                            <option value="<%= country.id %>"><%= country.country_name %></option>
+                            <% }); %>
+                          </select>
+                          <i class="fas fa-globe absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label for="admin-designation" class="block text-sm font-medium text-gray-700 mb-1">Designation
+                          <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                          <select id="admin-designation" name="designation" required
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none">
+                            <option value="Country Representative">Country Representative</option>
+                          </select>
+                          <i
+                            class="fas fa-briefcase absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label for="admin-mobile" class="block text-sm font-medium text-gray-700 mb-1">Phone Number
+                          <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                          <input type="tel" id="admin-mobile" name="number" required
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            placeholder="+1 (555) 123-4567">
+                          <i class="fas fa-phone absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+
+
+                <!-- Salary Information Card -->
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                  <div class="bg-gradient-to-r from-primary-50 to-secondary-50 px-6 py-4 border-b">
+                    <h2 class="text-xl font-semibold text-gray-700 flex items-center">
+                      <i class="fas fa-coins mr-3 text-primary-500"></i>
+                      Salary Information
+                    </h2>
+                  </div>
+                  <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label for="admin-name" class="block text-sm font-medium text-gray-700 mb-1">Salary Per Hour
+                          <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                          <input type="number" id="salary" name="salary" required
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            placeholder="">
+                          <i class="fas fa-coins absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
+
+
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Login Information Card -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                  <div class="bg-gradient-to-r from-primary-50 to-secondary-50 px-6 py-4 border-b">
+                    <h2 class="text-xl font-semibold text-gray-700 flex items-center">
+                      <i class="fas fa-key mr-3 text-primary-500"></i>
+                      Login Credentials
+                    </h2>
+                  </div>
+                  <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label for="admin-email" class="block text-sm font-medium text-gray-700 mb-1">Email Address
+                          <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                          <input type="email" id="admin-email" name="email" required
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            placeholder="john.doe@example.com">
+                          <i
+                            class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label for="admin-password" class="block text-sm font-medium text-gray-700 mb-1">Password <span
+                            class="text-red-500">*</span></label>
+                        <div class="relative">
+                          <input type="password" id="admin-password" name="password" required
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            placeholder="••••••••">
+                          <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Permissions Card -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                  <div class="bg-gradient-to-r from-green-50 to-teal-50 px-6 py-4 border-b">
+                    <h2 class="text-xl font-semibold text-gray-700 flex items-center">
+                      <i class="fas fa-user-shield mr-3 text-green-500"></i>
+                      Access Permissions
+                    </h2>
+                  </div>
+                  <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      <% for (const group in permissions) { %>
+                      <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="font-medium text-lg text-gray-700 mb-3 flex items-center">
+                          <i class="fas fa-folder-open mr-2 text-gray-500"></i>
+                          <%= group %>
+                        </h3>
+                        <div class="space-y-2">
+                          <% permissions[group].forEach(permission => { %>
+                          <div class="flex items-center">
+                            <input type="checkbox"
+                              id="<%= group.toLowerCase().replace(' ', '-') + '-' + permission.permission_name.toLowerCase() %>"
+                              name="permissions" value="<%= permission.permission_id %>"
+                              class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                            <label
+                              for="<%= group.toLowerCase().replace(' ', '-') + '-' + permission.permission_name.toLowerCase() %>"
+                              class="ml-2 text-sm text-gray-700"><%= permission.permission_name %></label>
+                          </div>
+                          <% }) %>
+                        </div>
+                      </div>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Submit Section -->
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8">
+                  <div class="text-sm text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i> Fields marked with <span class="text-red-500">*</span> are
+                    required
+                  </div>
+
+                  <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded">
+                    Save Admin and Permissions
+                  </button>
+                </div>
             </div>
-            <div class="flex justify-end">
-              <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded">
-                Save Admin and Permissions
-              </button>
-            </div>
-          </form>
+            </form>
         </div>
+        </main>
+      </div>
       </div>
     </section>
     <!-- Header Section Script -->

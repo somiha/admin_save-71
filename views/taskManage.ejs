@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Save Need - Task Approval</title>
+        <!-- Tailwind CSS -->
+        <link rel="stylesheet" href="./css/style.css">
+        <link rel="stylesheet" href="./css/output.css">
+        <!-- Font Awesome -->
+        <link rel="icon" sizes="325x325" href="https://admin.saveneed.com/images/favicon.png">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+        <!-- FullCalendar CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+        <style>
+            :root {
+                --sidebar-width: 280px;
+                --primary-color: #4e73df;
+                --secondary-color: #858796;
+                --success-color: #1cc88a;
+                --warning-color: #f6c23e;
+                --danger-color: #e74a3b;
+            }
+
+            /* Custom FullCalendar styles */
+            .fc .fc-toolbar-title {
+                font-size: 1.1rem;
+                font-weight: 600;
+            }
+
+            .fc-daygrid-day-number {
+                font-weight: 600;
+                font-size: 0.8rem;
+            }
+
+            .fc-daygrid-day.fc-day-today {
+                background-color: rgba(78, 115, 223, 0.1);
+            }
+
+            .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+                color: var(--primary-color);
+                font-weight: 700;
+            }
+
+            .fc-daygrid-event {
+                cursor: pointer;
+            }
+
+            .fc-event {
+                background-color: var(--primary-color);
+                border: none;
+                padding: 2px 4px;
+                font-size: 0.75rem;
+            }
+
+            .fc-event:hover {
+                opacity: 0.9;
+            }
+
+            .fc .fc-toolbar {
+                padding: 0.5rem;
+            }
+
+            .fc .fc-header-toolbar {
+                margin-bottom: 0.5rem;
+            }
+
+            .fc .fc-daygrid-body {
+                width: 100% !important;
+            }
+
+            .fc .fc-daygrid-day-frame {
+                min-height: 2rem;
+            }
+
+            .fc .fc-view-harness {
+                z-index: 0;
+            }
+
+            /* Modal styles */
+            .modal-overlay {
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+
+            .modal-content {
+                transition: all 0.3s ease;
+            }
+
+            .modal-enter {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            .modal-enter-active {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            .modal-exit {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            .modal-exit-active {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            /* Pagination styles */
+            .pagination {
+                display: flex;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+
+            .page-item {
+                margin: 0 0.25rem;
+            }
+
+            .page-link {
+                display: block;
+                padding: 0.5rem 0.75rem;
+                border: 1px solid #dee2e6;
+                color: #4e73df;
+                text-decoration: none;
+                border-radius: 0.25rem;
+            }
+
+            .page-link:hover {
+                background-color: #e9ecef;
+            }
+
+            .page-item.active .page-link {
+                background-color: #4e73df;
+                border-color: #4e73df;
+                color: white;
+            }
+
+            .page-item.disabled .page-link {
+                color: #6c757d;
+                pointer-events: none;
+                background-color: #fff;
+                border-color: #dee2e6;
+            }
+        </style>
+    </head>
+
+    <body class="font-sans bg-gray-50">
+        <section class="max-w-[1920px] ml-auto mr-auto">
+
+            <!-- Navigation Menu -->
+            <%- include('header') %>
+            <div class="ml-auto w-full xl:w-5/6 px-0 xl:px-1 py-2 mt-16 xl:mt-0">
+                <div class="flex items-center justify-between px-5 py-2 xl:py-5 gap-4 border-b">
+                    <!-- Search Box -->
+                    <div class="bg-white relative">
+                        <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text"
+                            placeholder="Search...">
+                        <i
+                            class="fa-solid fa-magnifying-glass absolute top-1/2 left-0 -translate-y-1/2 text-tColor"></i>
+                    </div>
+
+                    <!-- Notification & User -->
+                    <%- include('profileBar') %>
+
+                </div>
+
+                <div class="container mx-auto py-8 w-full">
+                    <p id="message">
+                        <% if (error) { %>
+                        <span class="text-red-500"><%= error %></span>
+                        <% } else if (success) { %>
+                        <span class="text-green-500"><%= success %></span>
+                        <% } %>
+                    </p>
+
+                    <!-- Main Content -->
+                    <div id="content" class="w-[calc(100%-5px)] ml-[10px] min-h-screen transition-all duration-300">
+                        <!-- Begin Page Content -->
+                        <div class="container mx-auto px-4">
+                            <!-- Page Heading -->
+                            <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+                                <h1 class="text-2xl font-bold text-gray-800">Employee Task Approval</h1>
+                                <div class="flex items-center space-x-2 mt-2 sm:mt-0">
+                                    <span class="text-sm text-gray-600">Filter by:</span>
+                                    <select id="statusFilter" class="border rounded px-3 py-1 text-sm">
+                                        <option value="all" <%= typeof is_approved === 'undefined' ? 'selected' : '' %>>
+                                            All Tasks</option>
+                                        <option value="pending" <%= is_approved === '0' ? 'selected' : '' %>>Pending
+                                        </option>
+                                        <option value="approved" <%= is_approved === '1' ? 'selected' : '' %>>Approved
+                                        </option>
+                                        <option value="rejected" <%= is_approved === '2' ? 'selected' : '' %>>Rejected
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Stats Cards -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                <div class="bg-white rounded-lg shadow p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-gray-500 text-sm">Pending Approval</p>
+                                            <h3 class="text-2xl font-bold text-yellow-600" id="pendingCount">
+                                                <%= totalPendingTasks[0]?.total_tasks %> </h3>
+                                        </div>
+                                        <div class="bg-yellow-100 p-3 rounded-full">
+                                            <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white rounded-lg shadow p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-gray-500 text-sm">Rejected Tasks</p>
+                                            <h3 class="text-2xl font-bold text-red-600" id="rejectedCount">
+                                                <%= totalRejectedTasks[0]?.total_tasks %> </h3>
+                                        </div>
+                                        <div class="bg-red-100 p-3 rounded-full">
+                                            <i class="fas fa-times-circle text-red-600 text-xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Content Row -->
+                            <div class="flex flex-col lg:flex-row gap-6">
+                                <!-- Task List Column -->
+                                <div class="w-full lg:w-full">
+                                    <div class="bg-white rounded-lg shadow-lg p-4">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <h5 class="text-lg font-semibold text-gray-800">Tasks List</h5>
+                                            <div class="text-sm text-gray-500">
+                                                <!-- <i class="far fa-clock mr-1"></i> -->
+                                                <!-- Total: <span id="totalTime" class="font-medium">0h 0m</span> -->
+                                            </div>
+                                        </div>
+
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-full divide-y divide-gray-200">
+                                                <thead class="bg-gray-50">
+                                                    <tr>
+                                                        <th scope="col"
+                                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                            Name</th>
+                                                        <th scope="col"
+                                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                            Task</th>
+                                                        <th scope="col"
+                                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                            Date</th>
+                                                        <th scope="col"
+                                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                            Duration</th>
+                                                        <th scope="col"
+                                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                            Status</th>
+                                                        <th scope="col"
+                                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                            Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white divide-y divide-gray-200">
+                                                    <% tasks.forEach((task) => { %>
+                                                    <tr>
+                                                        <td class="px-6 py-4 whitespace-nowrap"><%= task.admin_name %>
+                                                        </td>
+                                                        <td class="px-6 py-4">
+                                                            <%= task.task.slice(0, 20) %><% if (task.task.length > 20) { %>...<% } %>
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <%= new Date(task.task_date).toLocaleDateString('en-GB') %>
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <%= task.task_duration %></td>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                        <%= task.is_approved == '1' ? 'bg-green-100 text-green-800' : 
+                                                           task.is_approved == '2' ? 'bg-red-100 text-red-800' : 
+                                                           'bg-yellow-100 text-yellow-800' %>">
+                                                                <%= task.is_approved == '1' ? 'Approved' : 
+                                                           task.is_approved == '2' ? 'Rejected' : 
+                                                           'Pending' %>
+                                                            </span>
+                                                        </td>
+                                                        <td
+                                                            class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                                            <button
+                                                                class="text-blue-600 hover:text-blue-900 view-task-btn"
+                                                                data-task-id="<%= task.id %>"
+                                                                data-task-name="<%= task.admin_name %>"
+                                                                data-task-description="<%= task.task %>"
+                                                                data-task-date="<%= task.task_date %>"
+                                                                data-task-duration="<%= task.task_duration %>"
+                                                                data-task-status="<%= task.is_approved %>">
+                                                                View
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <% if (tasks.length === 0) { %>
+                                        <div id="tasksContainer" class="space-y-3">
+                                            <!-- Tasks will be loaded here -->
+                                            <div class="text-center py-8 text-gray-500" id="noTasksMessage">
+                                                <i class="fas fa-tasks text-4xl mb-2 text-gray-300"></i>
+                                                <p>No tasks found</p>
+                                            </div>
+                                        </div>
+                                        <% } %>
+
+                                        <!-- Pagination -->
+                                        <% if (totalPages > 1) { %>
+                                        <div class="pagination mt-4">
+                                            <% if (page > 1) { %>
+                                            <a href="?page=<%= page - 1 %><%= is_approved !== undefined ? `&is_approved=${is_approved}` : '' %>"
+                                                class="page-link">&laquo; Previous</a>
+                                            <% } else { %>
+                                            <span class="page-link disabled">&laquo; Previous</span>
+                                            <% } %>
+
+                                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                            <% if (i === page) { %>
+                                            <span class="page-link active"><%= i %></span>
+                                            <% } else { %>
+                                            <a href="?page=<%= i %><%= is_approved !== undefined ? `&is_approved=${is_approved}` : '' %>"
+                                                class="page-link"><%= i %></a>
+                                            <% } %>
+                                            <% } %>
+
+                                            <% if (page < totalPages) { %>
+                                            <a href="?page=<%= page + 1 %><%= is_approved !== undefined ? `&is_approved=${is_approved}` : '' %>"
+                                                class="page-link">Next &raquo;</a>
+                                            <% } else { %>
+                                            <span class="page-link disabled">Next &raquo;</span>
+                                            <% } %>
+                                        </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+
+        <!-- Task Details Modal -->
+        <div id="taskDetailsModal" class="fixed inset-0 bg-black/50 z-[9999] hidden transition-opacity duration-300">
+            <div class="ixed inset-0 flex items-center justify-center p-4">
+
+
+                <!-- Modal Content -->
+                <div
+                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle">
+                                    Task Details
+                                </h3>
+                                <div class="mt-4">
+                                    <div class="grid grid-cols-1 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Employee Name</label>
+                                            <p class="mt-1 text-sm text-gray-900" id="taskEmployeeName"></p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Task Date</label>
+                                            <p class="mt-1 text-sm text-gray-900" id="taskDate"></p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Task Duration</label>
+                                            <p class="mt-1 text-sm text-gray-900" id="taskDuration"></p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Task
+                                                Description</label>
+                                            <p class="mt-1 text-sm text-gray-900 whitespace-pre-line"
+                                                id="taskDescription"></p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Current
+                                                Status</label>
+                                            <p class="mt-1 text-sm" id="taskStatus">
+                                                <span
+                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"></span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button type="button" id="approveTaskBtn"
+                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
+                            Approve
+                        </button>
+                        <button type="button" id="rejectTaskBtn"
+                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                            Reject
+                        </button>
+                        <button type="button" id="closeModalBtn"
+                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- jQuery, FullCalendar JS -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+        <script>
+            // Global variables
+            let currentTaskId = null;
+            let currentTaskStatus = null;
+
+            // Format time string (HH:MM:SS) for display
+            function formatTimeString(timeStr) {
+                if (!timeStr) return "0h 0m";
+                const parts = timeStr.split(':');
+                const hours = parseInt(parts[0]) || 0;
+                const minutes = parseInt(parts[1]) || 0;
+                return `${hours}h ${minutes}m`;
+            }
+
+            // Open modal with task details
+            function openTaskModal(taskId, taskName, taskDescription, taskDate, taskDuration, taskStatus) {
+                currentTaskId = taskId;
+                currentTaskStatus = taskStatus;
+
+                // Set modal content
+                document.getElementById('taskEmployeeName').textContent = taskName;
+                document.getElementById('taskDescription').textContent = taskDescription;
+                document.getElementById('taskDate').textContent = taskDate;
+                document.getElementById('taskDuration').textContent = formatTimeString(taskDuration);
+
+                // Set status
+                const statusElement = document.querySelector('#taskStatus span');
+                statusElement.textContent =
+                    taskStatus == '1' ? 'Approved' :
+                        taskStatus == '2' ? 'Rejected' : 'Pending';
+
+                statusElement.className = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' +
+                    (taskStatus == '1' ? 'bg-green-100 text-green-800' :
+                        taskStatus == '2' ? 'bg-red-100 text-red-800' :
+                            'bg-yellow-100 text-yellow-800');
+
+                // Show/hide buttons based on current status
+                const approveBtn = document.getElementById('approveTaskBtn');
+                const rejectBtn = document.getElementById('rejectTaskBtn');
+
+                if (taskStatus == '0') {
+                    approveBtn.style.display = 'inline-flex';
+                    rejectBtn.style.display = 'inline-flex';
+                } else {
+                    approveBtn.style.display = 'none';
+                    rejectBtn.style.display = 'none';
+                }
+
+                // Show modal
+                document.getElementById('taskDetailsModal').classList.remove('hidden');
+            }
+
+            // Close modal
+            function closeTaskModal() {
+                document.getElementById('taskDetailsModal').classList.add('hidden');
+            }
+
+            // Approve task
+            function approveTask() {
+                if (!currentTaskId) return;
+
+                // Send AJAX request to approve task
+                $.ajax({
+                    url: '/approve-task',
+                    method: 'POST',
+                    data: {
+                        taskId: currentTaskId,
+                        status: '1'
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert('Task approved successfully!');
+                            location.reload(); // Refresh the page to update the list
+                        } else {
+                            alert('Error: ' + response.error);
+                        }
+                    },
+                    error: function () {
+                        alert('Error approving task. Please try again.');
+                    }
+                });
+            }
+
+            // Reject task
+            function rejectTask() {
+                if (!currentTaskId) return;
+
+                // Send AJAX request to reject task
+                $.ajax({
+                    url: '/approve-task',
+                    method: 'POST',
+                    data: {
+                        taskId: currentTaskId,
+                        status: '2'
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert('Task rejected successfully!');
+                            location.reload(); // Refresh the page to update the list
+                        } else {
+                            alert('Error: ' + response.error);
+                        }
+                    },
+                    error: function () {
+                        alert('Error rejecting task. Please try again.');
+                    }
+                });
+            }
+
+            // Event listeners
+            document.addEventListener('DOMContentLoaded', function () {
+                // View task button click
+                document.querySelectorAll('.view-task-btn').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const taskId = this.getAttribute('data-task-id');
+                        const taskName = this.getAttribute('data-task-name');
+                        const taskDescription = this.getAttribute('data-task-description');
+                        const taskDate = this.getAttribute('data-task-date');
+                        const taskDuration = this.getAttribute('data-task-duration');
+                        const taskStatus = this.getAttribute('data-task-status');
+
+                        openTaskModal(taskId, taskName, taskDescription, taskDate, taskDuration, taskStatus);
+                    });
+                });
+
+                // Close modal button
+                document.getElementById('closeModalBtn').addEventListener('click', closeTaskModal);
+
+                // Approve task button
+                document.getElementById('approveTaskBtn').addEventListener('click', approveTask);
+
+                // Reject task button
+                document.getElementById('rejectTaskBtn').addEventListener('click', rejectTask);
+
+                // Close modal when clicking outside
+                document.getElementById('taskDetailsModal').addEventListener('click', function (e) {
+                    if (e.target === this) {
+                        closeTaskModal();
+                    }
+                });
+
+                // Status filter change
+                const statusFilter = document.getElementById('statusFilter');
+                if (statusFilter) {
+                    statusFilter.addEventListener('change', function () {
+                        const value = this.value;
+                        let url = window.location.pathname;
+                        const params = new URLSearchParams(window.location.search);
+
+                        // Remove page parameter if it exists
+                        params.delete('page');
+
+                        // Add status parameter based on selection
+                        if (value === 'pending') {
+                            params.set('is_approved', '0');
+                        } else if (value === 'approved') {
+                            params.set('is_approved', '1');
+                        } else if (value === 'rejected') {
+                            params.set('is_approved', '2');
+                        } else {
+                            params.delete('is_approved');
+                        }
+
+                        // Update URL
+                        if (params.toString()) {
+                            url += '?' + params.toString();
+                        }
+
+                        window.location.href = url;
+                    });
+                }
+            });
+
+            // Auto-hide message after 2 seconds
+            setTimeout(() => {
+                const msg = document.getElementById('message');
+                if (msg) msg.style.display = 'none';
+            }, 2000);
+        </script>
+    </body>
+
+</html>

@@ -22,7 +22,6 @@ const getUserData = (req, is_logged = false, admin_id, otp = false) => {
       if (err) {
         console.error(err);
       } else {
-        console.log("Session created");
       }
     }
   );
@@ -76,7 +75,7 @@ const validateAdmin = (req, res, next) => {
                       }
                     } else {
                       // If no session exists, clear the cookies and redirect to the login page
-                      console.log("No session exists");
+
                       res.clearCookie("__aD");
                       return res.redirect("/login");
                     }
@@ -198,7 +197,6 @@ const verifyOTP = (req, res, OTP) => {
             }
           );
         } else {
-          console.log("OTP already verified");
           return res.redirect("/");
         }
       } else {
@@ -430,6 +428,7 @@ const checkPermissions = async (req, res, next, admin_id) => {
     url === "/logout" ||
     url === "/otp" ||
     url === "/resend" ||
+    url === "/adminDocuments" ||
     url.startsWith("/adminSettings") ||
     url.startsWith("/images")
   ) {
@@ -440,14 +439,11 @@ const checkPermissions = async (req, res, next, admin_id) => {
   try {
     // Extract the base URL (without query parameters)
     const baseUrl = url.split("?")[0];
-    console.log("Base URL: ", baseUrl);
 
     // Find the permission associated with the base URL
     const permission = await permissions_findOne(baseUrl);
-    console.log("Permission: ", permission);
 
     if (permission === undefined) {
-      console.log("No associated permission found");
       return res.render("unauthorized");
     }
 
@@ -455,14 +451,11 @@ const checkPermissions = async (req, res, next, admin_id) => {
     const hasPermission = await checkAdminPermissions(admin_id, [
       ...permission,
     ]);
-    console.log("Has permission: ", hasPermission);
 
     if (!hasPermission) {
-      console.log("Permission denied");
       return res.render("unauthorized");
     } else {
       // Continue to the next middleware
-      console.log("Permission granted");
       return next();
     }
   } catch (err) {

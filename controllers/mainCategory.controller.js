@@ -10,10 +10,8 @@ exports.mainCategory = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -144,7 +142,7 @@ exports.mainCatAdd = async (req, res) => {
 
 exports.mainCatDel = async (req, res) => {
   const id = req.params.id;
-  console.log("ID : ", id);
+
   db.query(
     `DELETE FROM extra_cat
   WHERE extra_cat.extra_cat_ref IN (

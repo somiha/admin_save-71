@@ -7,6 +7,8 @@ const mult_upload = require("../config/multer_product.config");
 const { all } = require("axios");
 const countryModal = require("../modals/countryModal");
 const adminInfoModal = require("../modals/adminInfoModal");
+const { queryAsyncWithoutValue, queryAsync } = require("../config/helper");
+const db = require("../config/database.config");
 
 exports.getAllAdmins = async (req, res) => {
   try {
@@ -15,10 +17,8 @@ exports.getAllAdmins = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -36,9 +36,9 @@ exports.getAllAdmins = async (req, res) => {
       page,
       limit
     );
-    console.log(subAdmins.admins);
+
     const total_pages = Math.ceil(subAdmins.totalAdmins / limit);
-    console.log(total_pages);
+
     const admin_info = subAdmins.admins;
     // return res.send("OK");
 
@@ -64,10 +64,8 @@ exports.viewAdmin = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -77,11 +75,10 @@ exports.viewAdmin = async (req, res) => {
     let referrerInfo = {};
     if (subAdmin.referrer) {
       referrerInfo = await adminModel.getAdminById(req, res, subAdmin.referrer);
-      console.log("referrerInfo", referrerInfo);
     }
-    console.log(admin);
-    console.log("referrerInfo", referrerInfo);
-
+    const designations = await queryAsyncWithoutValue(
+      `SELECT * FROM designation;`
+    );
     const premissions = await adminModel.getAdminPremissions(
       admin.is_super_admin,
       admin.permissions
@@ -90,10 +87,11 @@ exports.viewAdmin = async (req, res) => {
     const allPermissions = await adminModel.getAllPermissions(req, res);
     const countries = await countryModal.getAllCountries();
     const bankInfo = await adminModel.getAdminBankInfo(admin_id);
-    console.log({ bankInfo });
+    const docs = await adminInfoModal.getDocuments(admin_id);
+
     if (admin) {
       // console.log(admin);
-      console.log(allPermissions, admin);
+
       return res.render("adminProfile", {
         title: "Admin Profile",
         subAdmin: subAdmin,
@@ -103,6 +101,8 @@ exports.viewAdmin = async (req, res) => {
         premissions,
         admin,
         referrerInfo,
+        designations,
+        docs,
       });
     } else {
       res.status(404).send("Admin not found");
@@ -130,7 +130,15 @@ exports.updateAdminInfo = async (req, res) => {
       account_name,
       account_number,
       permissions,
+      reporting_manager,
+      is_manager,
     } = req.body;
+
+    if (!is_manager) {
+      is_manager = 0;
+    } else {
+      is_manager = 1;
+    }
 
     if (!is_active) {
       is_active = 0;
@@ -169,16 +177,14 @@ exports.updateAdminInfo = async (req, res) => {
       ? req.files.passport_pdf[0].path
       : null;
 
-    console.log(passportPdfPath, profilePicPath);
-
     if (profilePicPath) {
       profile_pic =
-        "https://admin.save71.com/images/admin/" +
+        "https://admin.saveneed.com/images/admin/" +
         req.files.profile_pic[0].filename;
     }
     if (passportPdfPath) {
       passport_pdf =
-        "https://admin.save71.com/images/admin/" +
+        "https://admin.saveneed.com/images/admin/" +
         req.files.passport_pdf[0].filename;
     }
 
@@ -198,7 +204,9 @@ exports.updateAdminInfo = async (req, res) => {
       is_active,
       country_id,
       profile_pic,
-      passport_pdf
+      passport_pdf,
+      is_manager,
+      reporting_manager
     );
 
     if (updatedAdmin) {
@@ -206,6 +214,154 @@ exports.updateAdminInfo = async (req, res) => {
     } else {
       res.status(500).send("Internal Server Error");
     }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+// exports.approveOrRejectTask = async (req, res) => {
+//   try {
+//     const { taskId, status } = req.body;
+
+//     db.query(
+//       "UPDATE task_log SET is_approved = ? WHERE id = ?",
+//       [status, taskId],
+//       (err, result) => {
+//         if (err) {
+//           console.error(err);
+//           res.status(500).send("Internal Server Error");
+//         } else {
+//           res.json({
+//             message: "Task status updated successfully",
+//             success: true,
+//           });
+//           return;
+//         }
+//       }
+//     );
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send("Internal Server Error");
+//   }
+// };
+
+const addAdminSalary = async (emp_id, salaryToAdd) => {
+  const empSalary = await queryAsync(
+    `SELECT * FROM admin_salary WHERE emp_id = ?`,
+    [emp_id]
+  );
+
+  if (empSalary.length > 0) {
+    const totalSalary = parseInt(empSalary[0].salary) + parseInt(salaryToAdd);
+    await queryAsync(`UPDATE admin_salary SET salary = ? WHERE emp_id = ?`, [
+      totalSalary,
+      emp_id,
+    ]);
+  } else {
+    await queryAsync(
+      `INSERT INTO admin_salary (emp_id, salary) VALUES (?, ?)`,
+      [emp_id, salaryToAdd]
+    );
+  }
+};
+
+exports.approveOrRejectTask = async (req, res) => {
+  try {
+    const { taskId, status } = req.body;
+
+    db.query(
+      "UPDATE task_log SET is_approved = ? WHERE id = ?",
+      [status, taskId],
+      (err, result) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).send("Internal Server Error");
+        }
+
+        console.log(status);
+        if (status == 1) {
+          console.log("Task approved");
+
+          db.query(
+            "SELECT emp_id, task_duration FROM task_log WHERE id = ?",
+            [taskId],
+            (err, taskResult) => {
+              if (err || taskResult.length === 0) {
+                console.error(err || "Task not found");
+                return res.status(500).send("Internal Server Error");
+              }
+
+              const { emp_id, task_duration } = taskResult[0];
+
+              let decimalHours = 0;
+              try {
+                if (task_duration.includes(":")) {
+                  const [hours, minutes] = task_duration
+                    .split(":")
+                    .map((part) => parseInt(part.trim()) || 0);
+                  decimalHours = hours + minutes / 60;
+                }
+                // Then try comma format (HH,MM)
+                else if (task_duration.includes(",")) {
+                  const [hours, minutes] = task_duration
+                    .split(",")
+                    .map((part) => parseInt(part.trim()) || 0);
+                  decimalHours = hours + minutes / 60;
+                } else {
+                  decimalHours = parseFloat(task_duration) || 0;
+                }
+              } catch (e) {
+                console.error("Error parsing task duration:", e);
+                return res.status(400).send("Invalid task duration format");
+              }
+
+              db.query(
+                "SELECT salary_per_hour FROM admin_info WHERE admin_id = ?",
+                [emp_id],
+                (err, salaryResult) => {
+                  if (err || salaryResult.length === 0) {
+                    console.error(err || "Employee salary not found");
+                    return res.status(500).send("Internal Server Error");
+                  }
+
+                  const salaryPerHour = salaryResult[0].salary_per_hour;
+                  const salaryToAdd = parseFloat(
+                    decimalHours * salaryPerHour
+                  ).toFixed(2);
+
+                  db.query(
+                    "UPDATE task_log SET salary = ? WHERE id = ?",
+                    [salaryToAdd, taskId],
+                    (err, updateResult) => {
+                      if (err) {
+                        console.error(err);
+                        return res.status(500).send("Internal Server Error");
+                      }
+
+                      addAdminSalary(emp_id, salaryToAdd);
+
+                      res.json({
+                        message:
+                          "Task approved and salary updated successfully",
+                        success: true,
+                        salaryAdded: salaryToAdd,
+                        hoursWorked: decimalHours.toFixed(2),
+                      });
+                    }
+                  );
+                }
+              );
+            }
+          );
+        } else {
+          res.json({
+            message: "Task status updated successfully",
+            success: true,
+          });
+        }
+      }
+    );
   } catch (err) {
     console.error(err);
     res.status(500).send("Internal Server Error");

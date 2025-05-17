@@ -11,7 +11,7 @@
 
     <!-- css for date range picker -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-    <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+    <link rel="icon" sizes="325x325" href="https://admin.saveneed.com/images/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
 
@@ -315,7 +315,7 @@
         $('#dateRangePicker').on('apply.daterangepicker', function (ev, picker) {
           var startDate = picker.startDate.format('YYYY-MM-DD');
           var endDate = picker.endDate.format('YYYY-MM-DD');
-          console.log('Selected Date Range:', startDate, 'to', endDate);
+
         });
       });
     </script>
@@ -446,7 +446,7 @@
           tabData.forEach(withdraw => {
             let selectHTML = `<select id="statusSelect" class="border rounded px-3 py-2 pr-8 appearance-none focus:outline-none focus:shadow-outline status-select" data-transaction-id="${withdraw.transaction_id}">`;
             actions.forEach((action, index) => {
-              console.log("Tab body id: ", tableBodyId)
+
               selectHTML += `<option class="excludeFromExport" value="${index}" ${index == withdraw.status ? 'selected' : ''} ${tableBodyId === '#paidTabBody' || tableBodyId === '#rejectedTabBody' ? 'disabled' : ''}>${action}</option>`;
             });
             selectHTML += '</select>';
@@ -498,7 +498,7 @@
               },
               success: function (response) {
                 // Handle success
-                console.log(response);
+
                 location.reload();
               },
               error: function (error) {
@@ -655,7 +655,6 @@
 
         XLSX.utils.book_append_sheet(wb, ws, sheetName);
 
-        console.log("Exporting...");
         XLSX.writeFile(wb, `${sheetName}.xlsx`);
       }
 

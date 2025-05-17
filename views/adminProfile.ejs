@@ -7,25 +7,20 @@
     <title>Sub-Admin Details</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/output.css">
-    <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+    <link rel="icon" sizes="325x325" href="https://admin.saveneed.com/images/favicon.png">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
 
     <style>
-      .custom-height {
-        height: 400px;
-        /* Set to desired height */
-      }
-
       .transition-all {
         transition: all 0.3s ease-in-out;
       }
     </style>
   </head>
 
-  <body class="font-sans">
-    <section class=" max-w-[1920px] ml-auto mr-auto">
+  <body class="bg-gray-50 font-sans">
+    <section class="max-w-[1920px] ml-auto mr-auto">
 
       <!-- Navigation Menu -->
       <%- include('header') %>
@@ -40,288 +35,541 @@
 
           <!-- Notification & User -->
           <%- include('profileBar') %>
-
-
         </div>
-        <div class=" mx-auto py-8 px-2">
-          <h1 class="text-3xl font-medium mb-6 text-gray-700"><%= subAdmin?.designation %> Details</h1>
-          <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-            <form action="/sub-admins/<%= subAdmin.admin_id %>/update" method="POST" enctype="multipart/form-data">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-                <div class="mb-4">
-                  <label for="admin-name" class="block text-gray-700 font-medium mb-2">Admin Name</label>
-                  <input type="text" id="admin-name" name="admin_name"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value="<%= subAdmin.admin_name %>">
+
+        <div class="min-h-screen">
+          <main class="container mx-auto px-4 py-8">
+            <div class="max-w-6xl mx-auto">
+              <h1 class="text-3xl font-bold text-gray-800 mb-2"><%= subAdmin?.designation %> Details</h1>
+              <p class="text-gray-600 mb-8">View and update employee details and permissions</p>
+
+              <form action="/sub-admins/<%= subAdmin.admin_id %>/update" method="POST" enctype="multipart/form-data"
+                class="space-y-6">
+                <!-- Employee Information Card -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                  <div class="bg-gradient-to-r from-primary-50 to-secondary-50 px-6 py-4 border-b">
+                    <h2 class="text-xl font-semibold text-gray-700 flex items-center">
+                      <i class="fas fa-user-tie mr-3 text-primary-500"></i>
+                      Employee Information
+                    </h2>
+                  </div>
+                  <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label for="admin-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <div class="relative">
+                          <input type="text" id="admin-name" name="admin_name" required
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            value="<%= subAdmin.admin_name %>">
+                          <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label for="admin-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <div class="relative">
+                          <input type="email" id="admin-email" name="admin_email" required
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            value="<%= subAdmin.admin_email %>">
+                          <i
+                            class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
+
+                      <div class="relative">
+                        <label for="admin_pass" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <div class="relative">
+                          <input type="password" id="admin_pass" value="<%= subAdmin.admin_pass %>" name="admin_pass"
+                            required
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 pr-10"
+                            placeholder="••••••••">
+                          <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                          <button type="button" class="absolute right-3 top-8 focus:outline-none"
+                            onclick="togglePasswordVisibility()">
+                            <i class="fas fa-eye eye-icon text-gray-500"></i>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label for="designation"
+                          class="block text-sm font-medium text-gray-700 mb-1">Designation</label>
+                        <div class="relative">
+                          <select id="designation" name="designation" required
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none">
+                            <% for (var i = 0; i < designations.length; i++) { %>
+                            <option value="<%= designations[i].name %>"
+                              <%= subAdmin?.designation === designations[i].name ? 'selected' : '' %>>
+                              <%= designations[i].name %></option>
+                            <% } %>
+                            <option value="Super Admin"
+                              <%= subAdmin?.designation === 'Super Admin' ? 'selected' : '' %>>Super Admin</option>
+                            <option value="Country Representative"
+                              <%= subAdmin?.designation === 'Country Representative' ? 'selected' : '' %>>Country
+                              Representative</option>
+                            <option value="Employee" <%= subAdmin?.designation === 'Employee' ? 'selected' : '' %>>
+                              Employee</option>
+                          </select>
+                          <i
+                            class="fas fa-briefcase absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label for="note" class="block text-sm font-medium text-gray-700 mb-1">Note</label>
+                        <div class="relative">
+                          <input type="text" id="note" name="note"
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            value="<%= subAdmin?.note %>">
+                          <i
+                            class="fas fa-sticky-note absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label for="salary" class="block text-sm font-medium text-gray-700 mb-1">Salary Per Hour</label>
+                        <div class="relative">
+                          <input type="number" id="salary" name="salary"
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            value="<%= subAdmin?.salary_per_hour %>">
+                          <i class="fas fa-coins absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label for="country" class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                        <div class="relative">
+                          <select id="admin-country" name="country_id"
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none">
+                            <option value="" disabled <%= !subAdmin.country_id ? 'selected' : '' %>>Select a country
+                            </option>
+                            <% countries.forEach(function(country) { %>
+                            <option value="<%= country.id %>"
+                              <%= subAdmin.country_id === country.id ? 'selected' : '' %>>
+                              <%= country.country_name %></option>
+                            <% }); %>
+                          </select>
+                          <i class="fas fa-globe absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <div class="flex items-center mt-2">
+                          <input type="checkbox" id="is_active" name="is_active" value="<%= subAdmin.is_active %>"
+                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                            <%= subAdmin.is_active ? 'checked' : '' %>>
+                          <label for="is_active" id="is_active_label" class="ml-2 text-sm text-gray-700">
+                            <%= subAdmin.is_active ? 'Active' : 'Inactive' %>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Manager Status</label>
+                        <div class="flex items-center mt-2">
+                          <input type="checkbox" id="is_manager" name="is_manager" value="<%= subAdmin.is_manager %>"
+                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                            <%= subAdmin.is_manager ? 'checked' : '' %>>
+                          <label for="is_manager" id="is_manager_label" class="ml-2 text-sm text-gray-700">
+                            <%= subAdmin.is_manager ? 'Manager' : 'Not Manager' %>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="mb-4">
-                  <label for="admin-email" class="block text-gray-700 font-medium mb-2">Admin Email</label>
-                  <input type="email" id="admin-email" name="admin_email"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value="<%= subAdmin.admin_email %>">
-                </div>
-                <div class="mb-4 relative">
-                  <label for="admin_pass" class="block text-gray-700 font-medium mb-2">Admin Password</label>
-                  <input type="password" id="admin_pass" value="<%= subAdmin.admin_pass  %>" name="admin_pass"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline pr-10">
-                  <button type="button" class="absolute top-10 right-3 focus:outline-none"
-                    onclick="togglePasswordVisibility()" style="line-height: 1.25;">
-                    <i class="fas fa-eye eye-icon text-gray-500"></i>
-                  </button>
-                </div>
 
-                <div class="mb-4">
-                  <label for="designation" class="block text-gray-700 font-medium mb-2">Designation</label>
+                <!-- Bank Information Card -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                  <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b">
+                    <h2 class="text-xl font-semibold text-gray-700 flex items-center">
+                      <i class="fas fa-university mr-3 text-blue-500"></i>
+                      Bank Information
+                    </h2>
+                  </div>
+                  <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label for="bank_name" class="block text-sm font-medium text-gray-700 mb-1">Bank Name</label>
+                        <div class="relative">
+                          <input type="text" id="bank_name" name="bank_name"
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            value="<%= bankInfo[0]?.bank_name %>">
+                          <i
+                            class="fas fa-landmark absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
 
-                  <select id="designation" name="designation"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                    <option value="Super Admin" <%= subAdmin?.designation === 'Super Admin' ? 'selected' : '' %>>Super
-                      Admin</option>
-                    <option value="Country Representative"
-                      <%= subAdmin?.designation === 'Country Representative' ? 'selected' : '' %>>
-                      Country Representative</option>
-                    <option value="Employee" <%= subAdmin?.designation === 'Employee' ? 'selected' : '' %>>Employee
-                    </option>
-                  </select>
+                      <div>
+                        <label for="routing_number" class="block text-sm font-medium text-gray-700 mb-1">Routing
+                          Number</label>
+                        <div class="relative">
+                          <input type="text" id="routing_number" name="routing_number"
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            value="<%= bankInfo[0]?.routing_number %>">
+                          <i
+                            class="fas fa-sort-numeric-up absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
 
-                </div>
+                      <div>
+                        <label for="branch_name" class="block text-sm font-medium text-gray-700 mb-1">Branch
+                          Name</label>
+                        <div class="relative">
+                          <input type="text" id="branch_name" name="branch_name"
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            value="<%= bankInfo[0]?.branch_name %>">
+                          <i
+                            class="fas fa-code-branch absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
 
-                <div class="mb-4">
-                  <label for="note" class="block text-gray-700 font-medium mb-2">Note</label>
-                  <input type="text" id="note" name="note"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value="<%= subAdmin?.note %>">
-                </div>
+                      <div>
+                        <label for="account_name" class="block text-sm font-medium text-gray-700 mb-1">Account Holder
+                          Name</label>
+                        <div class="relative">
+                          <input type="text" id="account_name" name="account_name"
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            value="<%= bankInfo[0]?.account_name %>">
+                          <i
+                            class="fas fa-user-circle absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
 
-                <div class="mb-4">
-                  <label for="country" class="block text-gray-700 font-medium mb-2">Country</label>
-                  <select id="admin-country" name="country_id"
-                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                    <option value="" disabled <%= !subAdmin.country_id ? 'selected' : '' %>>Select a country</option>
-                    <% countries.forEach(function(country) { %>
-                    <option value="<%= country.id %>" <%= subAdmin.country_id === country.id ? 'selected' : '' %>>
-                      <%= country.country_name %></option>
-                    <% }); %>
-                  </select>
-                </div>
-
-                <div class="mb-4">
-                  <label for="bank_name" class="block text-gray-700 font-medium mb-2">Bank Name</label>
-                  <input type="text" id="bank_name" name="bank_name"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value="<%= bankInfo[0]?.bank_name %>">
-                </div>
-
-                <div class="mb-4">
-                  <label for="routing_number" class="block text-gray-700 font-medium mb-2">Routing Number</label>
-                  <input type="text" id="routing_number" name="routing_number"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value="<%= bankInfo[0]?.routing_number %>">
-                </div>
-
-                <div class="mb-4">
-                  <label for="branch_name" class="block text-gray-700 font-medium mb-2">Branch Name</label>
-                  <input type="text" id="branch_name" name="branch_name"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value="<%= bankInfo[0]?.branch_name %>">
-                </div>
-
-                <div class="mb-4">
-                  <label for="account_name" class="block text-gray-700 font-medium mb-2">Account Holder Name</label>
-                  <input type="text" id="account_name" name="account_name"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value="<%= bankInfo[0]?.account_name %>">
+                      <div>
+                        <label for="account_number" class="block text-sm font-medium text-gray-700 mb-1">Account
+                          Number</label>
+                        <div class="relative">
+                          <input type="text" id="account_number" name="account_number"
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            value="<%= bankInfo[0]?.account_number %>">
+                          <i class="fas fa-wallet absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div class="mb-4">
-                  <label for="account_number" class="block text-gray-700 font-medium mb-2">Account Number</label>
-                  <input type="text" id="account_number" name="account_number"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value="<%= bankInfo[0]?.account_number %>">
+                <!-- Profile & Documents Card -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                  <div class="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b">
+                    <h2 class="text-xl font-semibold text-gray-700 flex items-center">
+                      <i class="fas fa-file-alt mr-3 text-purple-500"></i>
+                      Profile & Documents
+                    </h2>
+                  </div>
+                  <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label for="profile_pic" class="block text-sm font-medium text-gray-700 mb-1">Profile
+                          Picture</label>
+                        <% if (subAdmin.profile_pic) { %>
+                        <div class="mb-4 flex items-center justify-center">
+                          <img src="<%= subAdmin.profile_pic %>" alt="Profile Picture"
+                            class="w-32 h-32 object-cover rounded-lg">
+                        </div>
+                        <% } %>
+                        <input type="file" id="profile_pic" name="profile_pic" class="block w-full text-sm text-gray-500
+                                                file:mr-4 file:py-2 file:px-4
+                                                file:rounded-lg file:border-0
+                                                file:text-sm file:font-semibold
+                                                file:bg-blue-50 file:text-blue-700
+                                                hover:file:bg-blue-100" accept="image/*">
+                      </div>
+
+                      <!-- <div>
+                        <label for="passport_pdf" class="block text-sm font-medium text-gray-700 mb-1">Passport (PDF
+                          only)</label>
+                        <% if (subAdmin?.passport_pdf) { %>
+                        <div class="mb-4 flex items-center justify-center bg-gray-100 rounded-lg p-2">
+                          <i class="fas fa-file-pdf text-red-500 text-4xl mr-2"></i>
+                          <span class="text-sm text-gray-700">Passport.pdf</span>
+                        </div>
+                        <% } %>
+                        <input type="file" id="passport_pdf" name="passport_pdf" class="block w-full text-sm text-gray-500
+                                                file:mr-4 file:py-2 file:px-4
+                                                file:rounded-lg file:border-0
+                                                file:text-sm file:font-semibold
+                                                file:bg-blue-50 file:text-blue-700
+                                                hover:file:bg-blue-100" accept="application/pdf">
+                      </div> -->
+
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Unique ID</label>
+                        <div class="flex items-center">
+                          <input type="text" id="id" name="id"
+                            class="w-40 pl-3 pr-4 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            value="<%= subAdmin.unique_id %>" disabled>
+                          <button onclick="copyToClipboard()" type="button"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            Copy
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Created Time</label>
+                        <input type="text" id="time" name="time"
+                          class="w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                          value="<%= new Date(subAdmin.created_at).toLocaleDateString('en-GB') %>" disabled>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+                <div id="documents" role="tabpanel"
+                  class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                  <!-- Documents Table Header -->
+                  <div class="bg-gradient-to-r from-blue-50 to-cyan-50 px-6 py-4 border-b">
+                    <h2 class="text-xl font-semibold text-gray-700 flex items-center">
+                      <i class="fas fa-file-alt mr-3 text-blue-500"></i>
+                      Documents
+                    </h2>
+                  </div>
 
-                <div class="mb-4 mt-8 form-control">
-                  <label class="cursor-pointer">
-                    <input type="checkbox" id="is_active" name="is_active" value="<%= subAdmin.is_active %>"
-                      class="form-checkbox h-5 w-5 text-blue-600 p-2 align-middle"
-                      <%= subAdmin.is_active ? 'checked' : '' %>>
-                    <span id="is_active_label"
-                      class="label-text shadow appearance-none border rounded py-2 px-3 font-medium mb-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                      <%= subAdmin.is_active ? 'Active' : 'Inactive' %>
-                    </span>
-                  </label>
+                  <div class="overflow-x-auto p-6">
+                    <table class="min-w-full divide-y divide-gray-200">
+                      <thead class="bg-gray-50">
+                        <tr>
+                          <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <div class="flex items-center">
+                              <i class="fas fa-file-signature mr-2"></i>
+                              Document
+                            </div>
+                          </th>
+                          <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <div class="flex items-center">
+                              <i class="fas fa-calendar-alt mr-2"></i>
+                              Upload Date
+                            </div>
+                          </th>
+                          <th scope="col"
+                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <div class="flex items-center justify-end">
+                              <i class="fas fa-cog mr-2"></i>
+                              Actions
+                            </div>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody class="bg-white divide-y divide-gray-200">
+                        <% for (let i = 0; i < docs.length; i++) { %>
+                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                              <div
+                                class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                                <i class="fas fa-file-alt"></i>
+                              </div>
+                              <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900"><%= docs[i].title %></div>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900"><%= new Date(docs[i].created_at).toLocaleDateString() %>
+                            </div>
+                            <div class="text-xs text-gray-500"><%= new Date(docs[i].created_at).toLocaleTimeString() %>
+                            </div>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                              <!-- View Button -->
+                              <a href="<%= docs[i].file_url %>" target="_blank"
+                                class="inline-flex items-center px-3 py-1 border border-blue-200 rounded-full text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 transition-colors duration-200"
+                                title="View Document">
+                                <i class="fas fa-eye mr-1"></i> View
+                              </a>
 
-                </div>
+                              <!-- Download Button -->
+                              <a href="<%= docs[i].file_url %>" download
+                                class="inline-flex items-center px-3 py-1 border border-gray-200 rounded-full text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 hover:text-gray-700 transition-colors duration-200"
+                                title="Download Document">
+                                <i class="fas fa-download mr-1"></i> Download
+                              </a>
+                            </div>
+                          </td>
+                        </tr>
+                        <% } %>
+                      </tbody>
+                    </table>
+                  </div>
 
-                <div class="mb-4">
-                  <% if (subAdmin.profile_pic) { %>
-                  <div
-                    class="relative overflow-hidden custom-height max-w-5xl mx-auto my-4 flex items-center justify-center">
-                    <img src="<%= subAdmin.profile_pic %>" alt="Profile Picture" class="w-48 h-48 object-cover">
+                  <!-- Empty State -->
+                  <% if (docs.length === 0) { %>
+                  <div class="p-12 text-center">
+                    <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
+                      <i class="fas fa-file-alt text-5xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-1">No documents found</h3>
+
                   </div>
                   <% } %>
-                  <label for="profile_pic" class="block text-gray-700 font-medium mb-2">Profile Picture</label>
-                  <input type="file" id="profile_pic" name="profile_pic"
-                    class="file-input file-input-ghost w-full text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    accept="image/*">
                 </div>
-
-                <div class="mb-4">
-                  <% if (subAdmin?.passport_pdf) { %>
-                  <div
-                    class="relative overflow-hidden custom-height max-w-5xl mx-auto my-4 bg-gray-300 flex items-center justify-center">
-                    <embed src="<%= subAdmin.passport_pdf %>" type="application/pdf"
-                      class="absolute top-0 left-0 w-full h-full">
+                <!-- Referrer Information Card -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                  <div class="bg-gradient-to-r from-amber-50 to-orange-50 px-6 py-4 border-b">
+                    <h2 class="text-xl font-semibold text-gray-700 flex items-center">
+                      <i class="fas fa-user-friends mr-3 text-amber-500"></i>
+                      Referrer Information
+                    </h2>
                   </div>
-                  <% } %>
-                  <label for="passport_pdf" class="block text-gray-700 font-medium mb-2">Passport (pdf only)</label>
-                  <input type="file" id="passport_pdf" name="passport_pdf"
-                    class="file-input file-input-ghost w-full text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    accept="application/pdf">
-                </div>
-                <div class="mb-4">
-                  <label class="block text-gray-700 font-medium mb-2">Unique Id</label>
-                  <input type="text" id="id" name="id"
-                    class="shadow appearance-none border rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value="<%= subAdmin.unique_id %>" disabled>
-                  <button onclick="copyToClipboard()" type="button"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Copy
-                  </button>
-                </div>
+                  <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Referrer Name</label>
+                        <input type="text" id="referrer_name" name="referrer_name"
+                          class="w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-gray-100"
+                          value="<%= referrerInfo.admin_name %>" disabled>
+                      </div>
 
-                <div class="mb-4">
-                  <label class="block text-gray-700 font-medium mb-2">Created Time</label>
-                  <input type="text" id="time" name="time"
-                    class="shadow appearance-none border rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value="<%= new Date(subAdmin.created_at).toLocaleDateString('en-GB') %>" disabled>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Referrer Email</label>
+                        <input type="text" id="referrer_email" name="referrer_email"
+                          class="w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-gray-100"
+                          value="<%= referrerInfo.admin_email %>" disabled>
+                      </div>
 
-                </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Referrer Designation</label>
+                        <input type="text" id="referrer_designation" name="referrer_designation"
+                          class="w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-gray-100"
+                          value="<%= referrerInfo.designation %>" disabled>
+                      </div>
 
-              </div>
-              <div class="mb-4">
-                <div class="flex items-center justify-center h-full rounded-md bg-blue-100">
-                  <h2 class="text-xl font-semibold mb-5 mt-2 text-gray-600">Referreer Info</h2>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-                  <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Referrer Name</label>
-                    <input type="text" id="referrer_name" name="referrer_name"
-                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      value="<%= referrerInfo.admin_name %>" disabled>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Referrer Unique ID</label>
+                        <div class="flex items-center">
+                          <input type="text" id="referrer_id" name="referrer_id"
+                            class="w-40 pl-3 pr-4 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-gray-100"
+                            value="<%= referrerInfo.unique_id %>" disabled>
+                          <button onclick="copyReferrerToClipboard()" type="button"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            Copy
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Referrer Email</label>
-                    <input type="text" id="referrer_email" name="referrer_email"
-                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      value="<%= referrerInfo.admin_email %>" disabled>
+                </div>
+
+                <!-- Permissions Card -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                  <div class="bg-gradient-to-r from-green-50 to-teal-50 px-6 py-4 border-b">
+                    <h2 class="text-xl font-semibold text-gray-700 flex items-center">
+                      <i class="fas fa-user-shield mr-3 text-green-500"></i>
+                      Access Permissions
+                    </h2>
                   </div>
-                  <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Referrer Designation</label>
-                    <input type="text" id="referrer_designation" name="referrer_designation"
-                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      value="<%= referrerInfo.designation %>" disabled>
+                  <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      <% for (const group in Permissions) { %>
+                      <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="font-medium text-lg text-gray-700 mb-3 flex items-center">
+                          <i class="fas fa-folder-open mr-2 text-gray-500"></i>
+                          <%= group %>
+                        </h3>
+                        <div class="space-y-2">
+                          <% Permissions[group].forEach(permission => { %>
+                          <%
+                                                    const subAdminPermissions = JSON.parse(subAdmin.permissions);
+                                                    const permissionIdToCheck = permission.permission_id.toString();
+                                                    const isChecked = subAdminPermissions.some(item => item === permissionIdToCheck);
+                                                %>
+                          <div class="flex items-center">
+                            <input type="checkbox" id="permission-<%= permission.permission_id %>" name="permissions[]"
+                              value="<%= permission.permission_id %>"
+                              class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                              <%= isChecked ? 'checked' : '' %>>
+                            <label for="permission-<%= permission.permission_id %>" class="ml-2 text-sm text-gray-700">
+                              <%= permission.permission_name %>
+                            </label>
+                          </div>
+                          <% }) %>
+                        </div>
+                      </div>
+                      <% } %>
+                    </div>
                   </div>
-                  <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Referrer Unique Id</label>
-                    <input type="text" id="referrer_id" name="referrer_id"
-                      class="shadow appearance-none border rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      value="<%= referrerInfo.unique_id %>" disabled>
-                    <button onclick="copyToClipboard()" type="button"
-                      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                      Copy
+                </div>
+
+                <!-- Submit Section -->
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8">
+                  <div class="text-sm text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i> Fields marked with <span class="text-red-500">*</span> are
+                    required
+                  </div>
+
+                  <div class="flex gap-4">
+                    <button type="submit"
+                      class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200 flex items-center">
+                      <i class="fas fa-save mr-2"></i> Save Changes
                     </button>
                   </div>
                 </div>
-              </div>
-
-
-
-              <div class="mb-4">
-                <div class="flex items-center justify-center h-full rounded-md bg-blue-100">
-                  <h2 class="text-xl font-semibold mb-5 mt-2 text-gray-600">Permissions</h2>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-5">
-                  <% for (const group in Permissions) { %>
-                  <div class="space-y-4">
-                    <h3 class="text-lg font-medium text-gray-700"><%= group %></h3>
-                    <% Permissions[group].forEach(permission => { %>
-                    <div class="flex items-center">
-                      <%
-                        const subAdminPermissions = JSON.parse(subAdmin.permissions);
-                        const permissionIdToCheck = permission.permission_id.toString();
-                      
-                        const isChecked = subAdminPermissions.some(item => item === permissionIdToCheck);
-
-                      %>
-
-                      <input type="checkbox" id="permission-<%= permission.permission_id %>" name="permissions[]"
-                        value="<%= permission.permission_id %>" class="form-checkbox h-5 w-5 text-blue-600"
-                        <%= isChecked ? 'checked' : '' %>>
-                      <label for="permission-<%= permission.permission_id %>"
-                        class="ml-2 text-gray-700"><%= permission.permission_name %></label>
-                    </div>
-                    <% }) %>
-                  </div>
-                  <% } %>
-                </div>
-              </div>
-              <div class="flex items-center justify-between">
-                <button type="submit"
-                  class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                  <i class="fas fa-save"></i> Save
-                </button>
-                <!-- <a href="/sub-admins/<%= subAdmin.admin_id %>/delete"
-                  class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                  <i class="fas fa-trash"></i> Delete
-                </a> -->
-              </div>
-            </form>
-          </div>
+              </form>
+            </div>
+          </main>
         </div>
       </div>
     </section>
-  </body>
 
-  <script>
-    function togglePasswordVisibility() {
-      const passwordInput = document.getElementById('admin_pass');
-      const eyeIcon = document.querySelector('.eye-icon');
+    <script>
+      function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('admin_pass');
+        const eyeIcon = document.querySelector('.eye-icon');
 
-      if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        eyeIcon.classList.remove('fa-eye');
-        eyeIcon.classList.add('fa-eye-slash');
-      } else {
-        passwordInput.type = 'password';
-        eyeIcon.classList.remove('fa-eye-slash');
-        eyeIcon.classList.add('fa-eye');
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          eyeIcon.classList.remove('fa-eye');
+          eyeIcon.classList.add('fa-eye-slash');
+        } else {
+          passwordInput.type = 'password';
+          eyeIcon.classList.remove('fa-eye-slash');
+          eyeIcon.classList.add('fa-eye');
+        }
       }
-    }
-  </script>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const checkbox = document.getElementById('is_active');
-      const label = document.getElementById('is_active_label');
+      document.addEventListener('DOMContentLoaded', () => {
+        const checkbox = document.getElementById('is_active');
+        const label = document.getElementById('is_active_label');
 
-      checkbox.addEventListener('change', () => {
-        label.classList.add('transition-all');
-        label.textContent = checkbox.checked ? 'Active' : 'Inactive';
+        checkbox.addEventListener('change', () => {
+          label.classList.add('transition-all');
+          label.textContent = checkbox.checked ? 'Active' : 'Inactive';
+        });
       });
-    });
-  </script>
 
-  <script>
-    function copyToClipboard() {
-      const copyText = document.getElementById('referrer_id');
-      copyText.disabled = false;  // Enable temporarily to copy value
-      copyText.select();
-      document.execCommand('copy');
-      copyText.disabled = true;  // Disable again
-      alert('Copied to clipboard: ' + copyText.value);
-    }
-  </script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const checkbox = document.getElementById('is_manager');
+        const label = document.getElementById('is_manager_label');
+
+        checkbox.addEventListener('change', () => {
+          label.classList.add('transition-all');
+          label.textContent = checkbox.checked ? 'Manager' : 'Not Manager';
+        });
+      });
+
+      function copyToClipboard() {
+        const copyText = document.getElementById('id');
+        copyText.disabled = false;  // Enable temporarily to copy value
+        copyText.select();
+        document.execCommand('copy');
+        copyText.disabled = true;  // Disable again
+        alert('Copied to clipboard: ' + copyText.value);
+      }
+
+      function copyReferrerToClipboard() {
+        const copyText = document.getElementById('referrer_id');
+        copyText.disabled = false;  // Enable temporarily to copy value
+        copyText.select();
+        document.execCommand('copy');
+        copyText.disabled = true;  // Disable again
+        alert('Copied to clipboard: ' + copyText.value);
+      }
+    </script>
+  </body>
 
 </html>

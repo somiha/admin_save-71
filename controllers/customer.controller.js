@@ -14,10 +14,8 @@ exports.getAllCustomers = async (req, res, next) => {
 
     if (!adminData || !adminData.is_logged) {
       if (adminData.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }

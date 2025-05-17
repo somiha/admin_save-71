@@ -7,6 +7,7 @@ const adminModel = require("../middlewares/admin");
 const countryModal = require("../modals/countryModal");
 const adminInfoModal = require("../modals/adminInfoModal");
 const helper = require("../helper/index");
+const { queryAsyncWithoutValue } = require("../config/helper");
 
 exports.addEmployee = async (req, res) => {
   try {
@@ -16,10 +17,8 @@ exports.addEmployee = async (req, res) => {
 
     if (!adminData || !adminData.is_logged) {
       if (adminData.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -49,6 +48,9 @@ exports.addEmployee = async (req, res) => {
       admin.is_super_admin,
       admin.permissions
     );
+    const designations = await queryAsyncWithoutValue(
+      `SELECT * FROM designation;`
+    );
     // const userId = req.session.user_id;
     return res.render("addEmployee", {
       title: "Add Employee",
@@ -56,6 +58,7 @@ exports.addEmployee = async (req, res) => {
       countries,
       premissions,
       admin,
+      designations,
     });
   } catch (err) {
     console.error(err);
@@ -112,16 +115,24 @@ exports.addEmployeePost = (req, res) => {
 
     if (!adminData || !adminData.is_logged) {
       if (adminData.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
 
-    const { name, email, password, country, note, designation, permissions } =
-      req.body;
+    let {
+      name,
+      email,
+      password,
+      country,
+      note,
+      designation,
+      permissions,
+      is_manager,
+      salary,
+      number,
+    } = req.body;
     const uniqueId = helper.genertateUniqueId();
     const permissionsArray = permissions
       ? Array.isArray(permissions)
@@ -129,11 +140,15 @@ exports.addEmployeePost = (req, res) => {
         : [permissions]
       : [];
 
-    console.log(req.body);
+    if (!is_manager) {
+      is_manager = 0;
+    } else {
+      is_manager = 1;
+    }
 
     const sql =
-      "INSERT INTO `admin_info` (`admin_id`, `admin_name`, `admin_email`, `admin_pass`, `note`, `country_id`, `designation`, `permissions`, `is_employee`, `unique_id`, referrer) \
-      VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO `admin_info` (`admin_id`, `admin_name`, `admin_email`, `admin_pass`, `note`, `country_id`, `designation`, `permissions`, `is_employee`, `unique_id`, referrer, is_manager, salary_per_hour, mobile_number) \
+      VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     db.query(
       sql,
       [
@@ -147,6 +162,9 @@ exports.addEmployeePost = (req, res) => {
         1,
         uniqueId,
         adminData.admin_id,
+        is_manager,
+        salary,
+        number,
       ],
       (err, result) => {
         if (err) {
@@ -172,10 +190,8 @@ exports.getAllEmployees = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -194,9 +210,9 @@ exports.getAllEmployees = async (req, res) => {
       page,
       limit
     );
-    console.log(employess.admins);
+
     const total_pages = Math.ceil(employess.totalAdmins / limit);
-    console.log(total_pages);
+
     const admin_info = employess.admins;
     // return res.send("OK");
 
@@ -222,10 +238,8 @@ exports.getMyEmployees = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -244,9 +258,9 @@ exports.getMyEmployees = async (req, res) => {
       page,
       limit
     );
-    console.log(employess.admins);
+    // console.log(employess.admins);
     const total_pages = Math.ceil(employess.totalAdmins / limit);
-    console.log(total_pages);
+    // console.log(total_pages);
     const admin_info = employess.admins;
     // return res.send("OK");
 
@@ -272,30 +286,24 @@ exports.viewEmployee = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
     const admin_id = req.params.admin_id;
     const admin = await adminModel.getAdminById(req, res, adminInfo.admin_id);
     const subAdmin = await adminModel.getAdminById(req, res, admin_id);
+
     let referrerInfo = {};
     if (subAdmin.referrer) {
       referrerInfo = await adminModel.getAdminById(req, res, subAdmin.referrer);
-      console.log("referrerInfo", referrerInfo);
     }
-    console.log(admin);
-    console.log("referrerInfo", referrerInfo);
 
     const premissions = await adminModel.getAdminPremissions(
       admin.is_super_admin,
       admin.permissions
     );
-
-    console.log("premissions", { premissions });
 
     const allPermissions = await adminModel.getAllPermissions(req, res);
     let filteredGroupPermissions = allPermissions;
@@ -315,6 +323,14 @@ exports.viewEmployee = async (req, res) => {
     }
     const countries = await countryModal.getAllCountries();
     const bankInfo = await adminModel.getAdminBankInfo(admin_id);
+    const docs = await adminInfoModal.getDocuments(admin_id);
+    const designations = await queryAsyncWithoutValue(
+      "SELECT * FROM designation"
+    );
+    const allManagers = await queryAsyncWithoutValue(
+      `SELECT * FROM admin_info WHERE is_manager = 1 AND admin_id != ${admin_id}`
+    );
+
     if (admin) {
       return res.render("employeeProfile", {
         title: "Employee Profile",
@@ -325,6 +341,9 @@ exports.viewEmployee = async (req, res) => {
         premissions,
         admin,
         referrerInfo,
+        designations,
+        allManagers,
+        docs,
       });
     } else {
       res.status(404).send("Admin not found");
@@ -342,10 +361,8 @@ exports.viewSubAdminEmployee = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -366,9 +383,8 @@ exports.viewSubAdminEmployee = async (req, res) => {
       page,
       limit
     );
-    console.log(employess.admins);
     const total_pages = Math.ceil(employess.totalAdmins / limit);
-    console.log(total_pages);
+
     const admin_info = employess.admins;
     // return res.send("OK");
 
@@ -389,6 +405,7 @@ exports.viewSubAdminEmployee = async (req, res) => {
 
 exports.updateEmployeeInfo = async (req, res) => {
   try {
+    console.log("Test");
     const admin_id = req.params.admin_id;
     let {
       admin_name,
@@ -404,7 +421,17 @@ exports.updateEmployeeInfo = async (req, res) => {
       account_name,
       account_number,
       permissions,
+      reporting_manager,
+      is_manager,
     } = req.body;
+
+    if (!is_manager) {
+      is_manager = 0;
+    } else {
+      is_manager = 1;
+    }
+
+    console.log({ is_manager });
 
     if (!is_active) {
       is_active = 0;
@@ -443,16 +470,16 @@ exports.updateEmployeeInfo = async (req, res) => {
       ? req.files.passport_pdf[0].path
       : null;
 
-    console.log(passportPdfPath, profilePicPath);
+    // console.log(passportPdfPath, profilePicPath);
 
     if (profilePicPath) {
       profile_pic =
-        "https://admin.save71.com/images/admin/" +
+        "https://admin.saveneed.com/images/admin/" +
         req.files.profile_pic[0].filename;
     }
     if (passportPdfPath) {
       passport_pdf =
-        "https://admin.save71.com/images/admin/" +
+        "https://admin.saveneed.com/images/admin/" +
         req.files.passport_pdf[0].filename;
     }
 
@@ -472,7 +499,9 @@ exports.updateEmployeeInfo = async (req, res) => {
       is_active,
       country_id,
       profile_pic,
-      passport_pdf
+      passport_pdf,
+      is_manager,
+      reporting_manager
     );
 
     if (updatedAdmin) {

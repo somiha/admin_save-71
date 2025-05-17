@@ -8,7 +8,7 @@
     <title>Save 71 - Dashboard - Sub Category</title>
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/output.css">
-    <link rel="icon" sizes="325x325" href="https://admin.save71.com/images/favicon.png">
+    <link rel="icon" sizes="325x325" href="https://admin.saveneed.com/images/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
   </head>
@@ -442,7 +442,7 @@
         const categoryRef = matchingParentCat ? matchingParentCat.main_cat_id : '';
 
         const main_cat_name = editRow.find('#rowCatName_' + rowNumber).text();
-        console.log(id, main_cat_name, subCatCount)
+
         editRow.empty();
 
         const newRow = `
@@ -486,7 +486,7 @@
           if ($(`#edit_pic_${rowNumber}`)[0].files.length > 0) {
             data.append('productImage', $(`#edit_pic_${rowNumber}`)[0].files[0]);
           }
-          console.log(data)
+
 
           $.ajax({
             type: 'POST',
@@ -495,7 +495,7 @@
             processData: false,
             contentType: false,
             success: function (response) {
-              console.log(response);
+
               window.location.href = "/subcategory";
             },
             error: function (error) {

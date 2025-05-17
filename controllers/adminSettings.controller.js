@@ -16,10 +16,8 @@ exports.adminSettings = async (req, res) => {
     );
     if (!admin_info || !admin_info.is_logged) {
       if (admin_info.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -27,19 +25,20 @@ exports.adminSettings = async (req, res) => {
     const admin = await adminModel.getAdminById(res, req, admin_info.admin_id);
     const bankInfo = await adminModel.getAdminBankInfo(admin_info.admin_id);
     const message = crypto.decrypt(req.cookies.__mOA || "");
+    const docs = await adminInfoModal.getDocuments(admin_info.admin_id);
     const premissions = await adminModel.getAdminPremissions(
       admin.is_super_admin,
       admin.permissions
     );
-    console.log(`admin settings permissions: ${premissions}`);
-    console.log(`admin settings admin: ${admin}`);
-
+    const adminId = admin_info.admin_id;
     return res.render("adminSettings", {
       title: "Admin Settings",
       message,
       admin,
       bankInfo,
       premissions,
+      docs,
+      adminId,
     });
   } catch (err) {
     console.error(err);
@@ -55,10 +54,8 @@ exports.adminSettingsPost = async (req, res) => {
 
     if (!adminData || !adminData.is_logged) {
       if (adminData.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -66,7 +63,6 @@ exports.adminSettingsPost = async (req, res) => {
     const { otp } = req.body;
     const { email, name, password } = JSON.parse(req.body.formData);
     const dbOtp = await otpHelper.getOTPByAdminId(adminData.admin_id);
-    console.log(dbOtp);
 
     if (dbOtp[0].email !== email) {
       return res.status(400).send("Email not matched with admin email");
@@ -105,14 +101,10 @@ exports.adminBankInfoPost = async (req, res) => {
       crypto.decrypt(req.cookies.__aD || "") || "{is_logged: false}"
     );
 
-    console.log({ adminData }, adminData.admin_id);
-
     if (!adminData || !adminData.is_logged) {
       if (adminData.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -163,10 +155,8 @@ exports.adminDocumentsPost = async (req, res) => {
 
     if (!adminData || !adminData.is_logged) {
       if (adminData.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -181,16 +171,14 @@ exports.adminDocumentsPost = async (req, res) => {
       ? req.files.passport_pdf[0].path
       : null;
 
-    console.log(passportPdfPath, profilePicPath);
-
     if (profilePicPath) {
       profile_pic =
-        "https://admin.save71.com/images/admin/" +
+        "https://admin.saveneed.com/images/admin/" +
         req.files.profile_pic[0].filename;
     }
     if (passportPdfPath) {
       passport_pdf =
-        "https://admin.save71.com/images/admin/" +
+        "https://admin.saveneed.com/images/admin/" +
         req.files.passport_pdf[0].filename;
     }
 
@@ -207,6 +195,42 @@ exports.adminDocumentsPost = async (req, res) => {
   }
 };
 
+exports.documentsPost = async (req, res) => {
+  try {
+    const encryptedData = req.cookies.__aD || "";
+    const decryptedData = crypto.decrypt(encryptedData) || "{}";
+    const adminData = JSON.parse(decryptedData);
+
+    // ✅ Check if admin is logged in
+    if (!adminData || !adminData.is_logged) {
+      return res.redirect(adminData.otp === true ? "/otp" : "/login");
+    }
+
+    const admin_id = adminData.admin_id;
+    const adminInfo = await adminInfoModal.getDocuments(admin_id);
+    let files = adminInfo[0]?.files || [];
+
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
+
+    // ✅ Process uploaded file
+    if (req.file) {
+      const fileUrl =
+        "https://admin.saveneed.com/images/admin/" + req.file.filename;
+      files = [fileUrl]; // You can also keep old files if needed
+    }
+
+    const title = req.body.title;
+
+    await adminModel.addDocuments(admin_id, title, files);
+
+    res.redirect("/adminSettings");
+  } catch (err) {
+    console.error("Document Upload Error:", err);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 exports.adminOtp = async (req, res) => {
   try {
     const admin_info = JSON.parse(
@@ -214,10 +238,8 @@ exports.adminOtp = async (req, res) => {
     );
     if (!admin_info || !admin_info.is_logged) {
       if (admin_info.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }

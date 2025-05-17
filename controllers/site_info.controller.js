@@ -9,10 +9,8 @@ exports.aboutUs = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -53,10 +51,8 @@ exports.privacy_policy = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -96,10 +92,8 @@ exports.terms_condition = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -187,10 +181,8 @@ exports.brand_guidelines = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -246,10 +238,8 @@ exports.notice = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -305,10 +295,8 @@ exports.contact_us = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }

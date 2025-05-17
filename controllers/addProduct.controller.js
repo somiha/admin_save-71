@@ -13,10 +13,8 @@ exports.addProduct = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -70,7 +68,7 @@ exports.addProduct = async (req, res) => {
 //     let picUrls;
 //     if (Array.isArray(productImages)) {
 //       picUrls = productImages.map(
-//         (file) => "https://admin.save71.com/images/products/" + file.filename
+//         (file) => "https://admin.saveneed.com/images/products/" + file.filename
 //       );
 //     } else {
 //       picUrls = [];
@@ -82,7 +80,7 @@ exports.addProduct = async (req, res) => {
 //     const productQuery =
 //       "INSERT INTO `product_template` (`temp_id`, `temp_name`, `temp_price`, `temp_short_des`, `temp_long_des`, `extra_cat_id`) VALUES (NULL, ?, ?, ?, ?, ?)";
 //     var video_url = req.files["product_video"]
-//       ? "https://admin.save71.com/images/products/" +
+//       ? "https://admin.saveneed.com/images/products/" +
 //         req.files["product_video"][0].filename
 //       : null;
 //     db.query(
@@ -180,7 +178,7 @@ exports.addProductPost = (req, res) => {
     let picUrls;
     if (Array.isArray(productImages)) {
       picUrls = productImages.map(
-        (file) => "https://admin.save71.com/images/products/" + file.filename
+        (file) => "https://admin.saveneed.com/images/products/" + file.filename
       );
     } else {
       picUrls = [];
@@ -192,7 +190,7 @@ exports.addProductPost = (req, res) => {
     const productQuery =
       "INSERT INTO `product_template` (`temp_id`, `temp_name`, `temp_price`, `temp_short_des`, `temp_long_des`, `extra_cat_id`) VALUES (NULL, ?, ?, ?, ?, ?)";
     var video_url = req.files["product_video"]
-      ? "https://admin.save71.com/images/products/" +
+      ? "https://admin.saveneed.com/images/products/" +
         req.files["product_video"][0].filename
       : null;
     db.query(

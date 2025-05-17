@@ -4,6 +4,7 @@ const {
   adminSettingsPost,
   adminBankInfoPost,
   adminDocumentsPost,
+  documentsPost,
   adminOtp,
 } = require("../controllers/adminSettings.controller");
 
@@ -23,5 +24,7 @@ router.post(
   ]),
   adminDocumentsPost
 );
+
+router.post("/adminDocuments", upload.single("files"), documentsPost);
 
 module.exports = router;

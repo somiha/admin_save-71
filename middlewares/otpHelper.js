@@ -27,7 +27,6 @@ exports.setOTPCode = (admin_id, sub = "Admin Login OTP") => {
               // send otp to email
               hf.mailSend(admin_email, otp, sub);
 
-              console.log("OTP generated successfully.");
               return resolve(result);
             }
           );

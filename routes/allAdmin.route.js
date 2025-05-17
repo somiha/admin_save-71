@@ -5,6 +5,7 @@ const {
   updateAdminInfo,
   deleteAdmin,
   deleteSelectedAdmins,
+  approveOrRejectTask,
 } = require("../controllers/allAdmin.controller");
 const upload = require("../config/multer_admin.config");
 const router = express.Router();
@@ -21,6 +22,7 @@ router.post(
 );
 router.get("/sub-admins/:admin_id/delete", deleteAdmin);
 router.post("/sub-admins/delete", deleteSelectedAdmins);
+router.post("/approve-task", approveOrRejectTask);
 
 router.get("/unauthorized", (req, res) => {
   res.render("unauthorized");

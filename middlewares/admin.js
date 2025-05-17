@@ -159,7 +159,7 @@ exports.createAdminBankInfo = (
   account_number,
   admin_id
 ) => {
-  console.log("createAdminBankInfo");
+  // console.log("createAdminBankInfo");
   const insertQuery =
     "INSERT INTO `admin_bank_info` (`bank_name`, `routing_number`, `branch_name`, `account_name`, `account_number`, `admin_id`) VALUES (?, ?, ?, ?, ?, ?) ";
   return new Promise((resolve, reject) => {
@@ -209,7 +209,6 @@ exports.getAdminPremissions = (is_super_admin, permission_ids) => {
 
           // Filter the result array based on permission_id
           let filteredAccessLinks = [];
-          console.log({ is_super_admin });
           if (!is_super_admin) {
             filteredAccessLinks = result
               ?.filter((item) => permissionIds.includes(item.permission_id))
@@ -297,6 +296,24 @@ exports.updateAdminDocuments = (admin_id, profile_pic, passport_pdf) => {
   });
 };
 
+exports.addDocuments = (admin_id, title, file) => {
+  return new Promise((resolve, reject) => {
+    const file_url = file[0];
+    db.query(
+      "INSERT INTO admin_docs (admin_id, title, file_url) VALUES (?, ?, ?);",
+      [admin_id, title, file_url],
+      (err, result) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      }
+    );
+  });
+};
+
 exports.updateAdminInfo = (
   req,
   res,
@@ -310,11 +327,19 @@ exports.updateAdminInfo = (
   is_active,
   country_id,
   profile_pic,
-  passport_pdf
+  passport_pdf,
+  is_manager,
+  reporting_manager
 ) => {
+  if (!is_manager) {
+    is_manager = 0;
+  } else {
+    is_manager = 1;
+  }
+
   return new Promise((resolve, reject) => {
     db.query(
-      "UPDATE admin_info SET admin_name = ?, admin_pass = ?, admin_email = ?, permissions = ?, note = ?, designation = ?, is_active = ?, country_id = ?, profile_pic = ?, passport_pdf = ? WHERE admin_id = ?;",
+      "UPDATE admin_info SET admin_name = ?, admin_pass = ?, admin_email = ?, permissions = ?, note = ?, designation = ?, is_active = ?, country_id = ?, profile_pic = ?, passport_pdf = ?, is_manager = ?, reporting_manager = ? WHERE admin_id = ?;",
       [
         admin_name,
         admin_pass,
@@ -326,6 +351,8 @@ exports.updateAdminInfo = (
         country_id,
         profile_pic,
         passport_pdf,
+        is_manager,
+        reporting_manager || null,
         admin_id,
       ],
       (err, result) => {

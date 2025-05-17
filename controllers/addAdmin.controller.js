@@ -6,6 +6,7 @@ const crypto = require("../middlewares/crypto");
 const adminModel = require("../middlewares/admin");
 const cotuntryModal = require("../modals/countryModal");
 const helper = require("../helper/index");
+const { queryAsync, queryAsyncWithoutValue } = require("../config/helper");
 
 exports.addAdmin = async (req, res) => {
   try {
@@ -15,10 +16,8 @@ exports.addAdmin = async (req, res) => {
 
     if (!adminData || !adminData.is_logged) {
       if (adminData.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -31,6 +30,10 @@ exports.addAdmin = async (req, res) => {
       admin.is_super_admin,
       admin.permissions
     );
+
+    const designations = await queryAsyncWithoutValue(
+      `SELECT * FROM designation;`
+    );
     // const userId = req.session.user_id;
     return res.render("addAdmin", {
       title: "Add Admin",
@@ -38,6 +41,7 @@ exports.addAdmin = async (req, res) => {
       countries,
       premissions,
       admin,
+      designations,
     });
   } catch (err) {
     console.error(err);
@@ -53,10 +57,10 @@ exports.addAdmin = async (req, res) => {
 
 //     if (!adminData || !adminData.is_logged) {
 //       if (adminData.otp !== true) {
-//         console.log("OTP not verified");
+
 //         return res.redirect("/otp");
 //       } else {
-//         console.log("Admin not logged in");
+
 //         return res.redirect("/login");
 //       }
 //     }
@@ -94,16 +98,23 @@ exports.addAdminPost = (req, res) => {
 
     if (!adminData || !adminData.is_logged) {
       if (adminData.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
 
-    const { name, email, password, country, note, designation, permissions } =
-      req.body;
+    const {
+      name,
+      email,
+      password,
+      country,
+      note,
+      designation,
+      permissions,
+      salary,
+      number,
+    } = req.body;
     const uniqueId = helper.genertateUniqueId();
     const permissionsArray = permissions
       ? Array.isArray(permissions)
@@ -111,11 +122,9 @@ exports.addAdminPost = (req, res) => {
         : [permissions]
       : [];
 
-    console.log(req.body);
-
     const sql =
-      "INSERT INTO `admin_info` (`admin_id`, `admin_name`, `admin_email`, `admin_pass`, `note`, `country_id`, `designation`, `permissions`, `is_country_representative`, `unique_id`, referrer) \
-      VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO `admin_info` (`admin_id`, `admin_name`, `admin_email`, `admin_pass`, `note`, `country_id`, `designation`, `permissions`, `is_country_representative`, `unique_id`, `referrer`, `salary_per_hour`, `mobile_number`) \
+      VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     db.query(
       sql,
       [
@@ -129,6 +138,8 @@ exports.addAdminPost = (req, res) => {
         1,
         uniqueId,
         adminData.admin_id,
+        salary,
+        number,
       ],
       (err, result) => {
         if (err) {

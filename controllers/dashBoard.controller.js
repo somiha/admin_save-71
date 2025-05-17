@@ -10,10 +10,8 @@ exports.dashBoard = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -88,10 +86,8 @@ exports.dashBoardBranded = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -388,7 +384,6 @@ exports.productVis = (req, res) => {
   const { pId, currentVis } = req.params;
   const page = req.cookies.__p || 1;
 
-  console.log(pId, currentVis);
   db.query(
     "UPDATE `products` SET `admin_published` = ? WHERE `products`.`product_id` = ?",
     [currentVis == 1 ? 0 : 1, pId],

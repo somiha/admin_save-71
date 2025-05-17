@@ -10,10 +10,8 @@ exports.updateExchangeView = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -136,7 +134,7 @@ exports.updateExchange = (req, res) => {
                   });
                 });
               }
-              console.log("Exchange rates updated successfully");
+
               return res.status(200).json({
                 message: "Exchange rates updated successfully",
                 lastUpdateTime: `${date}, ${time}`,

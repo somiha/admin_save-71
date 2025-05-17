@@ -32,7 +32,7 @@ exports.verifyOTP = async (req, res) => {
     if (!is_logged || !admin_id) {
       return res.redirect("/login");
     }
-    console.log("Admin id:", admin_id);
+
     await auth.verifyOTP(req, res, otp);
     return;
   } catch (error) {

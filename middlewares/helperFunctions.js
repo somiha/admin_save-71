@@ -37,11 +37,11 @@ function mailSend(mail, otp, sub) {
         api_key: "api-7C43A99E6AC011EEBC97F23C91C88F4E",
         sender: "save71-noreply@save71.com",
         to: [mail],
-        subject: `Save-71 ${sub}`,
+        subject: `SaveNeed ${sub}`,
         html_body: `
                   <div style="background-color: #f2f2f2; padding: 20px;">
                     <div style="background-color: #ffffff; padding: 20px; border-radius: 10px;">
-                      <h1 style="text-align: center; color: #1A63A6;">Save-71</h1>
+                      <h1 style="text-align: center; color: #1A63A6;">SaveNeed</h1>
                       <h3 style="text-align: center; color: #000000;">${sub}</h3>
                       <h1 style="text-align: center; color: #000000;">OTP :  <strong>${otp}</strong></h1>
                     </div>

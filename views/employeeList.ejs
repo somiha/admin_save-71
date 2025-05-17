@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Save Need - Employee Salary Management</title>
+        <!-- Tailwind CSS -->
+        <link rel="stylesheet" href="./css/style.css">
+        <link rel="stylesheet" href="./css/output.css">
+        <!-- Font Awesome -->
+        <link rel="icon" sizes="325x325" href="https://admin.saveneed.com/images/favicon.png">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <style>
+            :root {
+                --sidebar-width: 280px;
+                --primary-color: #4e73df;
+                --secondary-color: #858796;
+                --success-color: #1cc88a;
+                --warning-color: #f6c23e;
+                --danger-color: #e74a3b;
+            }
+
+            /* Pagination styles */
+            .pagination {
+                display: flex;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+
+            .page-item {
+                margin: 0 0.25rem;
+            }
+
+            .page-link {
+                display: block;
+                padding: 0.5rem 0.75rem;
+                border: 1px solid #dee2e6;
+                color: #4e73df;
+                text-decoration: none;
+                border-radius: 0.25rem;
+            }
+
+            .page-link:hover {
+                background-color: #e9ecef;
+            }
+
+            .page-item.active .page-link {
+                background-color: #4e73df;
+                border-color: #4e73df;
+                color: white;
+            }
+
+            .page-item.disabled .page-link {
+                color: #6c757d;
+                pointer-events: none;
+                background-color: #fff;
+                border-color: #dee2e6;
+            }
+
+            .summary-card {
+                transition: all 0.3s ease;
+            }
+
+            .summary-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            }
+        </style>
+    </head>
+
+    <body class="font-sans bg-gray-50">
+        <section class="max-w-[1920px] ml-auto mr-auto">
+            <!-- Navigation Menu -->
+            <%- include('header') %>
+            <div class="ml-auto w-full xl:w-5/6 px-0 xl:px-1 py-2 mt-16 xl:mt-0">
+                <div class="flex items-center justify-between px-5 py-2 xl:py-5 gap-4 border-b">
+                    <!-- Search Box -->
+                    <div class="bg-white relative">
+                        <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text"
+                            placeholder="Search...">
+                        <i
+                            class="fa-solid fa-magnifying-glass absolute top-1/2 left-0 -translate-y-1/2 text-tColor"></i>
+                    </div>
+
+                    <!-- Notification & User -->
+                    <%- include('profileBar') %>
+                </div>
+
+                <div class="container mx-auto py-8 w-full">
+                    <p id="message">
+                        <% if (error) { %>
+                        <span class="text-red-500"><%= error %></span>
+                        <% } else if (success) { %>
+                        <span class="text-green-500"><%= success %></span>
+                        <% } %>
+                    </p>
+
+                    <!-- Main Content -->
+                    <div id="content" class="w-[calc(100%-5px)] ml-[10px] min-h-screen transition-all duration-300">
+                        <!-- Begin Page Content -->
+                        <div class="container mx-auto px-4">
+                            <!-- Page Heading -->
+                            <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+                                <h1 class="text-2xl font-bold text-gray-800">Employee Salary Management</h1>
+                            </div>
+
+                            <!-- Salary Filter Form -->
+                            <% if (employees.length > 0) { %>
+                            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                                <h3 class="text-lg font-semibold mb-4">Filter Salary Records</h3>
+                                <form id="salaryFilterForm" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Employee</label>
+                                        <select name="employee_id" class="w-full border rounded px-3 py-2">
+                                            <option value="">Select Employee</option>
+                                            <% employees.forEach(employee => { %>
+                                            <option value="<%= employee.admin_id %>"
+                                                <%= selectedEmployee == employee.admin_id ? 'selected' : '' %>>
+                                                <%= employee.admin_name %>
+                                            </option>
+                                            <% }); %>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+                                        <input type="date" name="from_date" value="<%= fromDate %>"
+                                            class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+                                        <input type="date" name="to_date" value="<%= toDate %>"
+                                            class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div class="flex items-end">
+                                        <button type="submit"
+                                            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                            Filter Records
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <% } %>
+
+                            <!-- Salary Summary Cards -->
+                            <% if (salaryData.length > 0) { %>
+                            <!-- <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                                <div class="summary-card bg-white rounded-lg shadow p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-gray-500 text-sm">Total Salary</p>
+                                            <h3 class="text-2xl font-bold text-blue-600">
+                                                <%= salarySummary.totalSalary %>
+                                            </h3>
+                                        </div>
+                                        <div class="bg-blue-100 p-3 rounded-full">
+                                            <i class="fas fa-dollar-sign text-blue-600 text-xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="summary-card bg-white rounded-lg shadow p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-gray-500 text-sm">Average Salary</p>
+                                            <h3 class="text-2xl font-bold text-green-600">
+                                                <%= salarySummary.averageSalary %>
+                                            </h3>
+                                        </div>
+                                        <div class="bg-green-100 p-3 rounded-full">
+                                            <i class="fas fa-calculator text-green-600 text-xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="summary-card bg-white rounded-lg shadow p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-gray-500 text-sm">Highest Salary</p>
+                                            <h3 class="text-2xl font-bold text-purple-600">
+                                                <%= salarySummary.maxSalary %>
+                                            </h3>
+                                        </div>
+                                        <div class="bg-purple-100 p-3 rounded-full">
+                                            <i class="fas fa-arrow-up text-purple-600 text-xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="summary-card bg-white rounded-lg shadow p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-gray-500 text-sm">Payments Count</p>
+                                            <h3 class="text-2xl font-bold text-orange-600">
+                                                <%= salarySummary.paymentCount %>
+                                            </h3>
+                                        </div>
+                                        <div class="bg-orange-100 p-3 rounded-full">
+                                            <i class="fas fa-list-ol text-orange-600 text-xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                            <% } %>
+
+                            <!-- Content Row -->
+                            <!-- <div class="flex flex-col lg:flex-row gap-6">
+                          
+                                <div class="w-full lg:w-full">
+                                    <div class="bg-white rounded-lg shadow-lg p-4">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <h5 class="text-lg font-semibold text-gray-800">Employee List</h5>
+                                            <div class="text-sm text-gray-500">
+                                                Showing <%= employees.length %> of <%= totalEmployees[0]?.total %>
+                                                employees
+                                            </div>
+                                        </div>
+
+                                        <div class="overflow-x-auto">
+                                            <% if (employees.length > 0) { %>
+                                            <table class="min-w-full divide-y divide-gray-200">
+                                                <thead class="bg-gray-50">
+                                                    <tr>
+                                                        <th scope="col"
+                                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                            Name
+                                                        </th>
+                                                        <th scope="col"
+                                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                            Email
+                                                        </th>
+                                                        <th scope="col"
+                                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                            Actions
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white divide-y divide-gray-200">
+                                                    <% employees.forEach((employee) => { %>
+                                                    <tr>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <%= employee.admin_name %>
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <%= employee.admin_email %>
+                                                        </td>
+                                                        <td
+                                                            class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                                            <button
+                                                                class="text-blue-600 hover:text-blue-900 view-salary-btn"
+                                                                data-employee-id="<%= employee.admin_id %>"
+                                                                data-employee-name="<%= employee.admin_name %>">
+                                                                View Salary
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                                </tbody>
+                                            </table>
+                                            <% } else { %>
+                                            <div class="text-center py-8 text-gray-500">
+                                                <i class="fas fa-users text-4xl mb-2 text-gray-300"></i>
+                                                <p>No employees found under your management</p>
+                                            </div>
+                                            <% } %>
+                                        </div>
+
+                                      
+                                        <% if (totalPages > 1) { %>
+                                        <div class="pagination mt-4">
+                                            <% if (page > 1) { %>
+                                            <a href="?page=<%= page - 1 %>" class="page-link">&laquo; Previous</a>
+                                            <% } else { %>
+                                            <span class="page-link disabled">&laquo; Previous</span>
+                                            <% } %>
+
+                                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                            <% if (i === page) { %>
+                                            <span class="page-link active"><%= i %></span>
+                                            <% } else { %>
+                                            <a href="?page=<%= i %>" class="page-link"><%= i %></a>
+                                            <% } %>
+                                            <% } %>
+
+                                            <% if (page < totalPages) { %>
+                                            <a href="?page=<%= page + 1 %>" class="page-link">Next &raquo;</a>
+                                            <% } else { %>
+                                            <span class="page-link disabled">Next &raquo;</span>
+                                            <% } %>
+                                        </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div> -->
+
+                            <!-- Salary Records Table -->
+                            <% if (salaryData.length > 0) { %>
+                            <div class="mt-8">
+                                <div class="bg-white rounded-lg shadow-lg p-4">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h5 class="text-lg font-semibold text-gray-800">Salary Records</h5>
+                                        <div class="text-sm text-gray-500">
+                                            <%= salaryData.length %> records found
+                                        </div>
+                                    </div>
+
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full divide-y divide-gray-200">
+                                            <thead class="bg-gray-50">
+                                                <tr>
+                                                    <th scope="col"
+                                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Date
+                                                    </th>
+                                                    <th scope="col"
+                                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Task Duration
+                                                    </th>
+                                                    <th scope="col"
+                                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Salary
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white divide-y divide-gray-200">
+                                                <% 
+                                            // Initialize variables for time calculations
+                                            let totalMinutes = 0;
+                                            let totalSalary = 0;
+                                            let minMinutes = Infinity;
+                                            let maxMinutes = -Infinity;
+                                            let minSalary = Infinity;
+                                            let maxSalary = -Infinity;
+                                            
+                                            // Function to parse duration string into minutes
+                                            function parseDuration(duration) {
+                                                if (!duration) return 0;
+                                                
+                                                // Handle different duration formats:
+                                                // "2h 30m", "2 hours 30 minutes", "2:30", etc.
+                                                const hoursMatch = duration.match(/(\d+)\s*h/i);
+                                                const minutesMatch = duration.match(/(\d+)\s*m/i);
+                                                const colonMatch = duration.match(/(\d+):(\d+)/);
+                                                
+                                                let hours = 0;
+                                                let minutes = 0;
+                                                
+                                                if (colonMatch) {
+                                                    // Handle "2:30" format
+                                                    hours = parseInt(colonMatch[1]);
+                                                    minutes = parseInt(colonMatch[2]);
+                                                } else {
+                                                    // Handle other formats
+                                                    if (hoursMatch) hours = parseInt(hoursMatch[1]);
+                                                    if (minutesMatch) minutes = parseInt(minutesMatch[1]);
+                                                }
+                                                
+                                                return hours * 60 + minutes;
+                                            }
+                                            
+                                            // Function to format minutes as "Xh Ym"
+                                            function formatDuration(minutes) {
+                                                if (minutes === 0) return '0m';
+                                                const hours = Math.floor(minutes / 60);
+                                                const mins = minutes % 60;
+                                                return `${hours > 0 ? hours + 'h ' : ''}${mins > 0 ? mins + 'm' : ''}`.trim();
+                                            }
+                                            
+                                            salaryData.forEach((record) => { 
+                                                const durationMinutes = parseDuration(record.task_duration);
+                                                const salary = parseFloat(record.salary) || 0;
+                                                
+                                                totalMinutes += durationMinutes;
+                                                totalSalary += salary;
+                                                
+                                              
+                                            %>
+                                                <tr>
+                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                        <%= new Date(record.task_date).toLocaleDateString('en-GB') %>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <%= record.task_duration ? formatDuration(parseDuration(record.task_duration)) : 'N/A' %>
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap font-medium">
+                                                        <%= salary.toFixed(2) %>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+
+                                                <!-- Summary Rows -->
+                                                <tr class="bg-gray-50 font-semibold">
+                                                    <td class="px-6 py-4 whitespace-nowrap">Total</td>
+                                                    <td class="px-6 py-4"><%= formatDuration(totalMinutes) %></td>
+                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                        <%= totalSalary.toFixed(2) %></td>
+                                                </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+        </section>
+
+        <script>
+            // Auto-hide message after 2 seconds
+            setTimeout(() => {
+                const msg = document.getElementById('message');
+                if (msg) msg.style.display = 'none';
+            }, 2000);
+
+            // View Salary button click handler
+            document.addEventListener('DOMContentLoaded', function () {
+                // Set default dates in the filter form
+                const today = new Date();
+                const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+                const formatDate = (date) => {
+                    return date.toISOString().split('T')[0];
+                };
+
+                // If dates are not already set, set default (current month)
+                if (!document.querySelector('input[name="from_date"]').value) {
+                    document.querySelector('input[name="from_date"]').value = formatDate(firstDayOfMonth);
+                }
+
+                if (!document.querySelector('input[name="to_date"]').value) {
+                    document.querySelector('input[name="to_date"]').value = formatDate(today);
+                }
+
+                // View Salary button click
+                document.querySelectorAll('.view-salary-btn').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const employeeId = this.getAttribute('data-employee-id');
+                        const employeeName = this.getAttribute('data-employee-name');
+
+                        // Set the employee in the filter form
+                        document.querySelector('select[name="employee_id"]').value = employeeId;
+
+                        // Submit the form
+                        document.getElementById('salaryFilterForm').submit();
+                    });
+                });
+
+                // Form submission handler
+                document.getElementById('salaryFilterForm').addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const employeeId = this.elements['employee_id'].value;
+                    const fromDate = this.elements['from_date'].value;
+                    const toDate = this.elements['to_date'].value;
+
+                    if (!employeeId || !fromDate || !toDate) {
+                        alert('Please select an employee and date range');
+                        return;
+                    }
+
+                    // Build URL with query parameters
+                    const params = new URLSearchParams();
+                    params.append('employee_id', employeeId);
+                    params.append('from_date', fromDate);
+                    params.append('to_date', toDate);
+
+                    window.location.href = window.location.pathname + '?' + params.toString();
+                });
+            });
+        </script>
+    </body>
+
+</html>

@@ -13,10 +13,8 @@ exports.editProduct = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -112,15 +110,6 @@ exports.editProductPost = (req, res) => {
       featured_index,
     } = req.body;
 
-    console.log(
-      product_name,
-      product_price,
-      extra_cat,
-      product_des,
-      product_short_des,
-      featured_index
-    );
-
     const productImages = req.files["productImages"];
     const { pID } = req.params;
     const page = req.cookies.__p || 1;
@@ -128,7 +117,7 @@ exports.editProductPost = (req, res) => {
     let picUrls;
     if (Array.isArray(productImages)) {
       picUrls = productImages.map(
-        (file) => "https://admin.save71.com/images/products/" + file.filename
+        (file) => "https://admin.saveneed.com/images/products/" + file.filename
       );
     } else {
       picUrls = [];
@@ -140,7 +129,7 @@ exports.editProductPost = (req, res) => {
     const productQuery =
       "UPDATE `product_template` SET `temp_name` = ?, `temp_price` = ?, `temp_short_des` = ?, `temp_long_des` = ?, `extra_cat_id` = ? WHERE `temp_id` = ?";
     var video_url = req.files["product_video"]
-      ? "https://admin.save71.com/images/products/" +
+      ? "https://admin.saveneed.com/images/products/" +
         req.files["product_video"][0].filename
       : null;
     db.query(
@@ -155,7 +144,6 @@ exports.editProductPost = (req, res) => {
       ],
       function (err, productResult) {
         if (err) {
-          console.log("Database query error:", err);
           return res.status(500).send("Error: " + err.message);
         }
 
@@ -182,24 +170,22 @@ exports.editProductPost = (req, res) => {
                   [imageValues],
                   function (err, imageResult) {
                     if (err) {
-                      console.log("Database query error:", err);
                       return res.status(500).send("Error: " + err.message);
                     }
                     // Images inserted successfully
-                    console.log("Product and images saved successfully");
+
                     //   res.status(200).json({ message: "Product and images saved successfully" });
                     res.redirect("/branded?page=" + page);
                   }
                 );
               } else {
-                console.log("Database query error:", errDelImg);
                 return res.status(500).send("Error: " + errDelImg.message);
               }
             }
           );
         } else {
           // No images uploaded, send success message
-          console.log("Product saved successfully");
+
           res.status(200).redirect("/branded?page=" + page);
         }
 

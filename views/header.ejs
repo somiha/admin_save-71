@@ -56,6 +56,10 @@
             </a>
           </li>
           <% } %>
+          <li><a href="/designation">
+              Designation
+            </a>
+          </li>
 
         </ul>
         <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => (link.toLowerCase() === '/withdraw'))) { %>
@@ -180,6 +184,45 @@
           <% } %>
         </ul>
 
+
+
+
+        <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => (link.toLowerCase() === '/task' || link.toLowerCase() === '/add-task' || link.toLowerCase() === '/task-manage' || link.toLowerCase() === '/approve-task' || link.toLowerCase() === '/employee-list' || link.toLowerCase() === '/my-salary'))) { %>
+
+        <button class="accordion-button menu-list">
+          <i class="fa-solid fa-info-circle"></i>
+          <span>Task Management</span>
+          <i class="ml-auto fa-solid fa-chevron-down"></i>
+        </button>
+
+        <% } %>
+
+        <ul class="menu-collapse">
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => link.toLowerCase() === '/task')) { %>
+          <li><a href="/task">
+              Log Task
+            </a>
+          </li>
+          <% } %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => link.toLowerCase() === '/task-manage')) { %>
+          <li><a href="/task-manage">
+              Manage task
+            </a>
+          </li>
+          <% } %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => link.toLowerCase() === '/employee-list')) { %>
+          <li><a href="/employee-list">
+              Employee Salary
+            </a>
+          </li>
+          <% } %>
+          <% if (premissions && admin && admin.is_active && premissions.includes && premissions.some(link => link.toLowerCase() === '/my-salary')) { %>
+          <li><a href="/my-salary">
+              My Salary
+            </a>
+          </li>
+          <% } %>
+        </ul>
 
 
 

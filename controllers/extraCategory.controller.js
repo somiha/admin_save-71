@@ -13,10 +13,8 @@ exports.extraCategory = async (req, res) => {
     );
     if (!adminInfo || !adminInfo.is_logged) {
       if (adminInfo.otp !== true) {
-        console.log("OTP not verified");
         return res.redirect("/otp");
       } else {
-        console.log("Admin not logged in");
         return res.redirect("/login");
       }
     }
@@ -78,7 +76,6 @@ exports.getExtraProducts = async (req, res) => {
       const endIndex = startIndex + itemsPerPage;
 
       const searchTerm = req.query.search || "";
-      console.log("Ajax executed");
 
       var query = `SELECT * FROM extra_cat`;
 
@@ -162,8 +159,8 @@ exports.addExtraCategory = async (req, res) => {
 
     // File upload successful
     const imageFileName =
-      "https://admin.save71.com/images/categories/" + req.file.filename;
-    console.log("Image uploaded successfully:", imageFileName);
+      "https://admin.saveneed.com/images/categories/" + req.file.filename;
+
     db.query(
       "INSERT INTO `extra_cat` (`id`, `extra_cat_id`, `extra_cat_ref`, `extra_cat_name`, `extra_cat_image_url`, `popular_cat_value`, `retailer_deduct_percentage`, `manufacturer_deduct_percentage`) VALUES (NULL, ?, ?, ?, ?, NULL, ?, ?)",
       [
@@ -178,7 +175,7 @@ exports.addExtraCategory = async (req, res) => {
         if (!err) {
           console.error("Error occurred while adding sub category:", err);
           const id = result.insertId;
-          console.log("ID : ", id);
+
           db.query(
             "UPDATE `extra_cat` SET `extra_cat_id` = ? WHERE `extra_cat`.`id` = ?",
             ["extracat-" + id, id],
@@ -201,7 +198,7 @@ exports.addExtraCategory = async (req, res) => {
 
 exports.extraCatDel = async (req, res) => {
   const id = req.params.id;
-  console.log("ID : ", id);
+
   db.query(
     `DELETE FROM extra_cat
   WHERE extra_cat.id = ?`,
@@ -229,7 +226,7 @@ exports.extraCatEdit = (req, res) => {
     let imageFileName = "";
     if (req.file) {
       imageFileName =
-        "https://admin.save71.com/images/categories/" + req.file.filename;
+        "https://admin.saveneed.com/images/categories/" + req.file.filename;
       db.query(
         "UPDATE `extra_cat` SET `extra_cat_ref` = ?, `extra_cat_name` = ?, `extra_cat_image_url` = ?, `retailer_deduct_percentage` = ?, `manufacturer_deduct_percentage` = ? WHERE `extra_cat`.`id` = ?",
         [
